@@ -108,7 +108,8 @@ public class Model {
                             var v = reader.getAttributeValue(null, "v");
                             if (k.equals("natural") && v.equals("water")) type = WayType.LAKE;
                             if (k.equals("building")) type = WayType.BUILDING;
-                            if (k.equals("highway") && (v.equals("primary") || v.equals("secondary") || v.equals("residential") || v.equals("unclassified"))) type = WayType.HIGHWWAY;
+                            if (k.equals("highway") && (v.equals("primary") || v.equals("secondary")  || v.equals("unclassified"))) type = WayType.HIGHWWAY;
+                            if (k.equals("highway") && (v.equals("residential")) || v.equals("service") || v.equals("cycleway"))  type = WayType.CITYWAY;
                             break;
                         case "member":
                             ref = Long.parseLong(reader.getAttributeValue(null, "ref"));

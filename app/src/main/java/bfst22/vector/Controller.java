@@ -18,6 +18,7 @@ public class Controller {
     @FXML
     private void onScroll(ScrollEvent e) {
         var factor = e.getDeltaY();
+        canvas.getZoom(factor);
         canvas.zoom(Math.pow(1.05, factor), e.getX(), e.getY());
     }
 
