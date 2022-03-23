@@ -1,5 +1,7 @@
 package bfst22.vector;
 
+import java.nio.file.WatchKey;
+
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
@@ -10,6 +12,7 @@ public class MapCanvas extends Canvas {
     Model model;
     Affine trans = new Affine();
     double zoomedIn = 100;
+
     void init(Model model) {
         this.model = model;
         pan(-model.minlon, -model.minlat);
@@ -24,11 +27,13 @@ public class MapCanvas extends Canvas {
         gc.setFill(Color.WHITE);
         gc.fillRect(0, 0, getWidth(), getHeight());
         gc.setTransform(trans);
-        if(zoomedIn < 50) {
-            for (var line : model.iterable(WayType.LAKE)) {
-                gc.setFill(Color.LIGHTBLUE);
-                line.fill(gc);
-            }
+        for (var line : model.iterable(WayType.LAKE)) {
+            gc.setFill(Color.LIGHTBLUE);
+            line.fill(gc);
+        }
+        for (var line : model.iterable(WayType.MOTORWAY)) {
+            gc.setStroke(Color.RED);
+            line.draw(gc);
         }
         for (var line : model.iterable(WayType.HIGHWWAY)) {
             gc.setStroke(Color.ORANGE);
@@ -43,24 +48,21 @@ public class MapCanvas extends Canvas {
 
             }
         }
-        if (zoomedIn > 80){
+        if (zoomedIn > 120) {
             for (var line : model.iterable(WayType.CITYWAY)) {
                 gc.setStroke(Color.BLACK);
                 line.draw(gc);
 
-
             }
         }
 
-
-        gc.setLineWidth(1/Math.sqrt(trans.determinant()));
-
+        gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
+        if (zoomedIn > 150) {
             for (var line : model.iterable(WayType.UNKNOWN)) {
                 line.draw(gc);
                 gc.setStroke(Color.BLACK);
             }
-
-
+        }
 
     }
 
@@ -77,8 +79,8 @@ public class MapCanvas extends Canvas {
         repaint();
     }
 
-    void getZoom(double factor){
-            zoomedIn += factor;
+    void getZoom(double factor) {
+        zoomedIn += factor;
     }
 
     public Point2D mouseToModel(Point2D point) {

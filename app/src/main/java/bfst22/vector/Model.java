@@ -28,13 +28,16 @@ import static java.util.stream.Collectors.toList;
 
 public class Model {
     float minlat, minlon, maxlat, maxlon;
-    Map<WayType,List<Drawable>> lines = new EnumMap<>(WayType.class); {
-        for (var type : WayType.values()) lines.put(type, new ArrayList<>());
+    Map<WayType, List<Drawable>> lines = new EnumMap<>(WayType.class);
+    {
+        for (var type : WayType.values())
+            lines.put(type, new ArrayList<>());
     }
     List<Runnable> observers = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
-    public Model(String filename) throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
+    public Model(String filename)
+            throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
         var time = -System.nanoTime();
         if (filename.endsWith(".zip")) {
             var zip = new ZipInputStream(new FileInputStream(filename));
@@ -48,16 +51,17 @@ public class Model {
                 minlon = input.readFloat();
                 maxlat = input.readFloat();
                 maxlon = input.readFloat();
-                lines = (Map<WayType,List<Drawable>>) input.readObject();
+                lines = (Map<WayType, List<Drawable>>) input.readObject();
             }
         } else {
             lines.put(WayType.UNKNOWN, Files.lines(Paths.get(filename))
-                .map(Line::new)
-                .collect(toList()));
+                    .map(Line::new)
+                    .collect(toList()));
         }
         time += System.nanoTime();
-        System.out.println("Load time: " + (long)(time / 1e6) + " ms");
-        if (!filename.endsWith(".obj")) save(filename);
+        System.out.println("Load time: " + (long) (time / 1e6) + " ms");
+        if (!filename.endsWith(".obj"))
+            save(filename);
     }
 
     public void save(String basename) throws FileNotFoundException, IOException {
@@ -106,15 +110,36 @@ public class Model {
                         case "tag":
                             var k = reader.getAttributeValue(null, "k");
                             var v = reader.getAttributeValue(null, "v");
-                            if (k.equals("natural") && v.equals("water")) type = WayType.LAKE;
-                            if (k.equals("building")) type = WayType.BUILDING;
-                            if (k.equals("highway") && (v.equals("primary") || v.equals("secondary")  || v.equals("unclassified"))) type = WayType.HIGHWWAY;
-                            if (k.equals("highway") && (v.equals("residential")) || v.equals("service") || v.equals("cycleway"))  type = WayType.CITYWAY;
+                            switch (k) {
+                                case "natural":
+                                    if (v.equals("water"))
+                                        type = WayType.LAKE;
+                                    break;
+                                case "building":
+                                    type = WayType.BUILDING;
+                                    break;
+                                case "highway":
+                                    if (v.equals("primary") || v.equals("trunk") || v.equals("secondary")
+                                            || v.equals("trunk_link") || v.equals("secondary_link")) {
+                                        type = WayType.HIGHWWAY;
+                                    } else if (v.equals("residential") || v.equals("service") || v.equals("cycleway")
+                                            || v.equals("tertiary") || v.equals("unclassified")
+                                            || v.equals("tertiary_link") || v.equals("road")) {
+                                        type = WayType.CITYWAY;
+                                    } else if (v.equals("motorway") || v.equals("motorway_link")) {
+                                        type = WayType.MOTORWAY;
+                                    }
+                                    break;
+
+                                default:
+                                    break;
+                            }
                             break;
                         case "member":
                             ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
                             var elm = id2way.get(ref);
-                            if (elm != null) rel.add(elm);
+                            if (elm != null)
+                                rel.add(elm);
                             break;
                         case "relation":
                             id = Long.parseLong(reader.getAttributeValue(null, "id"));
