@@ -1,3 +1,8 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "java.project.sourcePaths": [
+        "app\\data",
+        "app\\src\\main\\java\\bfst22",
+        "app\\src\\main\\java\\bfst22\\vector"
+    ]
 }

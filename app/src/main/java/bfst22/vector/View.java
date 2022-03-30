@@ -12,6 +12,6 @@ public class View {
         primaryStage.setScene(loader.load());
         Controller controller = loader.getController();
         controller.init(model);
-        primaryStage.setTitle("Handin3- rasni");
+        primaryStage.setTitle("Bornholm");
     }
 }

@@ -28,6 +28,8 @@ import static java.util.stream.Collectors.toList;
 
 public class Model {
     float minlat, minlon, maxlat, maxlon;
+    Address address = null;
+    OSMNode osmnode = null;
     Map<WayType, List<Drawable>> lines = new EnumMap<>(WayType.class);
     {
         for (var type : WayType.values())
@@ -98,6 +100,7 @@ public class Model {
                             var lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
                             var lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
                             id2node.add(new OSMNode(id, 0.56f * lon, -lat));
+                            osmnode = new OSMNode(id, 0.56f * lon, -lat);
                             break;
                         case "nd":
                             var ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
@@ -114,6 +117,8 @@ public class Model {
                                 case "natural":
                                     if (v.equals("water"))
                                         type = WayType.LAKE;
+                                    else if (v.equals("coastline"))
+                                        type = WayType.COASTLINE;
                                     break;
                                 case "building":
                                     type = WayType.BUILDING;
@@ -130,7 +135,31 @@ public class Model {
                                         type = WayType.MOTORWAY;
                                     }
                                     break;
-
+                                case "addr:city":
+                                    if (address == null) {
+                                        address = new Address(osmnode);
+                                    }
+                                    address.setCity(v.intern());
+                                    break;
+                                case "addr:postcode":
+                                    if (address == null) {
+                                        address = new Address(osmnode);
+                                    }
+                                    address.setPostcode(v.intern());
+                                    break;
+                                case "addr:housenumber":
+                                    if (address == null) {
+                                        address = new Address(osmnode);
+                                    }
+                                    address.setHousenumber(v.intern());
+                                    break;
+                                case "addr:street":
+                                    if (address == null) {
+                                        address = new Address(osmnode);
+                                    }
+                                    address.setStreet(v.intern());
+                                    System.out.println(v.intern());
+                                    break;
                                 default:
                                     break;
                             }

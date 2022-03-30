@@ -31,6 +31,10 @@ public class MapCanvas extends Canvas {
             gc.setFill(Color.LIGHTBLUE);
             line.fill(gc);
         }
+        for (var line : model.iterable(WayType.COASTLINE)) {
+            gc.setStroke(Color.BLACK);
+            line.draw(gc);
+        }
         for (var line : model.iterable(WayType.MOTORWAY)) {
             gc.setStroke(Color.RED);
             line.draw(gc);
