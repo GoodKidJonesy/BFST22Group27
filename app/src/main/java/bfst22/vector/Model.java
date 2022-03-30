@@ -30,6 +30,7 @@ public class Model {
     float minlat, minlon, maxlat, maxlon;
     Address address = null;
     OSMNode osmnode = null;
+    ArrayList<Address> addresses = new ArrayList<>();
     Map<WayType, List<Drawable>> lines = new EnumMap<>(WayType.class);
     {
         for (var type : WayType.values())
@@ -140,25 +141,36 @@ public class Model {
                                         address = new Address(osmnode);
                                     }
                                     address.setCity(v.intern());
+                                    if (address.isFull()) {
+                                        addAddress();
+                                    }
                                     break;
                                 case "addr:postcode":
                                     if (address == null) {
                                         address = new Address(osmnode);
                                     }
                                     address.setPostcode(v.intern());
+                                    if (address.isFull()) {
+                                        addAddress();
+                                    }
                                     break;
                                 case "addr:housenumber":
                                     if (address == null) {
                                         address = new Address(osmnode);
                                     }
                                     address.setHousenumber(v.intern());
+                                    if (address.isFull()) {
+                                        addAddress();
+                                    }
                                     break;
                                 case "addr:street":
                                     if (address == null) {
                                         address = new Address(osmnode);
                                     }
                                     address.setStreet(v.intern());
-                                    System.out.println(v.intern());
+                                    if (address.isFull()) {
+                                        addAddress();
+                                    }
                                     break;
                                 default:
                                     break;
@@ -212,5 +224,13 @@ public class Model {
 
     public Iterable<Drawable> iterable(WayType type) {
         return lines.get(type);
+    }
+
+    public void addAddress() {
+        addresses.add(address);
+        address.setCity(null);
+        address.setPostcode(null);
+        address.setHousenumber(null);
+        address.setStreet(null);
     }
 }

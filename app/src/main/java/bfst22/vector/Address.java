@@ -26,4 +26,25 @@ public class Address {
     public void setStreet(String street) {
         this.street = street;
     }
+
+    public boolean isFull() {
+        if (city == null) {
+            return false;
+        }
+        if (postcode == null) {
+            return false;
+        }
+        if (houseNumber == null) {
+            return false;
+        }
+        if (street == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public String getStreet() {
+        return street;
+    }
 }
