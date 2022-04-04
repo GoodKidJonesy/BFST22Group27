@@ -180,7 +180,7 @@
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <CheckBox mnemonicParsing="false" text="FPS" fx:id="fps" />
+                        <CheckBox mnemonicParsing="false" text="FPS" fx:id="FPSBox" />
                         <CheckBox mnemonicParsing="false" text="CheckBox" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         <CheckBox mnemonicParsing="false" text="CheckBox" GridPane.rowIndex="2" />
                         <CheckBox mnemonicParsing="false" text="CheckBox" GridPane.columnIndex="1" GridPane.rowIndex="1" />

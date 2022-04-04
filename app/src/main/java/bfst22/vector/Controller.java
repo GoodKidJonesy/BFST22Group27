@@ -1,9 +1,12 @@
 package bfst22.vector;
 
+import javax.swing.Action;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -16,6 +19,8 @@ import javafx.scene.control.ListView;
 
 public class Controller {
     private Point2D lastMouse;
+
+    Framerate FPS = new Framerate();
 
     @FXML
     private MapCanvas canvas;
@@ -37,16 +42,22 @@ public class Controller {
                         rute2;
 
     @FXML Label totalDistanceLabel,
-                totalTimeLabel;
+                totalTimeLabel,
+                FPSLabel;
     
     @FXML ListView directionList;
 
+    @FXML CheckBox FPSBox;
+
+
     public void init(Model model) {
         canvas.init(model);
+
     }
 
     @FXML
     private void onScroll(ScrollEvent e) {
+        startFPS();
         var factor = e.getDeltaY();
         canvas.getZoom(factor);
         canvas.zoom(Math.pow(1.005, factor), e.getX(), e.getY());
@@ -54,6 +65,7 @@ public class Controller {
 
     @FXML
     private void onMouseDragged(MouseEvent e) {
+        startFPS();
         var dx = e.getX() - lastMouse.getX();
         var dy = e.getY() - lastMouse.getY();
         canvas.pan(dx, dy);
@@ -63,6 +75,7 @@ public class Controller {
     @FXML
     private void onMousePressed(MouseEvent e) {
         lastMouse = new Point2D(e.getX(), e.getY());
+        startFPS();
     }
 
     @FXML
@@ -109,6 +122,15 @@ public class Controller {
             bikeBtn.setStyle(transparent);
             carBtn.setStyle(transparent);
             walkBtn.setStyle(lightgrey);
+        }
+    }
+
+    private void startFPS() {
+        if(FPSBox.isSelected()) {
+            FPSBox.setText(FPS.getFrameRate());
+        }
+        else if (!FPSBox.isSelected()) {
+            FPSBox.setText("FPS");
         }
     }
 }

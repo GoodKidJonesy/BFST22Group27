@@ -9,6 +9,7 @@ import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 
 public class MapCanvas extends Canvas {
+
     Model model;
     Affine trans = new Affine();
     double zoomedIn = 100;
@@ -22,6 +23,7 @@ public class MapCanvas extends Canvas {
     }
 
     void repaint() {
+
         var gc = getGraphicsContext2D();
         gc.setTransform(new Affine());
         gc.setFill(Color.WHITE);
@@ -68,10 +70,12 @@ public class MapCanvas extends Canvas {
             }
         }
 
+
     }
 
     void pan(double dx, double dy) {
         trans.prependTranslation(dx, dy);
+
         repaint();
     }
 
