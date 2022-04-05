@@ -19,7 +19,7 @@ public class Controller {
     private void onScroll(ScrollEvent e) {
         var factor = e.getDeltaY();
         canvas.getZoom(factor);
-        canvas.zoom(Math.pow(1.05, factor), e.getX(), e.getY());
+        canvas.zoom(Math.pow(1.005, factor), e.getX(), e.getY());
     }
 
     @FXML

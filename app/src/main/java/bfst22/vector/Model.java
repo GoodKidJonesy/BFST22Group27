@@ -85,6 +85,10 @@ public class Model {
         var rel = new ArrayList<OSMWay>();
         long relID = 0;
         var type = WayType.UNKNOWN;
+        OSMNodeSorter sorter = new OSMNodeSorter();
+        OSMNodeParser parser = new OSMNodeParser();
+        KDTree tree = new KDTree();
+
         while (reader.hasNext()) {
             switch (reader.next()) {
                 case XMLStreamConstants.START_ELEMENT:
@@ -100,8 +104,8 @@ public class Model {
                             var id = Long.parseLong(reader.getAttributeValue(null, "id"));
                             var lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
                             var lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
-                            id2node.add(new OSMNode(id, 0.56f * lon, -lat));
                             osmnode = new OSMNode(id, 0.56f * lon, -lat);
+                            id2node.add(osmnode);
                             break;
                         case "nd":
                             var ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
@@ -210,6 +214,8 @@ public class Model {
             }
         }
         System.out.println("Done");
+        parser.parseOSMNodes(tree, nodes, sorter, 0);
+        tree.printTree(tree.getRoot());
     }
 
     public void addObserver(Runnable observer) {
