@@ -103,6 +103,7 @@ public class Controller {
         System.out.println(rute1.getText());
     }
     
+    //TODO: NOT WORKING, NILLER WILL FIX
     @FXML
     private void highlightVehicle(ActionEvent e) {
         String transparent = "-fx-background-color: transparent";
@@ -132,5 +133,10 @@ public class Controller {
         else if (!FPSBox.isSelected()) {
             FPSBox.setText("FPS");
         }
+    }
+
+    //TODO: NOT WORKING, NILLER WILL FIX
+    @FXML 
+    private void zoomSlide() {
     }
 }

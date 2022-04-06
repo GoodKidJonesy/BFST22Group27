@@ -45,7 +45,7 @@ public class MapCanvas extends Canvas {
             gc.setStroke(Color.ORANGE);
             line.draw(gc);
         }
-        if (zoomedIn > 110) {
+        if (zoomedIn > 500) {
             for (var line : model.iterable(WayType.BUILDING)) {
                 gc.setStroke(Color.GREY);
                 line.draw(gc);
@@ -54,7 +54,7 @@ public class MapCanvas extends Canvas {
 
             }
         }
-        if (zoomedIn > 120) {
+        if (zoomedIn > 650) {
             for (var line : model.iterable(WayType.CITYWAY)) {
                 gc.setStroke(Color.BLACK);
                 line.draw(gc);
@@ -63,13 +63,12 @@ public class MapCanvas extends Canvas {
         }
 
         gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
-        if (zoomedIn > 150) {
+        if (zoomedIn > 800) {
             for (var line : model.iterable(WayType.UNKNOWN)) {
                 line.draw(gc);
                 gc.setStroke(Color.BLACK);
             }
         }
-
 
     }
 
