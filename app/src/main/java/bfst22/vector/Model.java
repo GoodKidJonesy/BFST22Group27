@@ -85,9 +85,7 @@ public class Model {
         var rel = new ArrayList<OSMWay>();
         long relID = 0;
         var type = WayType.UNKNOWN;
-        OSMNodeSorter sorter = new OSMNodeSorter();
-        OSMNodeParser parser = new OSMNodeParser();
-        KDTree tree = new KDTree();
+        KDTree OSMNodeTree = new KDTree();
 
         while (reader.hasNext()) {
             switch (reader.next()) {
@@ -214,8 +212,7 @@ public class Model {
             }
         }
         System.out.println("Done");
-        parser.parseOSMNodes(tree, nodes, sorter, 0);
-        tree.printTree(tree.getRoot());
+        OSMNodeTree.fillTree(id2node, 0);
     }
 
     public void addObserver(Runnable observer) {

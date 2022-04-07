@@ -1,6 +1,23 @@
 package bfst22.vector;
 
+import java.util.*;
+
 public class KDTree {
+
+  //Sorter. It is parsed a list of nodes to sort, and an axis for it to sort by
+  private static class OSMNodeSorter {
+    public static void sort(ArrayList<OSMNode> l, int depth) {
+      Collections.sort(l, new Comparator<OSMNode>() {
+        public int compare(OSMNode n1, OSMNode n2) {
+          if (depth % 2 == 0) {
+            return Float.valueOf(n1.getX()).compareTo(n2.getX());
+          } else {
+            return Float.valueOf(n1.getY()).compareTo(n2.getY());
+          }
+        }
+      });
+    }
+  }
 
   private OSMNode root;
 
@@ -12,127 +29,121 @@ public class KDTree {
     return root;
   }
 
-  public void insert(OSMNode r, OSMNode n, int depth) {
-    if (root == null) {
-      root = n;
-      n.parent = new OSMNode(0, 0, 0);
-      System.out.print("First OSMNode");
-      System.out.print(n.getX() + " " + n.getY());
+  //Void for outsiders to call when they want to add a node
+  public void add(OSMNode n) {
+    root = add(root, n, 0);
+  }
+
+  //Called by void add, this places the node in the tree
+  private OSMNode add(OSMNode r, OSMNode n, int depth) { // credit Sedgewick and Wayne
+    //If we are looking at an empty node, fill it out
+    if (r == null) {
+      return n;
+    }
+    //If the node we passed in is less than the current root, call recursivly on left child of root. The opposite for the else statement
+    if (compare(r, n, depth) == 1) {
+      r.left = add(r.left, n, depth + 1);
+      r.left.parent = r;
     } else {
-      //Should we compare x-values?
-      System.out.print(depth % 2);
-      System.out.print(n.getX() + " " + n.getY());
-      if (depth % 2 == 0) {
-        //if new x-value is less than current
-        if (n.getX() < r.getX()) {
-          //if current OSMNode has children, call recursivly; else make new OSMNode current OSMNodes child
-          if (r.left != null) {
-            insert(r.left, n, depth + 1);
-          } else {
-            System.out.println("inserted left");
-            r.left = n;
-            n.parent = r;
-          }
-        }
-        //if new x-value is greater than current
-        else {
-          //if current OSMNode has children, call recursivly; else make new OSMNode current OSMNodes child
-          if (r.right != null) {
-            insert(r.right, n, depth + 1);
-          } else {
-            System.out.println("inserted right");
-            r.right = n;
-            n.parent = r;
-          }
-        }
-      } 
-      //If we should compare y-values
-      else {
-        //if new y-value is less than current
-        if (n.getY() < r.getY()) {
-          //if current OSMNode has children, call recursivly; else make new OSMNode current OSMNodes child
-          if (r.left != null) {
-            insert(r.left, n, depth + 1);
-          } else {
-            System.out.println("inserted left");
-            r.left = n;
-            n.parent = r;
-          }
-        }
-        //if new y-value is greater than current
-        else {
-          //if current OSMNode has children, call recursivly; else make new OSMNode current OSMNodes child
-          if (r.right != null) {
-            insert(r.right, n, depth + 1);
-          } else {
-            System.out.println("inserted right");
-            r.right = n;
-            n.parent = r;
-          }
-        }
-      }
+      r.right = add(r.right, n, depth + 1);
+      r.right.parent = r;
+    }
+    //Return the root
+    return r;
+  }
+
+  //Void for filling the tree with nodes
+  public void fillTree(NodeMap OSMNodes, int depth) { // Credit to tcla for helping with this fill function
+    NodeMap remaining = OSMNodes;
+    int median;
+
+    //If 0 nodes are parsed in, get out
+    if (OSMNodes.size() == 0) {
+      return;
+    }
+
+    //Sort nodes
+    OSMNodeSorter.sort(OSMNodes, depth);
+
+    //Find the median value
+    median = findMedian(OSMNodes);
+
+    //Declare chosen node
+    OSMNode n = OSMNodes.get(median);
+
+    //remove median node
+    remaining.remove(median);
+
+    //Add the chosen node to the tree
+    add(n);
+
+    //Call recursivly with the remaining nodes
+    fillTree(remaining, depth + 1);
+  }
+
+  //Calculate the median value of a given list
+  private int findMedian(NodeMap OSMNodes){
+    if (OSMNodes.size() % 2 == 0) {
+      return (OSMNodes.size() / 2) - 1;
+    } else {
+      return OSMNodes.size() / 2;
     }
   }
 
-  public void printTree(OSMNode r) {
-    if (root == null) {
-      System.out.println("Tree is empty");
-    } else {
-      System.out.println(r.getX() + " " + r.getY());
-      if (r.left != null) {
-        printTree(r.left);
-      }
-      if (r.right != null) {
-        printTree(r.right);
-      }
-    }
-  }
-
-  /*public void drawTree(OSMNode r, int depth) {
-    if (root == null) {
-      System.out.println("Tree is empty");
-    } else {
-
-      if (depth % 2 == 0) {
-        drawLine(r, depth);
-        drawCircle(r);
-      } else {
-        drawLine(r, depth);
-        drawCircle(r);
-        
-      }
-
-      if (r.left != null) {
-        drawTree(r.left, depth + 1);
-      }
-      if (r.right != null) {
-        drawTree(r.right, depth + 1);
-      }
-    }
-  }
-
-
-  private void drawCircle(OSMNode r) {
-    fill(0);
-    noStroke();
-    ellipse(r.getX(), r.getY(), 7, 7);
-  }
-  
-  private void drawLine(OSMNode r, int depth) {
+  //Void for comparing two nodes based on axis
+  private int compare(OSMNode n1, OSMNode n2, int depth) {
     if (depth % 2 == 0) {
-      stroke(0, 0, 255);
-      if (r.getY() < r.parent.getY()) {
-        line(r.getX(), 0, r.getX(), r.parent.getY());
-      } else {
-        line(r.getX(), height, r.getX(), r.parent.getY());
+      if (n1.getX() < n2.getX())
+        return -1;
+      else
+        return +1;
+    } else {
+      if (n1.getY() < n2.getY())
+        return -1;
+      else
+        return +1;
+    }
+  }
+
+  //Check if given node is inside of given Screen(range)
+  public boolean isInside(OSMNode n, Screen s) {
+    if (n.getX() > s.getLeft())
+      if (n.getX() < s.getRight())
+        if (n.getY() < s.getBottom())
+          if (n.getY() > s.getTop())
+            return true;
+    return false;
+  }
+
+  //Query function, returns list of 
+  public ArrayList<OSMNode> query(OSMNode n, Screen s, int depth) {
+    ArrayList<OSMNode> found = new ArrayList<>();
+
+    if (n == null) {
+      return null;
+    }
+
+    if (isInside(n, s))
+      found.add(n);
+
+    //Call recursivly based on where the range is compared to our node.
+    //"Call on left child if its to the left or above (based on axis) of our node"
+    if (depth % 2 == 0) {
+      if (s.getLeft() < n.getX() && n.left != null) {
+        found.addAll(query(n.left, s, depth + 1));
+      }
+      if (s.getRight() > n.getX() && n.right != null) {
+        found.addAll(query(n.right, s, depth + 1));
       }
     } else {
-      stroke(255, 0, 0);
-      if (r.getX() < r.parent.getX()) {
-        line(0, r.getY(), r.parent.getX(), r.getY());
-      } else {
-        line(width, r.getY(), r.parent.getX(), r.getY());
+      if (s.getTop() < n.getY() && n.left != null) {
+        found.addAll(query(n.left, s, depth + 1));
+      }
+      if (s.getBottom() > n.getY() && n.right != null) {
+        found.addAll(query(n.right, s, depth + 1));
       }
     }
-  }*/
+    //return all the found nodes
+    return found;
+  }
 }
