@@ -212,7 +212,7 @@ public class Model {
             }
         }
         System.out.println("Done");
-        OSMNodeTree.fillTree(id2node, 0);
+        OSMNodeTree.fillTree(nodes, 0);
     }
 
     public void addObserver(Runnable observer) {

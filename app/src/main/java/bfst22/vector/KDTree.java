@@ -53,8 +53,8 @@ public class KDTree {
   }
 
   //Void for filling the tree with nodes
-  public void fillTree(NodeMap OSMNodes, int depth) { // Credit to tcla for helping with this fill function
-    NodeMap remaining = OSMNodes;
+  public void fillTree(ArrayList<OSMNode> OSMNodes, int depth) { // Credit to tcla for helping with this fill function
+    ArrayList<OSMNode> remaining = new ArrayList<OSMNode>();
     int median;
 
     //If 0 nodes are parsed in, get out
@@ -82,7 +82,7 @@ public class KDTree {
   }
 
   //Calculate the median value of a given list
-  private int findMedian(NodeMap OSMNodes){
+  private int findMedian(ArrayList<OSMNode> OSMNodes){
     if (OSMNodes.size() % 2 == 0) {
       return (OSMNodes.size() / 2) - 1;
     } else {
@@ -116,8 +116,8 @@ public class KDTree {
   }
 
   //Query function, returns list of 
-  public ArrayList<OSMNode> query(OSMNode n, Screen s, int depth) {
-    ArrayList<OSMNode> found = new ArrayList<>();
+  public NodeMap query(OSMNode n, Screen s, int depth) {
+    NodeMap found = new NodeMap();
 
     if (n == null) {
       return null;

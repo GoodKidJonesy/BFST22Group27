@@ -7,7 +7,7 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         // var filename = getParameters().getRaw().get(0);
-        var model = new Model("data/map.osm");
+        var model = new Model("data/small.osm");
         new View(model, primaryStage);
     }
 }
