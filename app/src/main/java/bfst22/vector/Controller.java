@@ -1,7 +1,11 @@
 package bfst22.vector;
 
 import javax.swing.Action;
+//import observableValue
+import java.util.Observable;
 
+
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
@@ -9,8 +13,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -43,24 +50,38 @@ public class Controller {
 
     @FXML Label totalDistanceLabel,
                 totalTimeLabel,
-                FPSLabel;
+                FPSLabel,
+                zoomValue;
     
     @FXML ListView directionList;
+
+    @FXML ProgressBar zoomBar;
 
     @FXML CheckBox FPSBox;
 
 
     public void init(Model model) {
         canvas.init(model);
-
     }
 
     @FXML
     private void onScroll(ScrollEvent e) {
         startFPS();
         var factor = e.getDeltaY();
-        canvas.getZoom(factor);
-        canvas.zoom(Math.pow(1.005, factor), e.getX(), e.getY());
+
+        if(factor > 0) {
+            if(canvas.zoomedIn+0.1 < canvas.maxZoom) {
+                canvas.getZoom(factor);
+                canvas.zoom(Math.pow(1.01, factor), e.getX(), e.getY());
+                zoomBarValue();
+            }
+        } else {
+            if(canvas.zoomedIn-0.1 > canvas.minZoom) {
+                canvas.getZoom(factor);
+                canvas.zoom(Math.pow(1.01, factor), e.getX(), e.getY());
+                zoomBarValue();
+            }
+        }
     }
 
     @FXML
@@ -96,6 +117,10 @@ public class Controller {
             totalDistanceLabel.setVisible(false);
             totalTimeLabel.setVisible(false);
             directionList.setVisible(false);
+            String transparent = "-fx-background-color: transparent; -fx-border-color: black";
+            walkBtn.setStyle(transparent);
+            bikeBtn.setStyle(transparent);
+            carBtn.setStyle(transparent);
         }
     }
 
@@ -103,26 +128,25 @@ public class Controller {
         System.out.println(rute1.getText());
     }
     
-    //TODO: NOT WORKING, NILLER WILL FIX
     @FXML
-    private void highlightVehicle(ActionEvent e) {
-        String transparent = "-fx-background-color: transparent";
-        String lightgrey = "-fx-background-color: lightgrey";
+    private void highlightVehicle(MouseEvent e) {
+        String transparent = "-fx-background-color: transparent; -fx-border-color: black";
+        String grey = "-fx-background-color: grey; -fx-border-color: black";
 
         if(carBtn.isPressed()) {
             walkBtn.setStyle(transparent);
             bikeBtn.setStyle(transparent);
-            carBtn.setStyle(lightgrey);
+            carBtn.setStyle(grey);
         }
         else if(bikeBtn.isPressed()) {
             walkBtn.setStyle(transparent);
             carBtn.setStyle(transparent);
-            bikeBtn.setStyle(lightgrey);
+            bikeBtn.setStyle(grey);
         }
         else if(walkBtn.isPressed()) {
             bikeBtn.setStyle(transparent);
             carBtn.setStyle(transparent);
-            walkBtn.setStyle(lightgrey);
+            walkBtn.setStyle(grey);
         }
     }
 
@@ -135,8 +159,8 @@ public class Controller {
         }
     }
 
-    //TODO: NOT WORKING, NILLER WILL FIX
-    @FXML 
-    private void zoomSlide() {
+    private void zoomBarValue() {
+        zoomBar.setProgress(canvas.zoomedIn);
+        zoomValue.setText(Math.round(canvas.zoomedIn * 100) + "%");
     }
 }

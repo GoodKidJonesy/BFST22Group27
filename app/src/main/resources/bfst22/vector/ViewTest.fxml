@@ -12,8 +12,8 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.image.Image?>
@@ -82,7 +82,7 @@
                   </HBox>
                   <HBox fx:id="vehicleBox" prefHeight="100.0" prefWidth="200.0" spacing="5.0" visible="false">
                      <children>
-                        <Button fx:id="carBtn" mnemonicParsing="false" onAction="#highlightVehicle" prefHeight="30.0" prefWidth="30.0" style="-fx-background-color: transparent; -fx-border-color: black;">
+                        <Button fx:id="carBtn" mnemonicParsing="false" onMousePressed="#highlightVehicle" prefHeight="30.0" prefWidth="30.0" style="-fx-background-color: transparent; -fx-border-color: black;">
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
@@ -103,7 +103,7 @@
                               </ImageView>
                            </graphic>
                         </Button>
-                        <Button fx:id="bikeBtn" mnemonicParsing="false" onAction="#highlightVehicle" prefHeight="30.0" prefWidth="30.0" style="-fx-background-color: transparent; -fx-border-color: black;">
+                        <Button fx:id="bikeBtn" mnemonicParsing="false" onMousePressed="#highlightVehicle" prefHeight="30.0" prefWidth="30.0" style="-fx-background-color: transparent; -fx-border-color: black;">
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
@@ -124,7 +124,7 @@
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </HBox.margin>
                         </Button>
-                        <Button fx:id="walkBtn" mnemonicParsing="false" onAction="#highlightVehicle" prefHeight="30.0" prefWidth="30.0" style="-fx-background-color: transparent; -fx-border-color: black;">
+                        <Button fx:id="walkBtn" mnemonicParsing="false" onMousePressed="#highlightVehicle" prefHeight="30.0" prefWidth="30.0" style="-fx-background-color: transparent; -fx-border-color: black;">
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
@@ -204,21 +204,15 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </padding>
                   </GridPane>
-                  <HBox prefHeight="33.0" prefWidth="246.0">
+                  <HBox prefHeight="25.0" prefWidth="246.0">
                      <children>
-                        <Slider fx:id="zoomSlider" onDragDetected="#zoomSlide" prefHeight="24.0" prefWidth="214.0" showTickMarks="true" snapToTicks="true">
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
+                        <ProgressBar fx:id="zoomBar" prefHeight="21.0" prefWidth="201.0" progress="0.0" />
+                        <Label fx:id="zoomValue" text="0%">
                            <HBox.margin>
-                              <Insets />
+                              <Insets left="10.0" />
                            </HBox.margin>
-                        </Slider>
-                        <Label fx:id="zoomValue" text="zoom" />
+                        </Label>
                      </children>
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
                   </HBox>
                </children>
             </VBox>
