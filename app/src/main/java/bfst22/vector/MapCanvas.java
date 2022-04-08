@@ -12,6 +12,7 @@ public class MapCanvas extends Canvas {
     Model model;
     Affine trans = new Affine();
     double zoomedIn = 100;
+    Screen screen;
 
     void init(Model model) {
         this.model = model;
@@ -19,6 +20,8 @@ public class MapCanvas extends Canvas {
         zoom(640 / (model.maxlon - model.minlon), 0, 0);
         model.addObserver(this::repaint);
         repaint();
+        screen = new Screen(-model.minlon, -model.maxlon, -model.minlat, -model.maxlat);
+        //System.out.println(model.OSMNodeTree.query(model.OSMNodeTree.getRoot(), screen, 0));
     }
 
     void repaint() {
@@ -27,6 +30,7 @@ public class MapCanvas extends Canvas {
         gc.setFill(Color.WHITE);
         gc.fillRect(0, 0, getWidth(), getHeight());
         gc.setTransform(trans);
+        
         for (var line : model.iterable(WayType.LAKE)) {
             gc.setFill(Color.LIGHTBLUE);
             line.fill(gc);
@@ -67,7 +71,6 @@ public class MapCanvas extends Canvas {
                 gc.setStroke(Color.BLACK);
             }
         }
-
     }
 
     void pan(double dx, double dy) {

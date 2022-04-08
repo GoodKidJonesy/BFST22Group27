@@ -2,28 +2,36 @@ package bfst22.vector;
 
 import java.awt.Window;
 
+import javafx.scene.canvas.Canvas;
+
 //Screen class is for defining the users screen as a box in the program
 public class Screen {
-    private float x, y;
-    private int w,h;
+    private float left, right, top, bottom;
     
-    public Screen(float x, float y, int w, int h) {
-      this.x = x;
-      this.y = y;
-      this.w = Window.WIDTH;
-      this.h = Window.HEIGHT;
+    public Screen(float left, float right, float top, float bottom) {
+      this.left = left;
+      this.right = right;
+      this.top = top;
+      this.bottom = bottom;
+    }
+
+    public void update(double dx, double dy, double zoomScale){
+      System.out.println("left: " + getLeft());
+      System.out.println("right: " + getRight());
+      System.out.println("top: " + getTop());
+      System.out.println("bottom: " + getBottom());
     }
     
-    public float getLeft(){
-      return x - (w / 2);  
+    public double getLeft(){
+      return left; 
     }
-    public float getRight(){
-      return x + (w / 2);  
+    public double getRight(){
+      return right; 
     }
-    public float getTop(){
-      return y - (h / 2);  
+    public double getTop(){
+      return top;
     }
-    public float getBottom(){
-      return y + (h / 2);  
+    public double getBottom(){
+      return bottom; 
     }
   }

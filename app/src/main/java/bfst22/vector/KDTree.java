@@ -40,6 +40,7 @@ public class KDTree {
     if (r == null) {
       return n;
     }
+
     //If the node we passed in is less than the current root, call recursivly on left child of root. The opposite for the else statement
     if (compare(r, n, depth) == 1) {
       r.left = add(r.left, n, depth + 1);
@@ -48,14 +49,18 @@ public class KDTree {
       r.right = add(r.right, n, depth + 1);
       r.right.parent = r;
     }
+
     //Return the root
     return r;
   }
 
   //Void for filling the tree with nodes
   public void fillTree(ArrayList<OSMNode> OSMNodes, int depth) { // Credit to tcla for helping with this fill function
-    ArrayList<OSMNode> remaining = new ArrayList<OSMNode>();
+    try {
+    ArrayList<OSMNode> remaining = OSMNodes;
     int median;
+
+    System.out.println("size: " + OSMNodes.size());
 
     //If 0 nodes are parsed in, get out
     if (OSMNodes.size() == 0) {
@@ -68,8 +73,12 @@ public class KDTree {
     //Find the median value
     median = findMedian(OSMNodes);
 
+    System.out.println("median: " + median);
+
     //Declare chosen node
     OSMNode n = OSMNodes.get(median);
+
+    System.out.println("chosen nodes: " + n);
 
     //remove median node
     remaining.remove(median);
@@ -78,8 +87,14 @@ public class KDTree {
     add(n);
 
     //Call recursivly with the remaining nodes
+
+    System.out.println("remaining: " + remaining.size());
     fillTree(remaining, depth + 1);
+  } catch (Exception e){
+    System.out.println(OSMNodes.size());
+    System.out.println(e.getMessage());
   }
+  } 
 
   //Calculate the median value of a given list
   private int findMedian(ArrayList<OSMNode> OSMNodes){
@@ -116,8 +131,8 @@ public class KDTree {
   }
 
   //Query function, returns list of 
-  public NodeMap query(OSMNode n, Screen s, int depth) {
-    NodeMap found = new NodeMap();
+  public ArrayList<OSMNode> query(OSMNode n, Screen s, int depth) {
+    ArrayList<OSMNode> found = new ArrayList<OSMNode>();
 
     if (n == null) {
       return null;
@@ -145,5 +160,16 @@ public class KDTree {
     }
     //return all the found nodes
     return found;
+  }
+
+  public void printTree(OSMNode n){
+    if (n == null){
+      System.out.println("Tree is empty");
+      return;
+    }
+    System.out.println(n);
+
+    if (n.left != null) printTree(n.left);
+    if (n.right != null) printTree(n.right);
   }
 }
