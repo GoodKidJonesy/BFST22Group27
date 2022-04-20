@@ -13,15 +13,13 @@ public class MapCanvas extends Canvas {
     Affine trans = new Affine();
     double zoomedIn = 100;
     Screen screen;
-
+<
     void init(Model model) {
         this.model = model;
         pan(-model.minlon, -model.minlat);
         zoom(640 / (model.maxlon - model.minlon), 0, 0);
         model.addObserver(this::repaint);
         repaint();
-        screen = new Screen(-model.minlon, -model.maxlon, -model.minlat, -model.maxlat);
-        //System.out.println(model.OSMNodeTree.query(model.OSMNodeTree.getRoot(), screen, 0));
     }
 
     void repaint() {
