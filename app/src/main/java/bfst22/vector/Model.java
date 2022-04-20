@@ -124,6 +124,11 @@ public class Model {
                                 case "building":
                                     type = WayType.BUILDING;
                                     break;
+                                case "landuse":
+                                    if (v.equals("forest") || v.equals("meadow"))
+                                        type = WayType.FOREST;
+                                    else
+                                        type = WayType.LANDUSE;
                                 case "highway":
                                     if (v.equals("primary") || v.equals("trunk") || v.equals("secondary")
                                             || v.equals("trunk_link") || v.equals("secondary_link")) {

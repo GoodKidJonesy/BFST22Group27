@@ -47,6 +47,14 @@ public class MapCanvas extends Canvas {
             gc.setStroke(Color.ORANGE);
             line.draw(gc);
         }
+        for (var line : model.iterable(WayType.FOREST)) {
+            gc.setFill(Color.LIGHTGREEN);
+            line.fill(gc);
+        }
+        for (var line : model.iterable(WayType.LANDUSE)) {
+            gc.setFill(Color.BEIGE);
+            line.fill(gc);
+        }
 
         if (zoomedIn > 0.45) {
             for (var line : model.iterable(WayType.CITYWAY)) {
@@ -91,7 +99,7 @@ public class MapCanvas extends Canvas {
     }
 
     void getZoom(double factor) {
-        if(factor > 0) {
+        if (factor > 0) {
             factor = 0.05;
         } else if (factor < 0) {
             factor = -0.05;
