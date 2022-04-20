@@ -81,7 +81,7 @@ public class KDTree {
     for (int i = 0; i < median; i++) {
       left.add(OSMNodes.get(i));
     }
-    for (int i = median +1; i < OSMNodes.size(); i++) {
+    for (int i = median + 1; i < OSMNodes.size(); i++) {
       right.add(OSMNodes.get(i));
     }
 
@@ -153,6 +153,7 @@ public class KDTree {
       }
     }
     // return all the found nodes
+    System.out.println(found.size());
     return found;
   }
 

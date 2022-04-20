@@ -12,14 +12,32 @@ public class MapCanvas extends Canvas {
     Model model;
     Affine trans = new Affine();
     double zoomedIn = 100;
-    Screen screen;
-<
+    Screen screen = new Screen(0, 0, 0, 0);
+
     void init(Model model) {
         this.model = model;
         pan(-model.minlon, -model.minlat);
         zoom(640 / (model.maxlon - model.minlon), 0, 0);
         model.addObserver(this::repaint);
         repaint();
+        getScreenCords();
+        model.OSMNodeTree.query(model.OSMNodeTree.getRoot(), screen, 0);
+    }
+
+    private void getScreenCords() {
+        double x1 = trans.getTx() / Math.sqrt(trans.determinant());
+        double y1 = (-trans.getTy()) / Math.sqrt(trans.determinant());
+        double x2 = getWidth() - x1;
+        double y2 = getHeight() - y1;
+
+        /*
+         * x1 -= 0.1D;
+         * y1 -= 0.1D;
+         * x2 += 0.1D;
+         * y2 += 0.1D;
+         */
+
+        screen.update(x1, y1, x2, y2);
     }
 
     void repaint() {
@@ -28,7 +46,10 @@ public class MapCanvas extends Canvas {
         gc.setFill(Color.WHITE);
         gc.fillRect(0, 0, getWidth(), getHeight());
         gc.setTransform(trans);
-        
+
+        gc.setFill(Color.RED);
+        gc.fillRect(screen.getLeft(), screen.getTop(), screen.getRight() - screen.getLeft(), screen.getBottom() - screen.getTop());
+
         for (var line : model.iterable(WayType.LAKE)) {
             gc.setFill(Color.LIGHTBLUE);
             line.fill(gc);
@@ -51,7 +72,6 @@ public class MapCanvas extends Canvas {
                 line.draw(gc);
                 gc.setFill(Color.LIGHTGREY);
                 line.fill(gc);
-
             }
         }
         if (zoomedIn > 120) {
