@@ -4,7 +4,7 @@ import java.util.*;
 
 public class KDTree {
 
-  //Sorter. It is parsed a list of nodes to sort, and an axis for it to sort by
+  // Sorter. It is parsed a list of nodes to sort, and an axis for it to sort by
   private static class OSMNodeSorter {
     public static void sort(ArrayList<OSMNode> l, int depth) {
       Collections.sort(l, new Comparator<OSMNode>() {
@@ -29,19 +29,20 @@ public class KDTree {
     return root;
   }
 
-  //Void for outsiders to call when they want to add a node
+  // Void for outsiders to call when they want to add a node
   public void add(OSMNode n) {
     root = add(root, n, 0);
   }
 
-  //Called by void add, this places the node in the tree
+  // Called by void add, this places the node in the tree
   private OSMNode add(OSMNode r, OSMNode n, int depth) { // credit Sedgewick and Wayne
-    //If we are looking at an empty node, fill it out
+    // If we are looking at an empty node, fill it out
     if (r == null) {
       return n;
     }
 
-    //If the node we passed in is less than the current root, call recursivly on left child of root. The opposite for the else statement
+    // If the node we passed in is less than the current root, call recursivly on
+    // left child of root. The opposite for the else statement
     if (compare(r, n, depth) == 1) {
       r.left = add(r.left, n, depth + 1);
       r.left.parent = r;
@@ -50,54 +51,47 @@ public class KDTree {
       r.right.parent = r;
     }
 
-    //Return the root
+    // Return the root
     return r;
   }
 
-  //Void for filling the tree with nodes
+  // Void for filling the tree with nodes
   public void fillTree(ArrayList<OSMNode> OSMNodes, int depth) { // Credit to tcla for helping with this fill function
-    try {
-    ArrayList<OSMNode> remaining = OSMNodes;
+    ArrayList<OSMNode> left = new ArrayList<>();
+    ArrayList<OSMNode> right = new ArrayList<>();
     int median;
 
-    System.out.println("size: " + OSMNodes.size());
-
-    //If 0 nodes are parsed in, get out
+    // If 0 nodes are parsed in, get out
     if (OSMNodes.size() == 0) {
       return;
     }
 
-    //Sort nodes
+    // Sort nodes
     OSMNodeSorter.sort(OSMNodes, depth);
 
-    //Find the median value
+    // Find the median value
     median = findMedian(OSMNodes);
 
-    System.out.println("median: " + median);
-
-    //Declare chosen node
+    // Declare chosen node
     OSMNode n = OSMNodes.get(median);
 
-    System.out.println("chosen nodes: " + n);
-
-    //remove median node
-    remaining.remove(median);
-
-    //Add the chosen node to the tree
+    // Add the chosen node to the tree
     add(n);
 
-    //Call recursivly with the remaining nodes
+    for (int i = 0; i < median; i++) {
+      left.add(OSMNodes.get(i));
+    }
+    for (int i = median +1; i < OSMNodes.size(); i++) {
+      right.add(OSMNodes.get(i));
+    }
 
-    System.out.println("remaining: " + remaining.size());
-    fillTree(remaining, depth + 1);
-  } catch (Exception e){
-    System.out.println(OSMNodes.size());
-    System.out.println(e.getMessage());
+    // Call recursivly with the remaining nodes
+    fillTree(left, depth + 1);
+    fillTree(right, depth + 1);
   }
-  } 
 
-  //Calculate the median value of a given list
-  private int findMedian(ArrayList<OSMNode> OSMNodes){
+  // Calculate the median value of a given list
+  private int findMedian(ArrayList<OSMNode> OSMNodes) {
     if (OSMNodes.size() % 2 == 0) {
       return (OSMNodes.size() / 2) - 1;
     } else {
@@ -105,7 +99,7 @@ public class KDTree {
     }
   }
 
-  //Void for comparing two nodes based on axis
+  // Void for comparing two nodes based on axis
   private int compare(OSMNode n1, OSMNode n2, int depth) {
     if (depth % 2 == 0) {
       if (n1.getX() < n2.getX())
@@ -120,7 +114,7 @@ public class KDTree {
     }
   }
 
-  //Check if given node is inside of given Screen(range)
+  // Check if given node is inside of given Screen(range)
   public boolean isInside(OSMNode n, Screen s) {
     if (n.getX() > s.getLeft())
       if (n.getX() < s.getRight())
@@ -130,7 +124,7 @@ public class KDTree {
     return false;
   }
 
-  //Query function, returns list of 
+  // Query function, returns list of
   public ArrayList<OSMNode> query(OSMNode n, Screen s, int depth) {
     ArrayList<OSMNode> found = new ArrayList<OSMNode>();
 
@@ -141,8 +135,8 @@ public class KDTree {
     if (isInside(n, s))
       found.add(n);
 
-    //Call recursivly based on where the range is compared to our node.
-    //"Call on left child if its to the left or above (based on axis) of our node"
+    // Call recursivly based on where the range is compared to our node.
+    // "Call on left child if its to the left or above (based on axis) of our node"
     if (depth % 2 == 0) {
       if (s.getLeft() < n.getX() && n.left != null) {
         found.addAll(query(n.left, s, depth + 1));
@@ -158,18 +152,20 @@ public class KDTree {
         found.addAll(query(n.right, s, depth + 1));
       }
     }
-    //return all the found nodes
+    // return all the found nodes
     return found;
   }
 
-  public void printTree(OSMNode n){
-    if (n == null){
+  public void printTree(OSMNode n) {
+    if (n == null) {
       System.out.println("Tree is empty");
       return;
     }
     System.out.println(n);
 
-    if (n.left != null) printTree(n.left);
-    if (n.right != null) printTree(n.right);
+    if (n.left != null)
+      printTree(n.left);
+    if (n.right != null)
+      printTree(n.right);
   }
 }
