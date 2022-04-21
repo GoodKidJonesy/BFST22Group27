@@ -212,7 +212,8 @@ public class Model {
             }
         }
         System.out.println("Done");
-        OSMNodeTree.fillTree(id2node, 0);
+        //OSMNodeTree.fillTree(id2node, 0);
+        addressRunthrough();
     }
 
     public void addObserver(Runnable observer) {
@@ -230,10 +231,14 @@ public class Model {
     }
 
     public void addAddress() {
+        //System.out.println(address.getStreet());
         addresses.add(address);
-        address.setCity(null);
-        address.setPostcode(null);
-        address.setHousenumber(null);
-        address.setStreet(null);
+        address = null;
+    }
+
+    public void addressRunthrough(){
+        for (Address a : addresses){
+            System.out.println(a.getAddress());
+        }
     }
 }
