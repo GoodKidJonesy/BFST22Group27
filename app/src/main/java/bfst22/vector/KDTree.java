@@ -153,7 +153,7 @@ public class KDTree {
       }
     }
     // return all the found nodes
-    System.out.println(found.size());
+    // System.out.println(found.size());
     return found;
   }
 
@@ -162,7 +162,7 @@ public class KDTree {
       System.out.println("Tree is empty");
       return;
     }
-    System.out.println(n);
+    // System.out.println(n);
 
     if (n.left != null)
       printTree(n.left);

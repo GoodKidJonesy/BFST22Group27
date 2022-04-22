@@ -120,14 +120,34 @@ public class Model {
                             var k = reader.getAttributeValue(null, "k");
                             var v = reader.getAttributeValue(null, "v");
                             switch (k) {
+                                case "place":
+                                    if (v.equals("island"))
+                                        type = WayType.ISLAND;
+                                    break;
+                                case "waterway":
+                                    type = WayType.LAKE;
+                                    break;
+                                case "water":
+                                    type = WayType.LAKE;
+                                    break;
                                 case "natural":
                                     if (v.equals("water"))
                                         type = WayType.LAKE;
                                     else if (v.equals("coastline"))
                                         type = WayType.COASTLINE;
+                                    else if (v.equals("scrub") || v.equals("tree_row"))
+                                        type = WayType.FOREST;
+                                    else if (v.equals("wetland"))
+                                        type = WayType.LANDUSE;
+                                    else if (v.equals("bare_rock"))
+                                        type = WayType.STONE;
                                     break;
                                 case "building":
                                     type = WayType.BUILDING;
+                                    break;
+                                case "leisure":
+                                    if (v.equals("pitch"))
+                                        type = WayType.FOREST;
                                     break;
                                 case "highway":
                                     if (v.equals("primary") || v.equals("trunk") || v.equals("secondary")
@@ -139,8 +159,24 @@ public class Model {
                                         type = WayType.CITYWAY;
                                     } else if (v.equals("motorway") || v.equals("motorway_link")) {
                                         type = WayType.MOTORWAY;
-                                    }
+                                    } else if (v.equals("track") || v.equals("path") || v.equals("footway"))
+                                        type = WayType.DIRTTRACK;
                                     break;
+                                case "barrier":
+                                    if (v.equals("hedge"))
+                                        type = WayType.FOREST;
+                                    break;
+                                case "landuse":
+                                    if (v.equals("forest") || v.equals("meadow") || v.equals("allotments"))
+                                        type = WayType.FOREST;
+                                    else if (v.equals("residential") || v.equals("industrial"))
+                                        type = WayType.CITY;
+                                    else if (v.equals("port"))
+                                        type = WayType.LAKE;
+                                    else if (v.equals("quarry"))
+                                        type = WayType.STONE;
+                                    else
+                                        type = WayType.LANDUSE;
                                 case "addr:city":
                                     if (address == null) {
                                         address = new Address(osmnode);
@@ -215,10 +251,10 @@ public class Model {
             }
         }
         System.out.println("Done");
-        System.out.println(id2nodeList.size());
+        // System.out.println(id2nodeList.size());
         OSMNodeTree.fillTree(id2nodeList, 0);
-        //OSMNodeTree.printTree(OSMNodeTree.getRoot());
-        System.out.println("root: " + OSMNodeTree.getRoot());
+        // OSMNodeTree.printTree(OSMNodeTree.getRoot());
+        // System.out.println("root: " + OSMNodeTree.getRoot());
     }
 
     public void addObserver(Runnable observer) {

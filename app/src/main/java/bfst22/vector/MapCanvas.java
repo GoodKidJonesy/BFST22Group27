@@ -43,13 +43,20 @@ public class MapCanvas extends Canvas {
     void repaint() {
         var gc = getGraphicsContext2D();
         gc.setTransform(new Affine());
-        gc.setFill(Color.WHITE);
+        gc.setFill(Color.LIGHTBLUE);
         gc.fillRect(0, 0, getWidth(), getHeight());
         gc.setTransform(trans);
 
-        gc.setFill(Color.RED);
-        gc.fillRect(screen.getLeft(), screen.getTop(), screen.getRight() - screen.getLeft(), screen.getBottom() - screen.getTop());
-
+        /*
+         * gc.setFill(Color.RED);
+         * gc.fillRect(screen.getLeft(), screen.getTop(), screen.getRight() -
+         * screen.getLeft(),
+         * screen.getBottom() - screen.getTop());
+         */
+        for (var line : model.iterable(WayType.ISLAND)) {
+            gc.setFill(Color.WHITE);
+            line.fill(gc);
+        }
         for (var line : model.iterable(WayType.LAKE)) {
             gc.setFill(Color.LIGHTBLUE);
             line.fill(gc);
@@ -66,29 +73,53 @@ public class MapCanvas extends Canvas {
             gc.setStroke(Color.ORANGE);
             line.draw(gc);
         }
-        if (zoomedIn > 110) {
+        for (var line : model.iterable(WayType.FOREST)) {
+            gc.setFill(Color.LIGHTGREEN);
+            line.fill(gc);
+        }
+        for (var line : model.iterable(WayType.LANDUSE)) {
+            gc.setFill(Color.BEIGE);
+            line.fill(gc);
+        }
+        for (var line : model.iterable(WayType.CITY)) {
+            gc.setFill(Color.WHITE);
+            line.fill(gc);
+        }
+        for (var line : model.iterable(WayType.STONE)) {
+            gc.setFill(Color.LIGHTGREY);
+            line.fill(gc);
+        }
+
+        if (zoomedIn > 150) {
             for (var line : model.iterable(WayType.BUILDING)) {
-                gc.setStroke(Color.GREY);
-                line.draw(gc);
+                if (zoomedIn > 200) {
+                    gc.setStroke(Color.GREY);
+                    line.draw(gc);
+                }
                 gc.setFill(Color.LIGHTGREY);
                 line.fill(gc);
             }
         }
-        if (zoomedIn > 120) {
+        if (zoomedIn > 170) {
             for (var line : model.iterable(WayType.CITYWAY)) {
-                gc.setStroke(Color.BLACK);
+                gc.setStroke(Color.WHITE);
                 line.draw(gc);
-
+            }
+            for (var line : model.iterable(WayType.DIRTTRACK)) {
+                gc.setStroke(Color.BURLYWOOD);
+                line.draw(gc);
             }
         }
 
         gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
-        if (zoomedIn > 150) {
-            for (var line : model.iterable(WayType.UNKNOWN)) {
-                line.draw(gc);
-                gc.setStroke(Color.BLACK);
-            }
-        }
+        /*
+         * if (zoomedIn > 150) {
+         * for (var line : model.iterable(WayType.UNKNOWN)) {
+         * gc.setStroke(Color.BLACK);
+         * line.draw(gc);
+         * }
+         * }
+         */
     }
 
     void pan(double dx, double dy) {
