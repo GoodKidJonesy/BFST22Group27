@@ -124,6 +124,9 @@ public class Model {
                                     if (v.equals("island"))
                                         type = WayType.ISLAND;
                                     break;
+                                case "name":
+                                    if (v.equals("bornholm"))
+                                        type = WayType.ISLAND;
                                 case "waterway":
                                     type = WayType.LAKE;
                                     break;
@@ -175,6 +178,8 @@ public class Model {
                                         type = WayType.LAKE;
                                     else if (v.equals("quarry"))
                                         type = WayType.STONE;
+                                    else if (v.equals("military"))
+                                        type = WayType.MILITARY;
                                     else
                                         type = WayType.LANDUSE;
                                 case "addr:city":
