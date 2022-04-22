@@ -34,4 +34,11 @@ public class Controller {
     private void onMousePressed(MouseEvent e) {
         lastMouse = new Point2D(e.getX(), e.getY());
     }
+
+    @FXML
+    private void onMouseMoved(MouseEvent e){
+        lastMouse = new Point2D(e.getX(), e.getY());
+        System.out.println(lastMouse);
+
+    }
 }

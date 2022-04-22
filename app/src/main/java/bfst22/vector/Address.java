@@ -5,10 +5,12 @@ import bfst22.vector.OSMNode;
 public class Address {
     private String city, postcode, houseNumber, street;
     private final float x, y;
+    private final long id;
 
     public Address(OSMNode node) {
         this.x = node.getX();
         this.y = node.getY();
+        this.id = node.getId();
     }
 
     public void setCity(String city) {
@@ -47,6 +49,16 @@ public class Address {
     public String getAddress() {
         String s = street + " " + houseNumber + " " + city;
         return s;
+    }
+
+    public float getX(){
+        return this.x;
+    }
+    public float getY(){
+        return this.y;
+    }
+    public long getId(){
+        return id;
     }
 
 }

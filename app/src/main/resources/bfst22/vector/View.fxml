@@ -17,6 +17,7 @@
                            onScroll="#onScroll"
                            onMousePressed="#onMousePressed"
                            onMouseDragged="#onMouseDragged"
+                           onMouseMoved="#onMouseMoved"
                 />
             </center>
         </BorderPane>
