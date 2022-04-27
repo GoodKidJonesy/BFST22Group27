@@ -1,6 +1,7 @@
 package bfst22.vector;
 
 import java.nio.file.WatchKey;
+import java.util.ArrayList;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
@@ -12,7 +13,7 @@ public class MapCanvas extends Canvas {
     Model model;
     Affine trans = new Affine();
     double zoomedIn = 100;
-    Screen screen = new Screen(0, 0, 0, 0);
+    Screen screen = new Screen(new Point2D(0, 0), new Point2D(0, 0));
 
     void init(Model model) {
         this.model = model;
@@ -20,24 +21,6 @@ public class MapCanvas extends Canvas {
         zoom(640 / (model.maxlon - model.minlon), 0, 0);
         model.addObserver(this::repaint);
         repaint();
-        getScreenCords();
-        model.OSMNodeTree.query(model.OSMNodeTree.getRoot(), screen, 0);
-    }
-
-    private void getScreenCords() {
-        double x1 = trans.getTx() / Math.sqrt(trans.determinant());
-        double y1 = (-trans.getTy()) / Math.sqrt(trans.determinant());
-        double x2 = getWidth() - x1;
-        double y2 = getHeight() - y1;
-
-        /*
-         * x1 -= 0.1D;
-         * y1 -= 0.1D;
-         * x2 += 0.1D;
-         * y2 += 0.1D;
-         */
-
-        screen.update(x1, y1, x2, y2);
     }
 
     void repaint() {
@@ -47,8 +30,17 @@ public class MapCanvas extends Canvas {
         gc.fillRect(0, 0, getWidth(), getHeight());
         gc.setTransform(trans);
 
-        gc.setFill(Color.RED);
-        gc.fillRect(screen.getLeft(), screen.getTop(), screen.getRight() - screen.getLeft(), screen.getBottom() - screen.getTop());
+        gc.setFill(Color.PURPLE);
+        gc.fillRect(screen.getLeft(), screen.getBottom(), screen.getRight() - screen.getLeft(), screen.getTop() - screen.getBottom());
+        System.out.println(query().size());
+        for (OSMNode n : query()) {
+            double size = 0.001;
+            gc.setFill(Color.RED);
+            gc.fillOval(n.getX() - (size / 2), n.getY() - (size / 2), size, size);
+        }
+
+        System.out.println("left: " + screen.getLeft() + " top: " + screen.getTop());
+        System.out.println("right: " + screen.getRight() + " bottom: " + screen.getBottom());
 
         for (var line : model.iterable(WayType.LAKE)) {
             gc.setFill(Color.LIGHTBLUE);
@@ -91,8 +83,19 @@ public class MapCanvas extends Canvas {
         }
     }
 
+    private void moveScreen() {
+        var gc = getGraphicsContext2D();
+        screen.update(mouseToModel(new Point2D(0, 0)),
+                mouseToModel(new Point2D(gc.getCanvas().getWidth(), gc.getCanvas().getHeight())));
+    }
+
+    private ArrayList<OSMNode> query() {
+        return model.OSMNodeTree.query(model.OSMNodeTree.getRoot(), screen, 0);
+    }
+
     void pan(double dx, double dy) {
         trans.prependTranslation(dx, dy);
+        moveScreen();
         repaint();
     }
 
@@ -100,7 +103,7 @@ public class MapCanvas extends Canvas {
         trans.prependTranslation(-x, -y);
         trans.prependScale(factor, factor);
         trans.prependTranslation(x, y);
-
+        moveScreen();
         repaint();
     }
 

@@ -217,7 +217,6 @@ public class Model {
         System.out.println("Done");
         System.out.println(id2nodeList.size());
         OSMNodeTree.fillTree(id2nodeList, 0);
-        //OSMNodeTree.printTree(OSMNodeTree.getRoot());
         System.out.println("root: " + OSMNodeTree.getRoot());
     }
 

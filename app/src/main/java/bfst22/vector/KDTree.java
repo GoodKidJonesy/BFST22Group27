@@ -3,6 +3,7 @@ package bfst22.vector;
 import java.util.*;
 
 public class KDTree {
+  int nodes = 0;
 
   // Sorter. It is parsed a list of nodes to sort, and an axis for it to sort by
   private static class OSMNodeSorter {
@@ -116,11 +117,15 @@ public class KDTree {
 
   // Check if given node is inside of given Screen(range)
   public boolean isInside(OSMNode n, Screen s) {
-    if (n.getX() > s.getLeft())
-      if (n.getX() < s.getRight())
-        if (n.getY() < s.getBottom())
-          if (n.getY() > s.getTop())
+    if (n.getX() > s.getLeft()){
+      if (n.getX() < s.getRight()){
+        if (n.getY() > s.getBottom()){
+          if (n.getY() < s.getTop()){
             return true;
+          }
+        }
+      }
+    }
     return false;
   }
 
@@ -153,7 +158,7 @@ public class KDTree {
       }
     }
     // return all the found nodes
-    System.out.println(found.size());
+    // System.out.println(found.size());
     return found;
   }
 
@@ -168,5 +173,12 @@ public class KDTree {
       printTree(n.left);
     if (n.right != null)
       printTree(n.right);
+  }
+
+  public int getSize(OSMNode n) {
+    nodes++;
+    if (n.left != null) getSize(n.left);
+    if (n.right != null) getSize(n.right);
+    return nodes;
   }
 }
