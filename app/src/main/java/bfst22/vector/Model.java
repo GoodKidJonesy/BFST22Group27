@@ -258,7 +258,10 @@ public class Model {
             }
         }
         System.out.println("Parsing Done");
-        makeTrie();
+        // makeTrie();
+        TrieTree t = new TrieTree();
+        t.testAdd();
+        t.testSearch();
         // System.out.println(id2nodeList.size());
         OSMNodeTree.fillTree(id2nodeList, 0);
         System.out.println("KDTree filled");
@@ -288,6 +291,7 @@ public class Model {
     public void makeTrie() {
         TrieTree trie = new TrieTree();
         for (Address a : addresses) {
+            System.out.println(a.toString());
             trie.insert(a.toString());
             System.out.println("added to trie");
         }

@@ -1,4 +1,5 @@
 plugins {
+    java
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.11'
 }
@@ -13,7 +14,7 @@ javafx {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
+    testImplementation 'junit:junit-jupiter:5.7.2'
 }
 
 compileJava.options.encoding = 'UTF-8'

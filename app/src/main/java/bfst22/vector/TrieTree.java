@@ -26,7 +26,7 @@ public class TrieTree {
     }
 
     // opretter root node som altid vil være null;
-    static TrieNode root;
+    static TrieNode root = new TrieNode();
 
     // insert metode der tager en String som argument og indsætter denne i træet.
     // hver char i key bliver indsat efter den forrige og hver node har en parent
@@ -37,6 +37,7 @@ public class TrieTree {
 
         TrieNode parent = root;
         for (depth = 0; depth < key.length(); depth++) {
+            System.out.println(key.charAt(depth));
             index = key.charAt(depth) - 'a';
             if (parent.children[index] == null)
                 parent.children[index] = new TrieNode();
@@ -61,15 +62,5 @@ public class TrieTree {
             parent = parent.children[index];
         }
         return parent.endOfString;
-    }
-
-    public void testAdd() {
-        insert("aha 13");
-        System.out.println("inserted 13");
-        insert("æble 1b");
-        System.out.println("inserted æ");
-        insert("årøgade 51");
-        System.out.println("inserted åø ");
-
     }
 }

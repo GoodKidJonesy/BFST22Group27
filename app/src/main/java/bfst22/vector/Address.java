@@ -45,10 +45,10 @@ public class Address {
     }
 
     public String getStreet() {
-        return street;
+        return street.toLowerCase().replace(" ", "");
     }
 
     public String toString() {
-        return street + " " + houseNumber + " " + postcode + " " + city;
+        return street.toLowerCase().replace(" ", "") + houseNumber + postcode + city.toLowerCase().replace(" ", "");
     }
 }
