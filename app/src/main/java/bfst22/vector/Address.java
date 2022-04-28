@@ -47,4 +47,8 @@ public class Address {
     public String getStreet() {
         return street;
     }
+
+    public String toString() {
+        return street + " " + houseNumber + " " + postcode + " " + city;
+    }
 }

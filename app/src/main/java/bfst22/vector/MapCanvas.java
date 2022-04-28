@@ -66,15 +66,6 @@ public class MapCanvas extends Canvas {
             gc.setFill(Color.LIGHTGREEN);
             line.fill(gc);
         }
-        for (var line : model.iterable(WayType.MOTORWAY)) {
-            gc.setStroke(Color.RED);
-            line.draw(gc);
-        }
-        for (var line : model.iterable(WayType.HIGHWWAY)) {
-            gc.setStroke(Color.ORANGE);
-            line.draw(gc);
-        }
-
         for (var line : model.iterable(WayType.LANDUSE)) {
             gc.setFill(Color.BEIGE);
             line.fill(gc);
@@ -88,8 +79,12 @@ public class MapCanvas extends Canvas {
             line.fill(gc);
         }
 
-        for (var line : model.iterable(WayType.ISLAND)) {
+        for (var line : model.iterable(WayType.MOTORWAY)) {
             gc.setStroke(Color.RED);
+            line.draw(gc);
+        }
+        for (var line : model.iterable(WayType.HIGHWWAY)) {
+            gc.setStroke(Color.ORANGE);
             line.draw(gc);
         }
         if (zoomedIn > 150) {
@@ -104,7 +99,7 @@ public class MapCanvas extends Canvas {
         }
         if (zoomedIn > 170) {
             for (var line : model.iterable(WayType.CITYWAY)) {
-                gc.setStroke(Color.WHITE);
+                gc.setStroke(Color.BLACK);
                 line.draw(gc);
             }
             for (var line : model.iterable(WayType.DIRTTRACK)) {
@@ -112,7 +107,6 @@ public class MapCanvas extends Canvas {
                 line.draw(gc);
             }
         }
-
         gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
         /*
          * if (zoomedIn > 150) {

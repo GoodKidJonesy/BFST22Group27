@@ -29,6 +29,7 @@ import static java.util.stream.Collectors.toList;
 public class Model {
     float minlat, minlon, maxlat, maxlon;
     Address address = null;
+    TrieTree trie;
     OSMNode osmnode = null;
     ArrayList<Address> addresses = new ArrayList<>();
     KDTree OSMNodeTree;
@@ -164,6 +165,7 @@ public class Model {
                                         type = WayType.MOTORWAY;
                                     } else if (v.equals("track") || v.equals("path") || v.equals("footway"))
                                         type = WayType.DIRTTRACK;
+
                                     break;
                                 case "barrier":
                                     if (v.equals("hedge"))
@@ -255,11 +257,13 @@ public class Model {
                     break;
             }
         }
-        System.out.println("Done");
+        System.out.println("Parsing Done");
+        makeTrie();
         // System.out.println(id2nodeList.size());
         OSMNodeTree.fillTree(id2nodeList, 0);
+        System.out.println("KDTree filled");
         // OSMNodeTree.printTree(OSMNodeTree.getRoot());
-        // System.out.println("root: " + OSMNodeTree.getRoot());
+        // System.out.println("root: " + OSMNodeTree.getRoot
     }
 
     public void addObserver(Runnable observer) {
@@ -278,9 +282,14 @@ public class Model {
 
     public void addAddress() {
         addresses.add(address);
-        address.setCity(null);
-        address.setPostcode(null);
-        address.setHousenumber(null);
-        address.setStreet(null);
+        address = null;
+    }
+
+    public void makeTrie() {
+        TrieTree trie = new TrieTree();
+        for (Address a : addresses) {
+            trie.insert(a.toString());
+            System.out.println("added to trie");
+        }
     }
 }
