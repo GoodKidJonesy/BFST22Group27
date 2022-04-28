@@ -13,12 +13,13 @@ public class MapCanvas extends Canvas {
     Model model;
     Affine trans = new Affine();
     double zoomedIn = 100;
-    Screen screen = new Screen(new Point2D(0, 0), new Point2D(0, 0));
+    Range range = new Range(new Point2D(0, 0), new Point2D(0, 0));
 
     void init(Model model) {
         this.model = model;
         pan(-model.minlon, -model.minlat);
         zoom(640 / (model.maxlon - model.minlon), 0, 0);
+        moveRange();
         model.addObserver(this::repaint);
         repaint();
     }
@@ -30,17 +31,11 @@ public class MapCanvas extends Canvas {
         gc.fillRect(0, 0, getWidth(), getHeight());
         gc.setTransform(trans);
 
-        gc.setFill(Color.PURPLE);
-        gc.fillRect(screen.getLeft(), screen.getBottom(), screen.getRight() - screen.getLeft(), screen.getTop() - screen.getBottom());
-        System.out.println(query().size());
         for (OSMNode n : query()) {
-            double size = 0.001;
+            double size = 0.0001;
             gc.setFill(Color.RED);
             gc.fillOval(n.getX() - (size / 2), n.getY() - (size / 2), size, size);
         }
-
-        System.out.println("left: " + screen.getLeft() + " top: " + screen.getTop());
-        System.out.println("right: " + screen.getRight() + " bottom: " + screen.getBottom());
 
         for (var line : model.iterable(WayType.LAKE)) {
             gc.setFill(Color.LIGHTBLUE);
@@ -81,21 +76,24 @@ public class MapCanvas extends Canvas {
                 gc.setStroke(Color.BLACK);
             }
         }
+
+        drawRange();
     }
 
-    private void moveScreen() {
+    private void moveRange() {
         var gc = getGraphicsContext2D();
-        screen.update(mouseToModel(new Point2D(0, 0)),
-                mouseToModel(new Point2D(gc.getCanvas().getWidth(), gc.getCanvas().getHeight())));
+        Point2D topLeft = mouseToModel(new Point2D(0, 0));
+        Point2D bottomRight = mouseToModel(new Point2D(gc.getCanvas().getWidth(), gc.getCanvas().getHeight()));
+        range.update(topLeft, bottomRight);
     }
 
     private ArrayList<OSMNode> query() {
-        return model.OSMNodeTree.query(model.OSMNodeTree.getRoot(), screen, 0);
+        return model.OSMNodeTree.query(model.OSMNodeTree.getRoot(), range, 0);
     }
 
     void pan(double dx, double dy) {
         trans.prependTranslation(dx, dy);
-        moveScreen();
+        moveRange();
         repaint();
     }
 
@@ -103,7 +101,7 @@ public class MapCanvas extends Canvas {
         trans.prependTranslation(-x, -y);
         trans.prependScale(factor, factor);
         trans.prependTranslation(x, y);
-        moveScreen();
+        moveRange();
         repaint();
     }
 
@@ -117,5 +115,17 @@ public class MapCanvas extends Canvas {
         } catch (NonInvertibleTransformException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void drawRange() {
+        var gc = getGraphicsContext2D();
+        gc.setStroke(Color.BLACK);
+        gc.beginPath();
+        gc.moveTo(range.getLeft(), range.getTop());
+        gc.lineTo(range.getRight(), range.getTop());
+        gc.lineTo(range.getRight(), range.getBottom());
+        gc.lineTo(range.getLeft(), range.getBottom());
+        gc.lineTo(range.getLeft(), range.getTop());
+        gc.stroke();
     }
 }

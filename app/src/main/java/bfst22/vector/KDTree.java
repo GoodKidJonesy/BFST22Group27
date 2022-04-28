@@ -115,50 +115,45 @@ public class KDTree {
     }
   }
 
-  // Check if given node is inside of given Screen(range)
-  public boolean isInside(OSMNode n, Screen s) {
-    if (n.getX() > s.getLeft()){
-      if (n.getX() < s.getRight()){
-        if (n.getY() > s.getBottom()){
-          if (n.getY() < s.getTop()){
+  // Check if given node is inside of given Range
+  public boolean isInside(OSMNode n, Range r) {
+    if (n.getX() > r.getLeft())
+      if (n.getX() < r.getRight())
+        if (n.getY() > r.getTop())
+          if (n.getY() < r.getBottom())
             return true;
-          }
-        }
-      }
-    }
     return false;
   }
 
   // Query function, returns list of
-  public ArrayList<OSMNode> query(OSMNode n, Screen s, int depth) {
+  public ArrayList<OSMNode> query(OSMNode n, Range r, int depth) {
     ArrayList<OSMNode> found = new ArrayList<OSMNode>();
 
     if (n == null) {
       return null;
     }
 
-    if (isInside(n, s))
+    if (isInside(n, r))
       found.add(n);
 
     // Call recursivly based on where the range is compared to our node.
     // "Call on left child if its to the left or above (based on axis) of our node"
     if (depth % 2 == 0) {
-      if (s.getLeft() < n.getX() && n.left != null) {
-        found.addAll(query(n.left, s, depth + 1));
+      if (r.getLeft() < n.getX() && n.left != null) {
+        found.addAll(query(n.left, r, depth + 1));
       }
-      if (s.getRight() > n.getX() && n.right != null) {
-        found.addAll(query(n.right, s, depth + 1));
+      if (r.getRight() > n.getX() && n.right != null) {
+        found.addAll(query(n.right, r, depth + 1));
       }
     } else {
-      if (s.getTop() < n.getY() && n.left != null) {
-        found.addAll(query(n.left, s, depth + 1));
+      if (r.getTop() < n.getY() && n.left != null) {
+        found.addAll(query(n.left, r, depth + 1));
       }
-      if (s.getBottom() > n.getY() && n.right != null) {
-        found.addAll(query(n.right, s, depth + 1));
+      if (r.getBottom() > n.getY() && n.right != null) {
+        found.addAll(query(n.right, r, depth + 1));
       }
     }
     // return all the found nodes
-    // System.out.println(found.size());
     return found;
   }
 
