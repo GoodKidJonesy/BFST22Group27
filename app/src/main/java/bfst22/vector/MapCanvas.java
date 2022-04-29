@@ -16,6 +16,7 @@ public class MapCanvas extends Canvas {
     double maxZoom = 1.06;
     double minZoom = -0.06;
     double zoomedIn = 0;
+    Range range = new Range(new Point2D(0,0), new Point2D(0,0));
 
     void init(Model model) {
         this.model = model;
