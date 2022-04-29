@@ -24,8 +24,8 @@ public class Controller {
 
     @FXML
     private void onMouseDragged(MouseEvent e) {
-        var dx = e.getX() - lastMouse.getX();
-        var dy = e.getY() - lastMouse.getY();
+        double dx = e.getX() - lastMouse.getX();
+        double dy = e.getY() - lastMouse.getY();
         canvas.pan(dx, dy);
         lastMouse = new Point2D(e.getX(), e.getY());
     }

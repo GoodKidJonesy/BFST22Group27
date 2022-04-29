@@ -31,6 +31,7 @@ public class Model {
     Address address = null;
     OSMNode osmnode = null;
     ArrayList<Address> addresses = new ArrayList<>();
+    KDTree OSMNodeTree;
     Map<WayType, List<Drawable>> lines = new EnumMap<>(WayType.class);
     {
         for (var type : WayType.values())
@@ -42,6 +43,7 @@ public class Model {
     public Model(String filename)
             throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
         var time = -System.nanoTime();
+        OSMNodeTree = new KDTree();
         if (filename.endsWith(".zip")) {
             var zip = new ZipInputStream(new FileInputStream(filename));
             zip.getNextEntry();
@@ -80,12 +82,12 @@ public class Model {
     private void loadOSM(InputStream input) throws XMLStreamException, FactoryConfigurationError {
         var reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input));
         var id2node = new NodeMap();
+        ArrayList<OSMNode> id2nodeList = new ArrayList<>();
         var id2way = new HashMap<Long, OSMWay>();
         var nodes = new ArrayList<OSMNode>();
         var rel = new ArrayList<OSMWay>();
         long relID = 0;
         var type = WayType.UNKNOWN;
-        KDTree OSMNodeTree = new KDTree();
 
         while (reader.hasNext()) {
             switch (reader.next()) {
@@ -104,6 +106,7 @@ public class Model {
                             var lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
                             osmnode = new OSMNode(id, 0.56f * lon, -lat);
                             id2node.add(osmnode);
+                            id2nodeList.add(osmnode);
                             break;
                         case "nd":
                             var ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
@@ -212,8 +215,9 @@ public class Model {
             }
         }
         System.out.println("Done");
-        //OSMNodeTree.fillTree(id2node, 0);
-        addressRunthrough();
+        System.out.println(id2nodeList.size());
+        OSMNodeTree.fillTree(id2nodeList, 0);
+        System.out.println("root: " + OSMNodeTree.getRoot());
     }
 
     public void addObserver(Runnable observer) {
