@@ -2,6 +2,7 @@ package bfst22.vector;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ public class Model {
     Address address = null;
     OSMNode osmnode = null;
     ArrayList<Address> addresses = new ArrayList<>();
+    ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
     Map<WayType, List<Drawable>> lines = new EnumMap<>(WayType.class);
     {
         for (var type : WayType.values())
@@ -83,6 +85,7 @@ public class Model {
         var id2way = new HashMap<Long, OSMWay>();
         var nodes = new ArrayList<OSMNode>();
         var rel = new ArrayList<OSMWay>();
+
         long relID = 0;
         var type = WayType.UNKNOWN;
         KDTree OSMNodeTree = new KDTree();
@@ -104,6 +107,8 @@ public class Model {
                             var lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
                             osmnode = new OSMNode(id, 0.56f * lon, -lat);
                             id2node.add(osmnode);
+                            Vertex V = new Vertex(id, 0.56f*lon, -lat);
+                            vertexList.add(V);
                             break;
                         case "nd":
                             var ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
@@ -211,8 +216,11 @@ public class Model {
                     break;
             }
         }
+
         System.out.println("Done");
         OSMNodeTree.fillTree(nodes, 0);
+        EdgeWeightedDigraph graf = new EdgeWeightedDigraph(id2way.size());
+
     }
 
     public void addObserver(Runnable observer) {
@@ -228,6 +236,7 @@ public class Model {
     public Iterable<Drawable> iterable(WayType type) {
         return lines.get(type);
     }
+
 
     public void addAddress() {
         addresses.add(address);

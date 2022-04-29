@@ -1,5 +1,6 @@
 package bfst22.vector;
 
+import java.awt.geom.Ellipse2D;
 import java.nio.file.WatchKey;
 
 import javafx.geometry.Point2D;
@@ -12,7 +13,7 @@ public class MapCanvas extends Canvas {
     Model model;
     Affine trans = new Affine();
     double zoomedIn = 100;
-
+    int i = 0;
     void init(Model model) {
         this.model = model;
         pan(-model.minlon, -model.minlat);
@@ -31,6 +32,20 @@ public class MapCanvas extends Canvas {
             gc.setFill(Color.LIGHTBLUE);
             line.fill(gc);
         }
+        for (Vertex v : model.vertexList){
+            double x1 = v.getX();
+            double y1 = v.getY();
+            double size = 0.0001;
+//            Point2D from = new Point2D(x1, y1);
+//            Point2D to = new Point2D(x1, y1);
+//            Line l = new Line(from, to);
+            gc.setFill(Color.RED);
+            gc.fillOval(x1-(size/2), y1-(size/2), size, size);
+
+
+
+
+        }
         for (var line : model.iterable(WayType.COASTLINE)) {
             gc.setStroke(Color.BLACK);
             line.draw(gc);
@@ -43,7 +58,7 @@ public class MapCanvas extends Canvas {
             gc.setStroke(Color.ORANGE);
             line.draw(gc);
         }
-        if (zoomedIn > 110) {
+        if (zoomedIn > 400) {
             for (var line : model.iterable(WayType.BUILDING)) {
                 gc.setStroke(Color.GREY);
                 line.draw(gc);
@@ -52,7 +67,7 @@ public class MapCanvas extends Canvas {
 
             }
         }
-        if (zoomedIn > 120) {
+        if (zoomedIn > 250) {
             for (var line : model.iterable(WayType.CITYWAY)) {
                 gc.setStroke(Color.BLACK);
                 line.draw(gc);
@@ -61,7 +76,7 @@ public class MapCanvas extends Canvas {
         }
 
         gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
-        if (zoomedIn > 150) {
+        if (zoomedIn > 500) {
             for (var line : model.iterable(WayType.UNKNOWN)) {
                 line.draw(gc);
                 gc.setStroke(Color.BLACK);
