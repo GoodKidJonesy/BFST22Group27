@@ -1,5 +1,5 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive",
+    "java.configuration.updateBuildConfiguration": "disabled",
     "java.project.sourcePaths": [
         "app\\data",
         "app\\src\\main\\java\\bfst22",

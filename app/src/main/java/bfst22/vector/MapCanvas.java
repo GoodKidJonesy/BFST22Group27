@@ -10,10 +10,12 @@ import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 
 public class MapCanvas extends Canvas {
+
     Model model;
     Affine trans = new Affine();
-    double zoomedIn = 100;
-    Range range = new Range(new Point2D(0, 0), new Point2D(0, 0));
+    double maxZoom = 1.06;
+    double minZoom = -0.06;
+    double zoomedIn = 0;
 
     void init(Model model) {
         this.model = model;
@@ -25,6 +27,7 @@ public class MapCanvas extends Canvas {
     }
 
     void repaint() {
+
         var gc = getGraphicsContext2D();
         gc.setTransform(new Affine());
         gc.setFill(Color.WHITE);
@@ -53,15 +56,16 @@ public class MapCanvas extends Canvas {
             gc.setStroke(Color.ORANGE);
             line.draw(gc);
         }
-        if (zoomedIn > 110) {
-            for (var line : model.iterable(WayType.BUILDING)) {
-                gc.setStroke(Color.GREY);
-                line.draw(gc);
-                gc.setFill(Color.LIGHTGREY);
-                line.fill(gc);
-            }
+        for (var line : model.iterable(WayType.FOREST)) {
+            gc.setFill(Color.LIGHTGREEN);
+            line.fill(gc);
         }
-        if (zoomedIn > 120) {
+        for (var line : model.iterable(WayType.LANDUSE)) {
+            gc.setFill(Color.BEIGE);
+            line.fill(gc);
+        }
+
+        if (zoomedIn > 0.45) {
             for (var line : model.iterable(WayType.CITYWAY)) {
                 gc.setStroke(Color.BLACK);
                 line.draw(gc);
@@ -69,8 +73,17 @@ public class MapCanvas extends Canvas {
             }
         }
 
+        if (zoomedIn > 0.50) {
+            for (var line : model.iterable(WayType.BUILDING)) {
+                gc.setStroke(Color.GREY);
+                line.draw(gc);
+                gc.setFill(Color.LIGHTGREY);
+                line.fill(gc);
+            }
+        }
+
         gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
-        if (zoomedIn > 150) {
+        if (zoomedIn > 0.55) {
             for (var line : model.iterable(WayType.UNKNOWN)) {
                 line.draw(gc);
                 gc.setStroke(Color.BLACK);
@@ -106,6 +119,11 @@ public class MapCanvas extends Canvas {
     }
 
     void getZoom(double factor) {
+        if (factor > 0) {
+            factor = 0.05;
+        } else if (factor < 0) {
+            factor = -0.05;
+        }
         zoomedIn += factor;
     }
 

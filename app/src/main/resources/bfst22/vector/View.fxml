@@ -3,6 +3,8 @@
 <?import bfst22.vector.MapCanvas?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.Scene?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.Label?>
 <Scene xmlns="http://javafx.com/javafx"
        xmlns:fx="http://javafx.com/fxml"
        fx:controller="bfst22.vector.Controller"
@@ -10,6 +12,9 @@
 >
     <root>
         <BorderPane prefHeight="480.0" prefWidth="640.0">
+            <top>
+                <Label fx:id="FPSLabel"></Label>
+            </top>
             <center>
                 <MapCanvas fx:id="canvas"
                            width="${scene.width}"
@@ -19,7 +24,9 @@
                            onMouseDragged="#onMouseDragged"
                            onMouseMoved="#onMouseMoved"
                 />
+
             </center>
+
         </BorderPane>
     </root>
 </Scene>
