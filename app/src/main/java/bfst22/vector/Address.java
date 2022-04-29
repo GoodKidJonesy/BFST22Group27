@@ -49,9 +49,9 @@ public class Address {
     }
 
     public String toString() {
-        return street.toLowerCase().replace(" ", "").replace("é","e").replace("ü","u") + houseNumber.toLowerCase() + postcode + city.toLowerCase().replace(" ", "");
+        return street.toLowerCase().replace("é","e").replace("ü","u") + " " + houseNumber.toLowerCase() + " " + postcode + " " + city.toLowerCase();
     }
     public String getCords(){
-        return x + "," + y;
+        return x + "." + y;
     }
 }

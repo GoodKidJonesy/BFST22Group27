@@ -58,6 +58,7 @@ public class Model {
                 maxlat = input.readFloat();
                 maxlon = input.readFloat();
                 lines = (Map<WayType, List<Drawable>>) input.readObject();
+                loadOSM(input);
             }
         } else {
             lines.put(WayType.UNKNOWN, Files.lines(Paths.get(filename))
@@ -65,7 +66,7 @@ public class Model {
                     .collect(toList()));
         }
         time += System.nanoTime();
-        System.out.println("Load time: " + (long) (time / 1e6) + " ms");
+        System.out.println("Total load time: " + (long) (time / 1e6) + " ms");
         if (!filename.endsWith(".obj"))
             save(filename);
     }
@@ -89,6 +90,7 @@ public class Model {
         var rel = new ArrayList<OSMWay>();
         long relID = 0;
         var type = WayType.UNKNOWN;
+        var timeTwo = -System.nanoTime();
 
         while (reader.hasNext()) {
             switch (reader.next()) {
@@ -257,11 +259,17 @@ public class Model {
                     break;
             }
         }
-        System.out.println("Parsing Done");
+        timeTwo += System.nanoTime();
+        System.out.println("Parsing Done in " + (long) (timeTwo / 1e6) + "ms.");
+        timeTwo = -System.nanoTime();
         makeTrie();
+        timeTwo += System.nanoTime(); 
+        System.out.println("TrieTree done in: " + (long) (timeTwo / 1e6) + "ms.");
         // System.out.println(id2nodeList.size());
+        timeTwo = -System.nanoTime();
         OSMNodeTree.fillTree(id2nodeList, 0);
-        System.out.println("KDTree filled");
+        timeTwo += System.nanoTime();
+        System.out.println("KDTree filled in: " + (long) (timeTwo / 1e6) + " ms");
         // OSMNodeTree.printTree(OSMNodeTree.getRoot());
         // System.out.println("root: " + OSMNodeTree.getRoot
     }
@@ -290,6 +298,5 @@ public class Model {
         for (Address a : addresses) {
             trie.insert(a.toString(), a.getCords());
         }
-        
     }
 }

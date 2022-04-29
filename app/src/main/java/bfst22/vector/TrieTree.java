@@ -6,7 +6,7 @@ public class TrieTree {
 
     }
 
-    static final int alhabet_size = 36; // antal symboler der bliver brugt, det danske alfabet+tal+mellemrum.
+    static final int alhabet_size = 37; // antal symboler der bliver brugt, det danske alfabet+tal+mellemrum.
 
     // opretter trienode klassen, hver node har en arraylist af børn samt en bool
     // der afgør om det er en slutnode.
@@ -44,6 +44,8 @@ public class TrieTree {
                 index -= 17;
             if(key.charAt(depth) == 'å')
                 index += 3;
+            if(key.charAt(depth) == ' ')
+                index += 101;
             if(index < 0)
                 index += 75;
             if (parent.children[index] == null)
@@ -64,8 +66,10 @@ public class TrieTree {
         boolean found;
         for (depth = 0; depth < key.length(); depth++) {
             index = key.charAt(depth) - 'a';
+            if(key.charAt(depth) == ' ')
+                index += 101;
             if(index < 0)
-                index += 75;
+                index += 75;            
             if (parent.children[index] == null){
                 found = false;
                 return "No such address found";
