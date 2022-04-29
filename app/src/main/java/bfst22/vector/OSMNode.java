@@ -24,4 +24,6 @@ public class OSMNode implements Serializable {
     public float getY() {
         return lon;
     }
+
+    public long getID(){ return id; }
 }

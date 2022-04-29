@@ -16,26 +16,7 @@ public class EdgeWeightedDigraph {
             adj[v] = new Bag<Edge>();
     }
 
-    /**
-     * Initializes a random edge-weighted digraph with {@code V} vertices and <em>E</em> edges.
-     *
-     * @param V the number of vertices
-     * @param E the number of edges
-     * @throws IllegalArgumentException if {@code V < 0}
-     * @throws IllegalArgumentException if {@code E < 0}
-     */
-    public EdgeWeightedDigraph(int V, int E) {
-        this(V);
-        Random random = new Random();
-        if (E < 0) throw new IllegalArgumentException("Number of edges in a Digraph must be non-negative");
-        for (int i = 0; i < E; i++) {
-            int v = random.nextInt(V);
-            int w = random.nextInt(E);
-            float weight = 0.01f * random.nextInt(100);
 
-
-        }
-    }
 
     /**
      * Returns the number of vertices in this edge-weighted digraph.
@@ -55,7 +36,7 @@ public class EdgeWeightedDigraph {
         return E;
     }
 
-    // throw an IllegalArgumentException unless {@code 0 <= v < V}
+    //throw an IllegalArgumentException unless {@code 0 <= v < V}
     private void validateVertex(int v) {
         if (v < 0 || v >= V)
             throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V - 1));
@@ -69,8 +50,8 @@ public class EdgeWeightedDigraph {
      *                                  and {@code V-1}
      */
     public void addEdge(Edge e) {
-        long v = e.getFrom();
-        long w = e.getTo();
+        Vertex v = e.getFrom();
+        Vertex w = e.getTo();
         //validateVertex(v);
         //validateVertex(w);
         //adj[v].add(e);

@@ -41,12 +41,27 @@ public class MapCanvas extends Canvas {
 //            Line l = new Line(from, to);
             gc.setFill(Color.RED);
             gc.fillOval(x1-(size/2), y1-(size/2), size, size);
+        }
+/*
+        for (Edge e :
+                model.edgeList) {
+            double x1 = e.getFrom().getX();
+            double y1 = e.getFrom().getY();
+            double x2 = e.getTo().getX();
+            double y2 = e.getTo().getY();
 
 
+            gc.setStroke(Color.RED);
+
+            gc.strokeLine(x1, y1, x2, y2);
+
+            gc.setFill(Color.RED);
+            gc.fillOval(x1,y1,x2,y2);
 
 
         }
-        for (var line : model.iterable(WayType.COASTLINE)) {
+        */
+       for (var line : model.iterable(WayType.COASTLINE)) {
             gc.setStroke(Color.BLACK);
             line.draw(gc);
         }
@@ -54,6 +69,7 @@ public class MapCanvas extends Canvas {
             gc.setStroke(Color.RED);
             line.draw(gc);
         }
+
         for (var line : model.iterable(WayType.HIGHWWAY)) {
             gc.setStroke(Color.ORANGE);
             line.draw(gc);
@@ -74,14 +90,18 @@ public class MapCanvas extends Canvas {
 
             }
         }
-
-        gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
         if (zoomedIn > 500) {
+
             for (var line : model.iterable(WayType.UNKNOWN)) {
                 line.draw(gc);
                 gc.setStroke(Color.BLACK);
             }
         }
+
+
+        gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
+
+
 
     }
 

@@ -33,6 +33,7 @@ public class Model {
     OSMNode osmnode = null;
     ArrayList<Address> addresses = new ArrayList<>();
     ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
+    ArrayList<Edge> edgeList = new ArrayList<>();
     Map<WayType, List<Drawable>> lines = new EnumMap<>(WayType.class);
     {
         for (var type : WayType.values())
@@ -112,10 +113,12 @@ public class Model {
                             break;
                         case "nd":
                             var ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
+
                             nodes.add(id2node.get(ref));
                             break;
                         case "way":
                             relID = Long.parseLong(reader.getAttributeValue(null, "id"));
+
                             type = WayType.UNKNOWN;
                             break;
                         case "tag":
@@ -132,6 +135,7 @@ public class Model {
                                     type = WayType.BUILDING;
                                     break;
                                 case "highway":
+
                                     if (v.equals("primary") || v.equals("trunk") || v.equals("secondary")
                                             || v.equals("trunk_link") || v.equals("secondary_link")) {
                                         type = WayType.HIGHWWAY;
@@ -202,7 +206,11 @@ public class Model {
                     switch (reader.getLocalName()) {
                         case "way":
                             var way = new PolyLine(nodes);
+
+
+
                             id2way.put(relID, new OSMWay(nodes));
+
                             lines.get(type).add(way);
                             nodes.clear();
                             break;
@@ -217,8 +225,9 @@ public class Model {
             }
         }
 
+
         System.out.println("Done");
-        OSMNodeTree.fillTree(nodes, 0);
+
         EdgeWeightedDigraph graf = new EdgeWeightedDigraph(id2way.size());
 
     }
