@@ -288,9 +288,8 @@ public class Model {
     public void makeTrie() {
         TrieTree trie = new TrieTree();
         for (Address a : addresses) {
-            System.out.println(a.toString());
-            trie.insert(a.toString());
-            System.out.println("added to trie");
+            trie.insert(a.toString(), a.getCords());
         }
+        
     }
 }

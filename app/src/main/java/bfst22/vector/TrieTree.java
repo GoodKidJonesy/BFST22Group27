@@ -14,11 +14,12 @@ public class TrieTree {
     // null.
     static class TrieNode {
         TrieNode[] children = new TrieNode[alhabet_size];
-
+        String cords;
         boolean endOfString;
 
-        TrieNode() {
+        TrieNode(String cords) {
             endOfString = false;
+            this.cords = cords;
             for (int i = 0; i < alhabet_size; i++) {
                 children[i] = null;
             }
@@ -26,12 +27,12 @@ public class TrieTree {
     }
     
     // opretter root node som altid vil være null;
-    static TrieNode root = new TrieNode();
+    static TrieNode root = new TrieNode("0");
 
     // insert metode der tager en String som argument og indsætter denne i træet.
     // hver char i key bliver indsat efter den forrige og hver node har en parent
     // samt børn.
-    public void insert(String key) {
+    public void insert(String key, String cords) {
         key = key.replace("æ", "ae").replace("ø","oe").replace("å", "aa");
         int depth;
         int index;
@@ -46,7 +47,7 @@ public class TrieTree {
             if(index < 0)
                 index += 75;
             if (parent.children[index] == null)
-                parent.children[index] = new TrieNode();
+                parent.children[index] = new TrieNode(cords);
 
             parent = parent.children[index];
         }
@@ -55,21 +56,26 @@ public class TrieTree {
 
     // search metode, fungerer ligesom insert. metode bare hvor den tjekker hver
     // node og sammenligner med input.
-    public static boolean search(String key) {
+    public static String search(String key) {
         key = key.replace("æ", "ae").replace("ø","oe").replace("å", "aa");
         int depth;
         int index;
         TrieNode parent = root;
-
+        boolean found;
         for (depth = 0; depth < key.length(); depth++) {
             index = key.charAt(depth) - 'a';
             if(index < 0)
                 index += 75;
-            if (parent.children[index] == null)
-                return false;
+            if (parent.children[index] == null){
+                found = false;
+                return "No such address found";
+            }
 
             parent = parent.children[index];
         }
-        return parent.endOfString;
+        found = true;
+        System.out.println(found);
+        System.out.println(parent.cords);
+        return parent.cords;
     }
 }
