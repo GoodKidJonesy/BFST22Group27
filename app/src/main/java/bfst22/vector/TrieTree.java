@@ -6,7 +6,7 @@ public class TrieTree {
 
     }
 
-    static final int alhabet_size = 40; // antal symboler der bliver brugt, det danske alfabet+tal+mellemrum.
+    static final int alhabet_size = 36; // antal symboler der bliver brugt, det danske alfabet+tal+mellemrum.
 
     // opretter trienode klassen, hver node har en arraylist af børn samt en bool
     // der afgør om det er en slutnode.
@@ -24,7 +24,7 @@ public class TrieTree {
             }
         }
     }
-
+    
     // opretter root node som altid vil være null;
     static TrieNode root = new TrieNode();
 
@@ -32,13 +32,19 @@ public class TrieTree {
     // hver char i key bliver indsat efter den forrige og hver node har en parent
     // samt børn.
     public void insert(String key) {
+        key = key.replace("æ", "ae").replace("ø","oe").replace("å", "aa");
         int depth;
         int index;
 
         TrieNode parent = root;
         for (depth = 0; depth < key.length(); depth++) {
-            System.out.println(key.charAt(depth));
             index = key.charAt(depth) - 'a';
+            if(key.charAt(depth) == 'ø')
+                index -= 17;
+            if(key.charAt(depth) == 'å')
+                index += 3;
+            if(index < 0)
+                index += 75;
             if (parent.children[index] == null)
                 parent.children[index] = new TrieNode();
 
@@ -50,12 +56,15 @@ public class TrieTree {
     // search metode, fungerer ligesom insert. metode bare hvor den tjekker hver
     // node og sammenligner med input.
     public static boolean search(String key) {
+        key = key.replace("æ", "ae").replace("ø","oe").replace("å", "aa");
         int depth;
         int index;
         TrieNode parent = root;
 
         for (depth = 0; depth < key.length(); depth++) {
             index = key.charAt(depth) - 'a';
+            if(index < 0)
+                index += 75;
             if (parent.children[index] == null)
                 return false;
 

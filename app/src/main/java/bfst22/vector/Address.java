@@ -49,6 +49,6 @@ public class Address {
     }
 
     public String toString() {
-        return street.toLowerCase().replace(" ", "") + houseNumber + postcode + city.toLowerCase().replace(" ", "");
+        return street.toLowerCase().replace(" ", "").replace("é","e").replace("ü","u") + houseNumber.toLowerCase() + postcode + city.toLowerCase().replace(" ", "");
     }
 }

@@ -258,10 +258,7 @@ public class Model {
             }
         }
         System.out.println("Parsing Done");
-        // makeTrie();
-        TrieTree t = new TrieTree();
-        t.testAdd();
-        t.testSearch();
+        makeTrie();
         // System.out.println(id2nodeList.size());
         OSMNodeTree.fillTree(id2nodeList, 0);
         System.out.println("KDTree filled");
