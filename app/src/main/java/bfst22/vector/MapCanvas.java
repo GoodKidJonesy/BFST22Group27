@@ -53,21 +53,17 @@ public class MapCanvas extends Canvas {
          * screen.getLeft(),
          * screen.getBottom() - screen.getTop());
          */
-
-        for (var line : model.iterable(WayType.LAKE)) {
-            gc.setFill(Color.LIGHTBLUE);
-            line.fill(gc);
-        }
+/*
         for (var line : model.iterable(WayType.COASTLINE)) {
             gc.setStroke(Color.BLACK);
             line.draw(gc);
         }
-        for (var line : model.iterable(WayType.FOREST)) {
-            gc.setFill(Color.LIGHTGREEN);
-            line.fill(gc);
-        }
         for (var line : model.iterable(WayType.LANDUSE)) {
             gc.setFill(Color.BEIGE);
+            line.fill(gc);
+        }
+        for (var line : model.iterable(WayType.FOREST)) {
+            gc.setFill(Color.LIGHTGREEN);
             line.fill(gc);
         }
         for (var line : model.iterable(WayType.CITY)) {
@@ -83,7 +79,7 @@ public class MapCanvas extends Canvas {
             gc.setStroke(Color.RED);
             line.draw(gc);
         }
-        for (var line : model.iterable(WayType.HIGHWWAY)) {
+        for (var line : model.iterable(WayType.HIGHWAY)) {
             gc.setStroke(Color.ORANGE);
             line.draw(gc);
         }
@@ -97,6 +93,24 @@ public class MapCanvas extends Canvas {
                 line.fill(gc);
             }
         }
+        */
+        for (WayType e : WayType.values()) {
+            if(e.equals(WayType.UNKNOWN) || e.equals(WayType.LAKE)){
+                break;
+            }
+            else{
+            for(var line : model.iterable(e)){
+                if(e.fillTrue()){
+                    gc.setFill(e.getColor());
+                    line.fill(gc);
+                }else{
+                    gc.setStroke(e.getColor());
+                    line.draw(gc);
+                }
+            }
+        }
+        }
+        /*
         if (zoomedIn > 170) {
             for (var line : model.iterable(WayType.CITYWAY)) {
                 gc.setStroke(Color.BLACK);
@@ -107,6 +121,7 @@ public class MapCanvas extends Canvas {
                 line.draw(gc);
             }
         }
+        */
         gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
         /*
          * if (zoomedIn > 150) {

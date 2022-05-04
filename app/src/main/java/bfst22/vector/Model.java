@@ -156,19 +156,33 @@ public class Model {
                                         type = WayType.FOREST;
                                     break;
                                 case "highway":
-                                    if (v.equals("primary") || v.equals("trunk") || v.equals("secondary")
-                                            || v.equals("trunk_link") || v.equals("secondary_link")) {
-                                        type = WayType.HIGHWWAY;
-                                    } else if (v.equals("residential") || v.equals("service") || v.equals("cycleway")
-                                            || v.equals("tertiary") || v.equals("unclassified")
-                                            || v.equals("tertiary_link") || v.equals("road")) {
-                                        type = WayType.CITYWAY;
-                                    } else if (v.equals("motorway") || v.equals("motorway_link")) {
-                                        type = WayType.MOTORWAY;
-                                    } else if (v.equals("track") || v.equals("path") || v.equals("footway"))
-                                        type = WayType.DIRTTRACK;
-
+                                    switch (v) {
+                                        case "primary":
+                                        case "trunk":
+                                        case "secondary":
+                                        case "trunk_link":
+                                        case "secondary_link":
+                                            type = WayType.HIGHWAY;
+                                            break;
+                                        case "residential":
+                                        case "tertiary":
+                                        case "road":
+                                            type = WayType.CITYWAY;
+                                            break;
+                                        case "motorway":
+                                        case "motorway_link":
+                                            type = WayType.MOTORWAY;
+                                            break;
+                                        case "track":
+                                        case "path":
+                                        case "footway":
+                                            type = WayType.DIRTTRACK;
+                                            break;
+                                        default:
+                                            break;
+                                    }
                                     break;
+                                    
                                 case "barrier":
                                     if (v.equals("hedge"))
                                         type = WayType.FOREST;
@@ -186,6 +200,7 @@ public class Model {
                                         type = WayType.MILITARY;
                                     else
                                         type = WayType.LANDUSE;
+                                
                                 case "addr:city":
                                     if (address == null) {
                                         address = new Address(osmnode);
@@ -296,6 +311,7 @@ public class Model {
     public void makeTrie() {
         TrieTree trie = new TrieTree();
         for (Address a : addresses) {
+            //System.out.println(a.getStreet());
             trie.insert(a.toString(), a.getCords());
         }
     }
