@@ -1,19 +1,21 @@
 package bfst22.vector;
 
 import javax.swing.Action;
+
+import java.io.IOException;
 //import observableValue
 import java.util.Observable;
 
-
+import javafx.animation.FadeTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -21,16 +23,24 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.util.Duration;
 import javafx.scene.control.ListView;
 
 public class Controller {
     private Point2D lastMouse;
 
+    private Model model;
+
     Framerate FPS = new Framerate();
 
     @FXML
     private MapCanvas canvas;
+
+    @FXML
+    private Range range = new Range(new Point2D(0, 0), new Point2D(0, 0));
 
     @FXML
     private ToggleButton ruteButton;
@@ -48,17 +58,23 @@ public class Controller {
     private TextField   rute1, 
                         rute2;
 
-    @FXML Label totalDistanceLabel,
+    @FXML 
+    Label totalDistanceLabel,
                 totalTimeLabel,
                 FPSLabel,
                 zoomValue;
     
-    @FXML ListView directionList;
+    @FXML 
+    ListView directionList;
 
-    @FXML ProgressBar zoomBar;
+    @FXML 
+    ProgressBar zoomBar;
 
-    @FXML CheckBox FPSBox;
+    @FXML 
+    CheckBox FPSBox, KdBox;
 
+    @FXML
+    BorderPane root;
 
     public void init(Model model) {
         canvas.init(model);
@@ -156,6 +172,18 @@ public class Controller {
         }
         else if (!FPSBox.isSelected()) {
             FPSBox.setText("FPS");
+        }
+    }
+
+    @FXML
+    private void KdDebugger(ActionEvent e) {
+        if(KdBox.isSelected()) {
+            canvas.setRangeDebug(true);
+            canvas.repaint();
+        }
+        else if (!KdBox.isSelected()) {
+            canvas.setRangeDebug(false);
+            canvas.repaint();
         }
     }
 

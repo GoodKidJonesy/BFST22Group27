@@ -35,11 +35,14 @@ public class MapCanvas extends Canvas {
         gc.fillRect(0, 0, getWidth(), getHeight());
         gc.setTransform(trans);
 
-        for (OSMNode n : query()) {
-            double size = 0.0001;
-            gc.setFill(Color.RED);
-            gc.fillOval(n.getX() - (size / 2), n.getY() - (size / 2), size, size);
+        if(range.getDebug()) {
+            for (OSMNode n : query()) {
+                double size = 0.0001;
+                gc.setFill(Color.RED);
+                gc.fillOval(n.getX() - (size / 2), n.getY() - (size / 2), size, size);
+            }
         }
+        
 
         for (var line : model.iterable(WayType.LAKE)) {
             gc.setFill(Color.LIGHTBLUE);
@@ -146,5 +149,9 @@ public class MapCanvas extends Canvas {
         gc.lineTo(range.getLeft(), range.getBottom());
         gc.lineTo(range.getLeft(), range.getTop());
         gc.stroke();
+    }
+
+    public void setRangeDebug(boolean debug) {
+        range.updateDebug(debug);
     }
 }

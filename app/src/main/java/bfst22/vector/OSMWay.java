@@ -24,7 +24,6 @@ public class OSMWay implements Serializable {
         this.nodes = new ArrayList<>(nodes);
         this.from = nodes.get(0);
         this.to = nodes.get(nodes.size() - 1);
-        System.out.println("from: " + getFrom() + " to: " + getTo());
         this.averagePos = new Point2D(Math.abs(from.getX() - to.getX()) / 2, Math.abs(from.getY() - to.getY()) / 2);
     }
 

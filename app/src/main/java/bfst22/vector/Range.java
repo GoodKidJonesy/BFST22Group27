@@ -1,6 +1,7 @@
 package bfst22.vector;
 
 import java.awt.Window;
+import java.io.Serializable;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
@@ -13,7 +14,7 @@ public class Range {
     public Range(Point2D topLeft, Point2D bottomRight) {
       this.topLeft = topLeft;
       this.bottomRight = bottomRight;
-      this.debug = true;
+      this.debug = false;
     }
 
     public void update(Point2D tL, Point2D bR){
@@ -21,8 +22,8 @@ public class Range {
       bottomRight = bR;
     }
 
-    public void updateDebug(){
-      debug = debug ? false : true;
+    public void updateDebug(boolean d){
+      debug = d;
     }
     public double getWidth(){
       return Math.abs(topLeft.getX() - bottomRight.getX());
