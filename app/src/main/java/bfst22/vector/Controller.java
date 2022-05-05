@@ -93,6 +93,7 @@ public class Controller {
     BorderPane root;
 
     public void init(Model model) {
+        canvas.init(model);
         String[] address = model.addresses.toString().split(",");
         TextFields.bindAutoCompletion(rute1, address);
         TextFields.bindAutoCompletion(rute2, address);
@@ -226,11 +227,14 @@ public class Controller {
 
     @FXML
     private void resetZoom(MouseEvent e) throws ClassNotFoundException, IOException, XMLStreamException, FactoryConfigurationError {
-        canvas.zoomedIn = canvas.minZoom;
-        zoomBar.setProgress(canvas.zoomedIn);
-        zoomValue.setText(0 + "%");
-        MapCanvas newCanvas = new MapCanvas();
-        newCanvas.init(model);
+        //canvas.zoomedIn = canvas.minZoom;
+        //zoomBar.setProgress(canvas.zoomedIn);
+        //zoomValue.setText(0 + "%");
+        //MapCanvas newCanvas = new MapCanvas();
+        //newCanvas.init(model);
+        
+        //Aner ikke hvordan jeg resetter kortet, til at resettes til samme zoom og position, som når man starter programmet.
+        //TODO: FIX
 
     }
 
