@@ -17,5 +17,6 @@ public class View {
         Controller controller = loader.getController();
         controller.init(model);
         primaryStage.setTitle("Bornholm");
+        primaryStage.setMaximized(true);
     }
 }

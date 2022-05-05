@@ -1,13 +1,17 @@
 package bfst22.vector;
 
 import javax.swing.Action;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLStreamException;
 
 import java.io.IOException;
 //import observableValue
 import java.util.Observable;
-
+import java.util.List;
+import java.util.ArrayList;
 import javafx.animation.FadeTransition;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,13 +30,22 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.control.ListView;
+
+import org.controlsfx.control.SearchableComboBox;
+import org.controlsfx.control.ToggleSwitch;
+import org.controlsfx.control.textfield.*;
 
 public class Controller {
     private Point2D lastMouse;
 
     private Model model;
+
+    private Address address;
+
+    private TrieTree trie;
 
     Framerate FPS = new Framerate();
 
@@ -43,7 +56,7 @@ public class Controller {
     private Range range = new Range(new Point2D(0, 0), new Point2D(0, 0));
 
     @FXML
-    private ToggleButton ruteButton;
+    private ToggleSwitch ruteSwitch;
 
     @FXML
     private HBox vehicleBox;
@@ -52,11 +65,12 @@ public class Controller {
     private Button  carBtn, 
                     bikeBtn, 
                     walkBtn,
-                    searchButton;
+                    searchButton,
+                    resetButton;
 
     @FXML
-    private TextField   rute1, 
-                        rute2;
+    private TextField   rute1 = TextFields.createClearableTextField(),
+                        rute2 = TextFields.createClearableTextField();
 
     @FXML 
     Label totalDistanceLabel,
@@ -73,11 +87,15 @@ public class Controller {
     @FXML 
     CheckBox FPSBox, KdBox;
 
+    App app;
+
     @FXML
     BorderPane root;
 
     public void init(Model model) {
-        canvas.init(model);
+        String[] address = model.addresses.toString().split(",");
+        TextFields.bindAutoCompletion(rute1, address);
+        TextFields.bindAutoCompletion(rute2, address);
     }
 
     @FXML
@@ -116,8 +134,8 @@ public class Controller {
     }
 
     @FXML
-    private void addTextFieldandLabel(ActionEvent e) {
-        if(ruteButton.isSelected()) {
+    private void addTextFieldandLabel(MouseEvent e) {
+        if(ruteSwitch.isSelected()) {
             rute1.setPromptText("Start destination");
             rute2.setVisible(true);
             rute2.setPromptText("End destination");
@@ -141,7 +159,15 @@ public class Controller {
     }
 
     @FXML private void searchPress(MouseEvent e) {
-        System.out.println(rute1.getText());
+        if(!ruteSwitch.isSelected()) {
+            trie.search(rute1.getText());
+        } else if(ruteSwitch.isSelected()) {
+            if(rute1.getText().equals("") || rute2.getText().equals("")) {
+                System.out.println("Please fill in both fields");
+            } else {
+                getDirectionList();
+            }
+        }
     }
     
     @FXML
@@ -196,6 +222,33 @@ public class Controller {
     private void onMouseMoved(MouseEvent e){
         lastMouse = new Point2D(e.getX(), e.getY());
         System.out.println(lastMouse);
+    }
+
+    @FXML
+    private void resetZoom(MouseEvent e) throws ClassNotFoundException, IOException, XMLStreamException, FactoryConfigurationError {
+        canvas.zoomedIn = canvas.minZoom;
+        zoomBar.setProgress(canvas.zoomedIn);
+        zoomValue.setText(0 + "%");
+        MapCanvas newCanvas = new MapCanvas();
+        newCanvas.init(model);
 
     }
+
+    private void getDirectionList() {
+        //HARDCODED FOR TEST PURPSES
+        //TODO: FIX THIS
+        directionList.getItems().add("1. Start point: " + rute1.getText());
+        directionList.getItems().add("2. Turn left after 50 meters");
+        directionList.getItems().add("3. Turn right after 100 meters");
+        directionList.getItems().add("4. Go through the roundabout");
+        directionList.getItems().add("5. Take first exit");
+        directionList.getItems().add("6. Go straight for 100 meters");
+        directionList.getItems().add("7. End point: " + rute2.getText());
+
+        totalDistanceLabel.setText("Total distance: " + "200 meters");
+        totalTimeLabel.setText("Total time: " + "20 minutes");
+    }
+        
+
+
 }

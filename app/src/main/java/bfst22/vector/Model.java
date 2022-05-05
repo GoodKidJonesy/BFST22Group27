@@ -29,6 +29,7 @@ import static java.util.stream.Collectors.toList;
 public class Model {
     float minlat, minlon, maxlat, maxlon;
     Address address = null;
+    TrieTree trie;
     OSMNode osmnode = null;
     ArrayList<Address> addresses = new ArrayList<>();
     KDTree OSMNodeTree;
@@ -88,6 +89,7 @@ public class Model {
         var rel = new ArrayList<OSMWay>();
         long relID = 0;
         var type = WayType.UNKNOWN;
+        var timeTwo = -System.nanoTime();
 
         while (reader.hasNext()) {
             switch (reader.next()) {
@@ -219,10 +221,19 @@ public class Model {
                     break;
             }
         }
-        System.out.println("Done");
-        System.out.println(id2nodeList.size());
+        timeTwo += System.nanoTime();
+        System.out.println("Parsing Done in " + (long) (timeTwo / 1e6) + "ms.");
+        timeTwo = -System.nanoTime();
+        makeTrie();
+        timeTwo += System.nanoTime(); 
+        System.out.println("TrieTree done in: " + (long) (timeTwo / 1e6) + "ms.");
+        // System.out.println(id2nodeList.size());
+        timeTwo = -System.nanoTime();
         OSMNodeTree.fillTree(id2nodeList, 0);
-        System.out.println("root: " + OSMNodeTree.getRoot());
+        timeTwo += System.nanoTime();
+        System.out.println("KDTree filled in: " + (long) (timeTwo / 1e6) + " ms");
+        // OSMNodeTree.printTree(OSMNodeTree.getRoot());
+        // System.out.println("root: " + OSMNodeTree.getRoot
     }
 
     public void addObserver(Runnable observer) {
@@ -240,14 +251,15 @@ public class Model {
     }
 
     public void addAddress() {
-        //System.out.println(address.getStreet());
         addresses.add(address);
         address = null;
     }
 
-    public void addressRunthrough(){
-        for (Address a : addresses){
-            System.out.println(a.getAddress());
+    public void makeTrie() {
+        TrieTree trie = new TrieTree();
+        for (Address a : addresses) {
+            //System.out.println(a.getStreet() + " " + a.getHouseNumber() + " " + a.getPostcode() + " " + a.getCity());
+            trie.insert(a.toString(), a.getCords());
         }
     }
 }
