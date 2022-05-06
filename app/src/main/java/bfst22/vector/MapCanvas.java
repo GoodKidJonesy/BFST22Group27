@@ -1,7 +1,5 @@
 package bfst22.vector;
 
-import java.nio.file.WatchKey;
-
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;

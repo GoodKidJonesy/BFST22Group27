@@ -1,8 +1,5 @@
 package bfst22.vector;
 
-import java.awt.Window;
-
-import javafx.scene.canvas.Canvas;
 
 //Screen class is for defining the users screen as a box in the program
 public class Screen {
