@@ -134,22 +134,22 @@ public class MapCanvas extends Canvas {
         for (OSMWay o : model.highways){
             for (int j = 0; j < o.nodes.size()-1; j++) {
                 double distance = distanceCalc(o.nodes.get(j).getID(), o.nodes.get(j+1).getID());
-                Edge e = new Edge(o.nodes.get(j).getID(), o.nodes.get(j+1).getID(), o.name, distance/o.getSpeedLimit(), distance);
+                Edge e = new Edge(o.nodes.get(j).getID(), o.nodes.get(j+1).getID(), o.nodes.get(j).getID2(), o.nodes.get(j+1).getID2(), o.name, distance/o.getSpeedLimit(), distance);
                 edgeList.add(e);
 
-                graphsize++;
+
 
 
             }
         }
-        EdgeWeightedDigraph graf = new EdgeWeightedDigraph(graphsize);
+        EdgeWeightedDigraph graf = new EdgeWeightedDigraph(model.id2);
 
         /**
          * Adds edges to the graf.
          */
         for (Edge e : edgeList){
             graf.addEdge(e);
-            System.out.println(e.getWeight());
+            //System.out.println(e.getWeight());
         }
     }
 

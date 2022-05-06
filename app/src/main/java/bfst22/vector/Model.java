@@ -31,6 +31,7 @@ import static java.util.stream.Collectors.toList;
 
 public class Model {
     float minlat, minlon, maxlat, maxlon;
+    int id2 = 0;
     Address address = null;
     OSMNode osmnode = null;
     ArrayList<Address> addresses = new ArrayList<>();
@@ -91,6 +92,7 @@ public class Model {
     }
 
     private void loadOSM(InputStream input) throws XMLStreamException, FactoryConfigurationError {
+
         var reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input));
         var id2way = new HashMap<Long, OSMWay>();
 
@@ -116,7 +118,8 @@ public class Model {
                             var id = Long.parseLong(reader.getAttributeValue(null, "id"));
                             var lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
                             var lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
-                            osmnode = new OSMNode(id, 0.56f * lon, -lat);
+                            osmnode = new OSMNode(id, id2, 0.56f * lon, -lat);
+                            id2++;
                             id2node.add(osmnode);
                             Vertex V = new Vertex(id,0.56f*lon, -lat);
                             vertexList.add(V);
@@ -252,12 +255,9 @@ public class Model {
         }
 
 
-        System.out.println("Done");
+        System.out.println("Done" + " " + id2);
 
-        graf = new EdgeWeightedDigraph(id2way.size());
-        for (OSMNode o : highwayNodeList){
-            System.out.println(o.getX());
-        }
+
 
     }
 

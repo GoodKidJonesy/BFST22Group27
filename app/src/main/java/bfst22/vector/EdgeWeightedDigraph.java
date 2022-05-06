@@ -4,13 +4,13 @@ public class EdgeWeightedDigraph {
     private final int V;                // number of vertices in this digraph
     private int E;                      // number of edges in this digraph
     private Bag<Edge>[] adj;    // adj[v] = adjacency list for vertex v
-    private long[] indegree;
+    private int[] indegree;
 
     public EdgeWeightedDigraph(int V) {
         if (V < 0) throw new IllegalArgumentException("Number of vertices in a Digraph must be non-negative");
         this.V = V;
         this.E = 0;
-        this.indegree = new long[V];
+        this.indegree = new int[V];
         adj = (Bag<Edge>[]) new Bag[V];
         for (int v = 0; v < V; v++)
             adj[v] = new Bag<Edge>();
@@ -37,7 +37,7 @@ public class EdgeWeightedDigraph {
     }
 
     //throw an IllegalArgumentException unless {@code 0 <= v < V}
-    private void validateVertex(long v) {
+    private void validateVertex(int v) {
         if (v < 0 || v >= V)
             throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V - 1));
     }
@@ -50,13 +50,13 @@ public class EdgeWeightedDigraph {
      *                                  and {@code V-1}
      */
     public void addEdge(Edge e) {
-       /* int v = e.getFrom();
-        int w = e.getTo();
+        int v = e.getFrom2();
+        int w = e.getTo2();
         validateVertex(v);
         validateVertex(w);
         adj[E].add(e);
-        indegree[(int) w]++;
-        E++;*/
+        indegree[w]++;
+        E++;
     }
 
 
@@ -68,7 +68,7 @@ public class EdgeWeightedDigraph {
      * @throws IllegalArgumentException unless {@code 0 <= v < V}
      */
     public Iterable<Edge> adj(int v) {
-        //validateVertex(v);
+        validateVertex(v);
         return adj[v];
     }
 
@@ -81,7 +81,7 @@ public class EdgeWeightedDigraph {
      * @throws IllegalArgumentException unless {@code 0 <= v < V}
      */
     public long outdegree(int v) {
-        //validateVertex(v);
+        validateVertex(v);
         return adj[v].size();
     }
 
@@ -93,9 +93,9 @@ public class EdgeWeightedDigraph {
      * @return the indegree of vertex {@code v}
      * @throws IllegalArgumentException unless {@code 0 <= v < V}
      */
-    public long indegree(long v) {
-        //validateVertex(v);
-        return indegree[(int) v];
+    public long indegree(int v) {
+        validateVertex(v);
+        return indegree[v];
     }
 
     /**
