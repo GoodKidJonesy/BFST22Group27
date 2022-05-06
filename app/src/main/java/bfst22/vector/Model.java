@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
 
+import javax.management.relation.RelationType;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -88,6 +89,8 @@ public class Model {
         var rel = new ArrayList<OSMWay>();
         long relID = 0;
         var type = WayType.UNKNOWN;
+        var relationType = "";
+        var multipolygonWays = new ArrayList<OSMWay>();
 
         while (reader.hasNext()) {
             switch (reader.next()) {
@@ -119,6 +122,7 @@ public class Model {
                         case "tag":
                             var k = reader.getAttributeValue(null, "k");
                             var v = reader.getAttributeValue(null, "v");
+                            if(k.equals("type")) relationType = v;
                             switch (k) {
                                 case "natural":
                                     if (v.equals("water"))
@@ -187,6 +191,10 @@ public class Model {
                             }
                             break;
                         case "member":
+                            var member = id2way.get(Long.parseLong(reader.getAttributeValue(null, "ref")));
+                            if(member != null){
+                                multipolygonWays.add(member);
+                            }
                             ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
                             var elm = id2way.get(ref);
                             if (elm != null)
@@ -210,9 +218,12 @@ public class Model {
                             nodes.clear();
                             break;
                         case "relation":
-                            if (type == WayType.LAKE && !rel.isEmpty()) {
-                                lines.get(type).add(new MultiPolygon(rel));
-                            }
+                            if(relationType.equals("multipolygon")){
+                                MultiPolygon multiPolygon = new MultiPolygon(multipolygonWays);
+                                lines.get(type).add(multiPolygon);
+                            } 
+                            relationType = "";
+                            multipolygonWays.clear();
                             rel.clear();
                             break;
                     }
