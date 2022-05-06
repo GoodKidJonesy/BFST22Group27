@@ -42,6 +42,7 @@ public class Model {
     NodeMap id2node = new NodeMap();
     EdgeWeightedDigraph graf;
     String wayName = null;
+    int maxSpeed = 0;
     boolean isHighway = false;
 
     {
@@ -198,6 +199,9 @@ public class Model {
                                     break;
                                 case "name":
                                     wayName = v;
+                                    break;
+                                case "maxspeed":
+                                    maxSpeed = Integer.parseInt(v);
                                 default:
                                     break;
                             }
@@ -222,7 +226,7 @@ public class Model {
                         case "way":
                             if (isHighway){
                                 //System.out.println(osmnode.id);
-                                OSMWay highway = new OSMWay(nodes, wayName);
+                                OSMWay highway = new OSMWay(nodes, wayName, maxSpeed);
                                 highways.add(highway);
                                 isHighway = false;
                             }
@@ -230,7 +234,7 @@ public class Model {
 
 
 
-                            id2way.put(relID, new OSMWay(nodes, wayName));
+                            id2way.put(relID, new OSMWay(nodes, wayName, maxSpeed));
 
                             lines.get(type).add(way);
 

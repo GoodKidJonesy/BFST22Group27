@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class Edge implements Serializable {
     private final long from, to;
-    private final float weight, distance;
+    private final double weight, distance;
     String name;
     //private final boolean forCar, forBike, forWalk;
 
@@ -13,8 +13,8 @@ public class Edge implements Serializable {
                 long from,
                 long to,
                 String name,
-                float weight,
-                float distance
+                double weight,
+                double distance
                 ){
 
         this.from = from;
@@ -31,10 +31,10 @@ public class Edge implements Serializable {
     public long getTo(){
         return to;
     }
-    public float getWeight(){
+    public double getWeight(){
         return weight;
     }
-    public float getDistance(){
+    public double getDistance(){
         return distance;
     }
 

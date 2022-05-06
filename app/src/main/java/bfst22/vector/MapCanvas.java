@@ -25,6 +25,7 @@ public class MapCanvas extends Canvas {
         pan(-model.minlon, -model.minlat);
         zoom(640 / (model.maxlon - model.minlon), 0, 0);
         model.addObserver(this::repaint);
+        createGraph();
         repaint();
     }
 
@@ -132,7 +133,8 @@ public class MapCanvas extends Canvas {
          */
         for (OSMWay o : model.highways){
             for (int j = 0; j < o.nodes.size()-1; j++) {
-                Edge e = new Edge(o.nodes.get(j).getID(), o.nodes.get(j+1).getID(), o.name, 2.0f, 2.0f);
+                double distance = distanceCalc(o.nodes.get(j).getID(), o.nodes.get(j+1).getID());
+                Edge e = new Edge(o.nodes.get(j).getID(), o.nodes.get(j+1).getID(), o.name, distance/o.getSpeedLimit(), distance);
                 edgeList.add(e);
 
                 graphsize++;
@@ -147,6 +149,26 @@ public class MapCanvas extends Canvas {
          */
         for (Edge e : edgeList){
             graf.addEdge(e);
+            System.out.println(e.getWeight());
         }
+    }
+
+    Double distanceCalc(long from, long to){
+        double R = 6371*1000;
+        double lat1 = model.id2node.get(from).lat*Math.PI/180;
+        double lat2 = model.id2node.get(to).lat*Math.PI/180;
+        double deltaLat = (lat2-lat1)*Math.PI/180;
+        double lon1 = model.id2node.get(from).lon;
+        double lon2 = model.id2node.get(to).lon;
+        double deltaLon = (lon2-lon1) * Math.PI/180;
+
+        double a = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) + Math.cos(lat1) *
+                   Math.cos(lat2) * Math.sin(deltaLon/2) * Math.sin(deltaLon/2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+        double d = R * c;
+
+        return d;
     }
 }

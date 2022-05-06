@@ -9,14 +9,20 @@ import javafx.scene.canvas.GraphicsContext;
 public class OSMWay implements Serializable {
     public static final long serialVersionUID = 42;
     public long length;
-    public int speedLimit;
+    private int speedLimit;
     public String name;
     public Boolean oneWay;
 
     List<OSMNode> nodes;
 
-    public OSMWay(List<OSMNode> nodes, String name) {
+    public OSMWay(List<OSMNode> nodes, String name, int speedLimit) {
         this.nodes = new ArrayList<>(nodes);
         this.name = name;
+        this.speedLimit = speedLimit;
     }
+
+    int getSpeedLimit(){
+        return speedLimit;
+    }
+
 }
