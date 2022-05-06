@@ -1,5 +1,7 @@
 package bfst22.vector;
 
+import org.w3c.dom.Node;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Array;
@@ -32,9 +34,16 @@ public class Model {
     Address address = null;
     OSMNode osmnode = null;
     ArrayList<Address> addresses = new ArrayList<>();
+    ArrayList<OSMWay> highways = new ArrayList<OSMWay>();
     ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
-    ArrayList<Edge> edgeList = new ArrayList<>();
+    ArrayList<OSMNode> highwayNodeList = new ArrayList<>();
+    HashMap<Long, Vertex> vertexMap = new HashMap<Long, Vertex>();
     Map<WayType, List<Drawable>> lines = new EnumMap<>(WayType.class);
+    NodeMap id2node = new NodeMap();
+    EdgeWeightedDigraph graf;
+    String wayName = null;
+    boolean isHighway = false;
+
     {
         for (var type : WayType.values())
             lines.put(type, new ArrayList<>());
@@ -82,8 +91,8 @@ public class Model {
 
     private void loadOSM(InputStream input) throws XMLStreamException, FactoryConfigurationError {
         var reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input));
-        var id2node = new NodeMap();
         var id2way = new HashMap<Long, OSMWay>();
+
         var nodes = new ArrayList<OSMNode>();
         var rel = new ArrayList<OSMWay>();
 
@@ -108,7 +117,7 @@ public class Model {
                             var lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
                             osmnode = new OSMNode(id, 0.56f * lon, -lat);
                             id2node.add(osmnode);
-                            Vertex V = new Vertex(id, 0.56f*lon, -lat);
+                            Vertex V = new Vertex(id,0.56f*lon, -lat);
                             vertexList.add(V);
                             break;
                         case "nd":
@@ -135,6 +144,9 @@ public class Model {
                                     type = WayType.BUILDING;
                                     break;
                                 case "highway":
+                                        isHighway = true;
+
+
 
                                     if (v.equals("primary") || v.equals("trunk") || v.equals("secondary")
                                             || v.equals("trunk_link") || v.equals("secondary_link")) {
@@ -146,6 +158,7 @@ public class Model {
                                     } else if (v.equals("motorway") || v.equals("motorway_link")) {
                                         type = WayType.MOTORWAY;
                                     }
+
                                     break;
                                 case "addr:city":
                                     if (address == null) {
@@ -183,6 +196,8 @@ public class Model {
                                         addAddress();
                                     }
                                     break;
+                                case "name":
+                                    wayName = v;
                                 default:
                                     break;
                             }
@@ -205,13 +220,20 @@ public class Model {
                 case XMLStreamConstants.END_ELEMENT:
                     switch (reader.getLocalName()) {
                         case "way":
+                            if (isHighway){
+                                //System.out.println(osmnode.id);
+                                OSMWay highway = new OSMWay(nodes, wayName);
+                                highways.add(highway);
+                                isHighway = false;
+                            }
                             var way = new PolyLine(nodes);
 
 
 
-                            id2way.put(relID, new OSMWay(nodes));
+                            id2way.put(relID, new OSMWay(nodes, wayName));
 
                             lines.get(type).add(way);
+
                             nodes.clear();
                             break;
                         case "relation":
@@ -228,7 +250,10 @@ public class Model {
 
         System.out.println("Done");
 
-        EdgeWeightedDigraph graf = new EdgeWeightedDigraph(id2way.size());
+        graf = new EdgeWeightedDigraph(id2way.size());
+        for (OSMNode o : highwayNodeList){
+            System.out.println(o.getX());
+        }
 
     }
 
@@ -247,11 +272,16 @@ public class Model {
     }
 
 
+
     public void addAddress() {
         addresses.add(address);
         address.setCity(null);
         address.setPostcode(null);
         address.setHousenumber(null);
         address.setStreet(null);
+    }
+
+    public NodeMap getId2node(){
+        return id2node;
     }
 }

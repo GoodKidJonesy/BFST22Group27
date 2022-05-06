@@ -1,7 +1,9 @@
 package bfst22.vector;
 
 import java.awt.geom.Ellipse2D;
+import java.lang.reflect.Array;
 import java.nio.file.WatchKey;
+import java.util.ArrayList;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
@@ -14,6 +16,10 @@ public class MapCanvas extends Canvas {
     Affine trans = new Affine();
     double zoomedIn = 100;
     int i = 0;
+    ArrayList<Vertex> vertexList = new ArrayList<>();
+    ArrayList<Edge> edgeList = new ArrayList<>();
+    int graphsize = 0;
+
     void init(Model model) {
         this.model = model;
         pan(-model.minlon, -model.minlat);
@@ -32,35 +38,16 @@ public class MapCanvas extends Canvas {
             gc.setFill(Color.LIGHTBLUE);
             line.fill(gc);
         }
-        for (Vertex v : model.vertexList){
-            double x1 = v.getX();
-            double y1 = v.getY();
-            double size = 0.0001;
-//            Point2D from = new Point2D(x1, y1);
-//            Point2D to = new Point2D(x1, y1);
-//            Line l = new Line(from, to);
-            gc.setFill(Color.RED);
-            gc.fillOval(x1-(size/2), y1-(size/2), size, size);
-        }
-/*
-        for (Edge e :
-                model.edgeList) {
-            double x1 = e.getFrom().getX();
-            double y1 = e.getFrom().getY();
-            double x2 = e.getTo().getX();
-            double y2 = e.getTo().getY();
 
 
-            gc.setStroke(Color.RED);
-
-            gc.strokeLine(x1, y1, x2, y2);
-
-            gc.setFill(Color.RED);
-            gc.fillOval(x1,y1,x2,y2);
 
 
-        }
-        */
+
+
+
+
+
+
        for (var line : model.iterable(WayType.COASTLINE)) {
             gc.setStroke(Color.BLACK);
             line.draw(gc);
@@ -71,10 +58,14 @@ public class MapCanvas extends Canvas {
         }
 
         for (var line : model.iterable(WayType.HIGHWWAY)) {
-            gc.setStroke(Color.ORANGE);
-            line.draw(gc);
+
+                gc.setStroke(Color.BLACK);
+                line.draw(gc);
+
+
+
         }
-        if (zoomedIn > 400) {
+        if (zoomedIn > 100) {
             for (var line : model.iterable(WayType.BUILDING)) {
                 gc.setStroke(Color.GREY);
                 line.draw(gc);
@@ -85,8 +76,7 @@ public class MapCanvas extends Canvas {
         }
         if (zoomedIn > 250) {
             for (var line : model.iterable(WayType.CITYWAY)) {
-                gc.setStroke(Color.BLACK);
-                line.draw(gc);
+
 
             }
         }
@@ -100,6 +90,11 @@ public class MapCanvas extends Canvas {
 
 
         gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
+
+
+
+
+
 
 
 
@@ -127,6 +122,31 @@ public class MapCanvas extends Canvas {
             return trans.inverseTransform(point);
         } catch (NonInvertibleTransformException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+
+    void createGraph(){
+        /**
+         * constructs Edges from ArrayList highways, and tracks how many vertices there are
+         */
+        for (OSMWay o : model.highways){
+            for (int j = 0; j < o.nodes.size()-1; j++) {
+                Edge e = new Edge(o.nodes.get(j).getID(), o.nodes.get(j+1).getID(), o.name, 2.0f, 2.0f);
+                edgeList.add(e);
+
+                graphsize++;
+
+
+            }
+        }
+        EdgeWeightedDigraph graf = new EdgeWeightedDigraph(graphsize);
+
+        /**
+         * Adds edges to the graf.
+         */
+        for (Edge e : edgeList){
+            graf.addEdge(e);
         }
     }
 }

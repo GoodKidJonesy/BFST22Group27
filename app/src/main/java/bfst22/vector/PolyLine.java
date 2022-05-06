@@ -10,6 +10,7 @@ public class PolyLine implements Drawable, Serializable {
     float[] coords;
     List<OSMNode> nodes;
 
+
     public PolyLine(List<OSMNode> nodes) {
         this.nodes = nodes;
         coords = new float[nodes.size() * 2];
@@ -17,6 +18,7 @@ public class PolyLine implements Drawable, Serializable {
         for (var node : nodes) {
             coords[i++] = node.lat;
             coords[i++] = node.lon;
+
         }
     }
 
@@ -28,6 +30,16 @@ public class PolyLine implements Drawable, Serializable {
         gc.moveTo(coords[0], coords[1]);
         for (var i = 2 ; i < coords.length ; i += 2) {
             gc.lineTo(coords[i], coords[i+1]);
+
         }
     }
-}
+
+
+
+
+    }
+
+
+
+
+

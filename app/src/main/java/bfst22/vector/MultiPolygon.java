@@ -19,4 +19,6 @@ public class MultiPolygon implements Drawable, Serializable {
     public void trace(GraphicsContext gc) {
         for (var part : parts) part.trace(gc);
     }
+
+
 }

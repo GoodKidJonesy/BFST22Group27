@@ -14,4 +14,7 @@ public interface Drawable {
         gc.fill();
     }
     void trace(GraphicsContext gc);
+
+
+
 }

@@ -3,30 +3,32 @@ package bfst22.vector;
 import java.io.Serializable;
 
 public class Edge implements Serializable {
-    private final Vertex from, to;
+    private final long from, to;
     private final float weight, distance;
-    long name;
+    String name;
     //private final boolean forCar, forBike, forWalk;
 
 
     public Edge(
-                Vertex from,
-                Vertex to,
+                long from,
+                long to,
+                String name,
                 float weight,
                 float distance
                 ){
 
         this.from = from;
         this.to = to;
+        this.name = name;
         this.weight = weight;
         this.distance = distance;
 
     }
 
-    public Vertex getFrom() {
+    public long getFrom() {
         return from;
     }
-    public Vertex getTo(){
+    public long getTo(){
         return to;
     }
     public float getWeight(){
