@@ -15,7 +15,7 @@ public class MapCanvas extends Canvas {
     Affine trans = new Affine();
     double maxZoom = 1.06;
     double minZoom = -0.06;
-    double zoomedIn = 0;
+    float zoomedIn = 0;
     Range range = new Range(new Point2D(0,0), new Point2D(0,0));
 
     void init(Model model) {
@@ -36,9 +36,9 @@ public class MapCanvas extends Canvas {
         gc.setTransform(trans);
 
         for (OSMNode n : query()) {
-            double size = 0.0001;
+            float size = 0.0001f;
             gc.setFill(Color.RED);
-            gc.fillOval(n.getX() - (size / 2), n.getY() - (size / 2), size, size);
+            //gc.fillOval(n.getX() - (size / 2), n.getY() - (size / 2), size, size);
         }
 
         for (var line : model.iterable(WayType.LAKE)) {
@@ -61,7 +61,12 @@ public class MapCanvas extends Canvas {
             gc.setFill(Color.LIGHTGREEN);
             line.fill(gc);
         }
-        for (var line : model.iterable(WayType.LANDUSE)) {
+        /*for (var line : model.iterable(WayType.LANDUSE)) {
+            gc.setFill(Color.BEIGE);
+            line.fill(gc);
+        }*/
+
+        for (var line : model.testTree.query(model.testTree.getRoot(), range, 0)){
             gc.setFill(Color.BEIGE);
             line.fill(gc);
         }

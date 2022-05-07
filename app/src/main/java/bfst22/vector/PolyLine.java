@@ -5,9 +5,10 @@ import java.util.List;
 
 import javafx.scene.canvas.GraphicsContext;
 
-public class PolyLine implements Drawable, Serializable {
+public class PolyLine extends Drawable implements Serializable {
     public static final long serialVersionUID = 134123;
-    float[] coords;
+    public float[] coords;
+    public PolyLine left,right;
 
     public PolyLine(List<OSMNode> nodes) {
         coords = new float[nodes.size() * 2];
@@ -24,5 +25,30 @@ public class PolyLine implements Drawable, Serializable {
         for (var i = 2 ; i < coords.length ; i += 2) {
             gc.lineTo(coords[i], coords[i+1]);
         }
+    }
+
+    
+    public float getAvgX(){
+        float tempX = 0;
+
+        for (int i = 0; i < coords.length; i++){
+            if (i % 2 == 0){
+                tempX += coords[i];
+            }
+        }
+        float avgX = tempX / (coords.length / 2);
+        return avgX;
+    }
+    
+    public float getAvgY(){
+        float tempY = 0;
+
+        for (int i = 0; i < coords.length; i++){
+            if (i % 2 == 1){
+                tempY += coords[i];
+            }
+        }
+        float avgY = tempY / (coords.length / 2);
+        return avgY;
     }
 }

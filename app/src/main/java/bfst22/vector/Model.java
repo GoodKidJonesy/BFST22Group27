@@ -32,6 +32,7 @@ public class Model {
     OSMNode osmnode = null;
     ArrayList<Address> addresses = new ArrayList<>();
     KDTree OSMNodeTree;
+    KDTreeTest testTree;
     Map<WayType, List<Drawable>> lines = new EnumMap<>(WayType.class);
     {
         for (var type : WayType.values())
@@ -44,6 +45,7 @@ public class Model {
             throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
         var time = -System.nanoTime();
         OSMNodeTree = new KDTree();
+        testTree = new KDTreeTest();
         if (filename.endsWith(".zip")) {
             var zip = new ZipInputStream(new FileInputStream(filename));
             zip.getNextEntry();
@@ -219,10 +221,9 @@ public class Model {
                     break;
             }
         }
-        System.out.println("Done");
-        System.out.println(id2nodeList.size());
         OSMNodeTree.fillTree(id2nodeList, 0);
-        System.out.println("root: " + OSMNodeTree.getRoot());
+        test();
+
     }
 
     public void addObserver(Runnable observer) {
@@ -240,14 +241,22 @@ public class Model {
     }
 
     public void addAddress() {
-        //System.out.println(address.getStreet());
         addresses.add(address);
         address = null;
     }
 
-    public void addressRunthrough(){
-        for (Address a : addresses){
+    public void addressRunthrough() {
+        for (Address a : addresses) {
             System.out.println(a.getAddress());
         }
+    }
+
+    public void test() {
+        ArrayList<Drawable> temp = new ArrayList<>();
+        for (var l : iterable(WayType.LANDUSE)) {
+            temp.add(l);
+        }
+        testTree.fillTree(temp, 0);
+
     }
 }

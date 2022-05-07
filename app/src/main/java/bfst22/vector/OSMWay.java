@@ -16,7 +16,7 @@ public class OSMWay implements Serializable {
     private int speedLimit;
     private boolean oneWay;
     private OSMNode from,to;
-    private Point2D averagePos;
+    private WayType type;
 
     List<OSMNode> nodes;
 
@@ -24,8 +24,6 @@ public class OSMWay implements Serializable {
         this.nodes = new ArrayList<>(nodes);
         this.from = nodes.get(0);
         this.to = nodes.get(nodes.size() - 1);
-        System.out.println("from: " + getFrom() + " to: " + getTo());
-        this.averagePos = new Point2D(Math.abs(from.getX() - to.getX()) / 2, Math.abs(from.getY() - to.getY()) / 2);
     }
 
     public long getLength(){
