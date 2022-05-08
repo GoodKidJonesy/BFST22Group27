@@ -1,11 +1,8 @@
 package bfst22.vector;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
@@ -24,15 +21,12 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import static java.util.stream.Collectors.toList;
-
 public class Model {
     float minlat, minlon, maxlat, maxlon;
     Address address = null;
     OSMNode osmnode = null;
     ArrayList<Address> addresses = new ArrayList<>();
-    KDTree OSMNodeTree;
-    KDTreeTest testTree;
+    KDTree drawTree;
     Map<WayType, List<Drawable>> lines = new EnumMap<>(WayType.class);
     {
         for (var type : WayType.values())
@@ -44,8 +38,7 @@ public class Model {
     public Model(String filename)
             throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
         var time = -System.nanoTime();
-        OSMNodeTree = new KDTree();
-        testTree = new KDTreeTest();
+        drawTree = new KDTree();
         if (filename.endsWith(".zip")) {
             var zip = new ZipInputStream(new FileInputStream(filename));
             zip.getNextEntry();
@@ -60,10 +53,6 @@ public class Model {
                 maxlon = input.readFloat();
                 lines = (Map<WayType, List<Drawable>>) input.readObject();
             }
-        } else {
-            lines.put(WayType.UNKNOWN, Files.lines(Paths.get(filename))
-                    .map(Line::new)
-                    .collect(toList()));
         }
         time += System.nanoTime();
         System.out.println("Load time: " + (long) (time / 1e6) + " ms");
@@ -139,7 +128,7 @@ public class Model {
                                 case "highway":
                                     if (v.equals("primary") || v.equals("trunk") || v.equals("secondary")
                                             || v.equals("trunk_link") || v.equals("secondary_link")) {
-                                        type = WayType.HIGHWWAY;
+                                        type = WayType.HIGHWAY;
                                     } else if (v.equals("residential") || v.equals("service") || v.equals("cycleway")
                                             || v.equals("tertiary") || v.equals("unclassified")
                                             || v.equals("tertiary_link") || v.equals("road")) {
@@ -206,14 +195,14 @@ public class Model {
                 case XMLStreamConstants.END_ELEMENT:
                     switch (reader.getLocalName()) {
                         case "way":
-                            var way = new PolyLine(nodes);
+                            var way = new PolyLine(nodes, type);
                             id2way.put(relID, new OSMWay(nodes));
                             lines.get(type).add(way);
                             nodes.clear();
                             break;
                         case "relation":
                             if (type == WayType.LAKE && !rel.isEmpty()) {
-                                lines.get(type).add(new MultiPolygon(rel));
+                                lines.get(type).add(new MultiPolygon(rel, type));
                             }
                             rel.clear();
                             break;
@@ -221,9 +210,7 @@ public class Model {
                     break;
             }
         }
-        OSMNodeTree.fillTree(id2nodeList, 0);
         test();
-
     }
 
     public void addObserver(Runnable observer) {
@@ -253,10 +240,12 @@ public class Model {
 
     public void test() {
         ArrayList<Drawable> temp = new ArrayList<>();
-        for (var l : iterable(WayType.LANDUSE)) {
-            temp.add(l);
-        }
-        testTree.fillTree(temp, 0);
 
+        for (WayType e : WayType.values()) {
+            for (var l : iterable(e)) {
+                temp.add(l);
+            }
+        }
+        drawTree.fillTree(temp, 0);
     }
 }

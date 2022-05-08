@@ -9,14 +9,18 @@ public class PolyLine extends Drawable implements Serializable {
     public static final long serialVersionUID = 134123;
     public float[] coords;
     public PolyLine left,right;
+    public WayType type;
+    public int size = 0;
 
-    public PolyLine(List<OSMNode> nodes) {
+    public PolyLine(List<OSMNode> nodes, WayType type) {
         coords = new float[nodes.size() * 2];
         int i = 0;
         for (var node : nodes) {
             coords[i++] = node.lat;
             coords[i++] = node.lon;
         }
+        this.type = type;
+        this.size = coords.length / 2;
     }
 
     @Override
@@ -27,7 +31,7 @@ public class PolyLine extends Drawable implements Serializable {
         }
     }
 
-    
+    @Override
     public float getAvgX(){
         float tempX = 0;
 
@@ -40,6 +44,7 @@ public class PolyLine extends Drawable implements Serializable {
         return avgX;
     }
     
+    @Override
     public float getAvgY(){
         float tempY = 0;
 
@@ -50,5 +55,58 @@ public class PolyLine extends Drawable implements Serializable {
         }
         float avgY = tempY / (coords.length / 2);
         return avgY;
+    }
+
+    @Override
+    public float getMinX(){
+        float minX = 0;
+
+        for (int i = 0; i < coords.length; i++){
+            if (i % 2 == 0){
+                if (coords[i] < minX) minX = coords[i];
+            }
+        }
+        return minX;
+    }
+
+    @Override
+    public float getMinY(){
+        float minY = 0;
+
+        for (int i = 0; i < coords.length; i++){
+            if (i % 2 == 1){
+                if (coords[i] < minY) minY = coords[i];
+            }
+        }
+        return minY;
+    }
+
+    @Override
+    public float getMaxX(){
+        float maxX = 0;
+
+        for (int i = 0; i < coords.length; i++){
+            if (i % 2 == 0){
+                if (coords[i] < maxX) maxX = coords[i];
+            }
+        }
+        return maxX;
+    }
+
+    @Override
+    public float getMaxY(){
+        float maxY = 0;
+
+        for (int i = 0; i < coords.length; i++){
+            if (i % 2 == 0){
+                if (coords[i] < maxY) maxY = coords[i];
+            }
+        }
+        return maxY;
+    }
+
+    @Override
+    public WayType getType(){
+        return type;
     }
 }

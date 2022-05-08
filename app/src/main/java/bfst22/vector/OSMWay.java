@@ -1,14 +1,8 @@
 package bfst22.vector;
 
 import java.io.Serializable;
-//import java.lang.invoke.ClassSpecializer.SpeciesData;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.SpinnerModel;
-
-import javafx.geometry.Point2D;
-import javafx.scene.canvas.GraphicsContext;
 
 public class OSMWay implements Serializable {
     public static final long serialVersionUID = 42;
@@ -16,7 +10,6 @@ public class OSMWay implements Serializable {
     private int speedLimit;
     private boolean oneWay;
     private OSMNode from,to;
-    private WayType type;
 
     List<OSMNode> nodes;
 

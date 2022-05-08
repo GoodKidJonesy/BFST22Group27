@@ -1,6 +1,5 @@
 package bfst22.vector;
 
-import java.nio.file.WatchKey;
 import java.util.ArrayList;
 
 import javafx.geometry.Point2D;
@@ -16,7 +15,7 @@ public class MapCanvas extends Canvas {
     double maxZoom = 1.06;
     double minZoom = -0.06;
     float zoomedIn = 0;
-    Range range = new Range(new Point2D(0,0), new Point2D(0,0));
+    Range range = new Range(new Point2D(0, 0), new Point2D(0, 0));
 
     void init(Model model) {
         this.model = model;
@@ -31,72 +30,27 @@ public class MapCanvas extends Canvas {
 
         var gc = getGraphicsContext2D();
         gc.setTransform(new Affine());
-        gc.setFill(Color.WHITE);
+        gc.setFill(WayType.LAKE.getColor());
         gc.fillRect(0, 0, getWidth(), getHeight());
         gc.setTransform(trans);
 
-        for (OSMNode n : query()) {
-            float size = 0.0001f;
-            gc.setFill(Color.RED);
-            //gc.fillOval(n.getX() - (size / 2), n.getY() - (size / 2), size, size);
-        }
-
-        for (var line : model.iterable(WayType.LAKE)) {
-            gc.setFill(Color.LIGHTBLUE);
-            line.fill(gc);
-        }
-        for (var line : model.iterable(WayType.COASTLINE)) {
-            gc.setStroke(Color.BLACK);
-            line.draw(gc);
-        }
-        for (var line : model.iterable(WayType.MOTORWAY)) {
-            gc.setStroke(Color.RED);
-            line.draw(gc);
-        }
-        for (var line : model.iterable(WayType.HIGHWWAY)) {
-            gc.setStroke(Color.ORANGE);
-            line.draw(gc);
-        }
-        for (var line : model.iterable(WayType.FOREST)) {
-            gc.setFill(Color.LIGHTGREEN);
-            line.fill(gc);
-        }
-        /*for (var line : model.iterable(WayType.LANDUSE)) {
-            gc.setFill(Color.BEIGE);
-            line.fill(gc);
-        }*/
-
-        for (var line : model.testTree.query(model.testTree.getRoot(), range, 0)){
-            gc.setFill(Color.BEIGE);
-            line.fill(gc);
-        }
-
-        if (zoomedIn > 0.45) {
-            for (var line : model.iterable(WayType.CITYWAY)) {
-                gc.setStroke(Color.BLACK);
-                line.draw(gc);
-
-            }
-        }
-
-        if (zoomedIn > 0.50) {
-            for (var line : model.iterable(WayType.BUILDING)) {
-                gc.setStroke(Color.GREY);
-                line.draw(gc);
-                gc.setFill(Color.LIGHTGREY);
-                line.fill(gc);
-            }
-        }
-
         gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
-        if (zoomedIn > 0.55) {
-            for (var line : model.iterable(WayType.UNKNOWN)) {
-                line.draw(gc);
-                gc.setStroke(Color.BLACK);
+
+        for (Drawable d : query()) {
+            if (d.getType().fillTrue()) {
+                gc.setFill(d.getType().getColor());
+                d.fill(gc);
+            } else {
+                gc.setStroke(d.getType().getColor());
+                d.draw(gc);
             }
         }
 
         drawRange();
+    }
+
+    private ArrayList<Drawable> query() {
+        return model.drawTree.query(model.drawTree.getRoot(), range, 0);
     }
 
     private void moveRange() {
@@ -104,10 +58,6 @@ public class MapCanvas extends Canvas {
         Point2D topLeft = mouseToModel(new Point2D(0, 0));
         Point2D bottomRight = mouseToModel(new Point2D(gc.getCanvas().getWidth(), gc.getCanvas().getHeight()));
         range.update(topLeft, bottomRight);
-    }
-
-    private ArrayList<OSMNode> query() {
-        return model.OSMNodeTree.query(model.OSMNodeTree.getRoot(), range, 0);
     }
 
     void pan(double dx, double dy) {

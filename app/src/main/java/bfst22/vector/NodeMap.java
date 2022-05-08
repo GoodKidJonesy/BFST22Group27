@@ -18,7 +18,6 @@ public class NodeMap extends ArrayList<OSMNode> {
         }
         int lo = 0;
         int hi = size();
-        // I: get(lo).id <= ref < get(hi).id
         while (hi - lo > 1) {
             int mi = (lo + hi) / 2;
             if (get(mi).id <= ref) {
