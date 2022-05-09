@@ -6,7 +6,7 @@ public class OSMNode implements Serializable {
     public static final long serialVersionUID = 9082413;
     long id;
     float lat, lon;
-    OSMNode right,left,parent;
+    OSMNode right,left;
 
     //Parent is not necessary for the KDTree structure, defined in case we want to draw lines for debugging
     public OSMNode(long id, float lat, float lon) {
@@ -15,7 +15,6 @@ public class OSMNode implements Serializable {
         this.lon = lon;
         this.right = null;
         this.left = null;
-        this.parent = null;
     }
 
     public float getX() {

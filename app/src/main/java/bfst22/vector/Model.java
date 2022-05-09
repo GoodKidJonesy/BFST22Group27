@@ -1,11 +1,8 @@
 package bfst22.vector;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
@@ -15,6 +12,11 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
+import org.xml.sax.XMLReader;
+
+import javafx.beans.Observable;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -25,17 +27,15 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import static java.util.stream.Collectors.toList;
-
 public class Model {
     float minlat, minlon, maxlat, maxlon;
     Address address = null;
     OSMNode osmnode = null;
-    ArrayList<Address> addresses = new ArrayList<>();
-    KDTree OSMNodeTree;
+    List<Address> addresses = new ArrayList<>();
+    KDTree kdTree;
     Map<WayType, List<Drawable>> lines = new EnumMap<>(WayType.class);
     {
-        for (var type : WayType.values())
+        for (WayType type : WayType.values())
             lines.put(type, new ArrayList<>());
     }
     List<Runnable> observers = new ArrayList<>();
@@ -43,26 +43,23 @@ public class Model {
     @SuppressWarnings("unchecked")
     public Model(String filename)
             throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
-        var time = -System.nanoTime();
-        OSMNodeTree = new KDTree();
+        long time = -System.nanoTime();
+        kdTree = new KDTree();
         if (filename.endsWith(".zip")) {
-            var zip = new ZipInputStream(new FileInputStream(filename));
+            ZipInputStream zip = new ZipInputStream(new FileInputStream(filename));
             zip.getNextEntry();
             loadOSM(zip);
         } else if (filename.endsWith(".osm")) {
             loadOSM(new FileInputStream(filename));
         } else if (filename.endsWith(".obj")) {
-            try (var input = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)))) {
+            try (ObjectInputStream input = new ObjectInputStream(
+                    new BufferedInputStream(new FileInputStream(filename)))) {
                 minlat = input.readFloat();
                 minlon = input.readFloat();
                 maxlat = input.readFloat();
                 maxlon = input.readFloat();
                 lines = (Map<WayType, List<Drawable>>) input.readObject();
             }
-        } else {
-            lines.put(WayType.UNKNOWN, Files.lines(Paths.get(filename))
-                    .map(Line::new)
-                    .collect(toList()));
         }
         time += System.nanoTime();
         System.out.println("Load time: " + (long) (time / 1e6) + " ms");
@@ -71,7 +68,7 @@ public class Model {
     }
 
     public void save(String basename) throws FileNotFoundException, IOException {
-        try (var out = new ObjectOutputStream(new FileOutputStream(basename + ".obj"))) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(basename + ".obj"))) {
             out.writeFloat(minlat);
             out.writeFloat(minlon);
             out.writeFloat(maxlat);
@@ -81,21 +78,18 @@ public class Model {
     }
 
     private void loadOSM(InputStream input) throws XMLStreamException, FactoryConfigurationError {
-        var reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input));
-        var id2node = new NodeMap();
-        ArrayList<OSMNode> id2nodeList = new ArrayList<>();
-        var id2way = new HashMap<Long, OSMWay>();
-        var nodes = new ArrayList<OSMNode>();
-        var rel = new ArrayList<OSMWay>();
+        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input));
+        NodeMap id2node = new NodeMap();
+        Map<Long, OSMWay> id2way = new HashMap<>();
+        List<OSMNode> nodes = new ArrayList<>();
+        List<OSMWay> rel = new ArrayList<>();
         long relID = 0;
-        var type = WayType.UNKNOWN;
-        var relationType = "";
-        var multipolygonWays = new ArrayList<OSMWay>();
+        WayType type = WayType.UNKNOWN;
 
         while (reader.hasNext()) {
             switch (reader.next()) {
                 case XMLStreamConstants.START_ELEMENT:
-                    var name = reader.getLocalName();
+                    String name = reader.getLocalName();
                     switch (name) {
                         case "bounds":
                             maxlat = -Float.parseFloat(reader.getAttributeValue(null, "minlat"));
@@ -104,15 +98,14 @@ public class Model {
                             maxlon = 0.56f * Float.parseFloat(reader.getAttributeValue(null, "maxlon"));
                             break;
                         case "node":
-                            var id = Long.parseLong(reader.getAttributeValue(null, "id"));
-                            var lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
-                            var lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
+                            long id = Long.parseLong(reader.getAttributeValue(null, "id"));
+                            float lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
+                            float lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
                             osmnode = new OSMNode(id, 0.56f * lon, -lat);
                             id2node.add(osmnode);
-                            id2nodeList.add(osmnode);
                             break;
                         case "nd":
-                            var ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
+                            long ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
                             nodes.add(id2node.get(ref));
                             break;
                         case "way":
@@ -120,9 +113,8 @@ public class Model {
                             type = WayType.UNKNOWN;
                             break;
                         case "tag":
-                            var k = reader.getAttributeValue(null, "k");
-                            var v = reader.getAttributeValue(null, "v");
-                            if(k.equals("type")) relationType = v;
+                            String k = reader.getAttributeValue(null, "k");
+                            String v = reader.getAttributeValue(null, "v");
                             switch (k) {
                                 case "natural":
                                     if (v.equals("water"))
@@ -136,12 +128,14 @@ public class Model {
                                 case "landuse":
                                     if (v.equals("forest") || v.equals("meadow"))
                                         type = WayType.FOREST;
+                                    else if (v.equals("military"))
+                                        type = WayType.MILITARY;
                                     else
                                         type = WayType.LANDUSE;
                                 case "highway":
                                     if (v.equals("primary") || v.equals("trunk") || v.equals("secondary")
                                             || v.equals("trunk_link") || v.equals("secondary_link")) {
-                                        type = WayType.HIGHWWAY;
+                                        type = WayType.HIGHWAY;
                                     } else if (v.equals("residential") || v.equals("service") || v.equals("cycleway")
                                             || v.equals("tertiary") || v.equals("unclassified")
                                             || v.equals("tertiary_link") || v.equals("road")) {
@@ -196,7 +190,7 @@ public class Model {
                                 multipolygonWays.add(member);
                             }
                             ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
-                            var elm = id2way.get(ref);
+                            OSMWay elm = id2way.get(ref);
                             if (elm != null)
                                 rel.add(elm);
                             break;
@@ -212,28 +206,22 @@ public class Model {
                 case XMLStreamConstants.END_ELEMENT:
                     switch (reader.getLocalName()) {
                         case "way":
-                            var way = new PolyLine(nodes);
+                            PolyLine way = new PolyLine(nodes, type);
                             id2way.put(relID, new OSMWay(nodes));
                             lines.get(type).add(way);
                             nodes.clear();
                             break;
                         case "relation":
-                            if(relationType.equals("multipolygon")){
-                                MultiPolygon multiPolygon = new MultiPolygon(multipolygonWays);
-                                lines.get(type).add(multiPolygon);
-                            } 
-                            relationType = "";
-                            multipolygonWays.clear();
+                            if (type == WayType.LAKE && !rel.isEmpty()) {
+                                lines.get(type).add(new MultiPolygon(rel, type));
+                            }
                             rel.clear();
                             break;
                     }
                     break;
             }
         }
-        System.out.println("Done");
-        System.out.println(id2nodeList.size());
-        OSMNodeTree.fillTree(id2nodeList, 0);
-        System.out.println("root: " + OSMNodeTree.getRoot());
+        test();
     }
 
     public void addObserver(Runnable observer) {
@@ -241,7 +229,7 @@ public class Model {
     }
 
     public void notifyObservers() {
-        for (var observer : observers) {
+        for (Runnable observer : observers) {
             observer.run();
         }
     }
@@ -251,14 +239,24 @@ public class Model {
     }
 
     public void addAddress() {
-        //System.out.println(address.getStreet());
         addresses.add(address);
         address = null;
     }
 
-    public void addressRunthrough(){
-        for (Address a : addresses){
+    public void addressRunthrough() {
+        for (Address a : addresses) {
             System.out.println(a.getAddress());
         }
+    }
+
+    public void test() {
+        ArrayList<Drawable> temp = new ArrayList<>();
+
+        for (WayType e : WayType.values()) {
+            for (Drawable l : iterable(e)) {
+                temp.add(l);
+            }
+        }
+        kdTree.fillTree(temp, 0);
     }
 }

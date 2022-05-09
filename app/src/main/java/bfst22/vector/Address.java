@@ -1,7 +1,5 @@
 package bfst22.vector;
 
-import bfst22.vector.OSMNode;
-
 public class Address {
     private String city, postcode, houseNumber, street;
     private final float x, y;
