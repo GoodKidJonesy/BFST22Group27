@@ -153,10 +153,6 @@ public class KDTree {
       }
     }
     // return all the found nodes
-<<<<<<< HEAD
-=======
-    // System.out.println(found.size());
->>>>>>> prototype-luczito
     return found;
   }
 

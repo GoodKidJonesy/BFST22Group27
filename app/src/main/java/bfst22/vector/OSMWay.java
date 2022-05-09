@@ -4,10 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-<<<<<<< HEAD
-=======
-
->>>>>>> prototype-luczito
 public class OSMWay implements Serializable {
     public static final long serialVersionUID = 42;
     private long length;
