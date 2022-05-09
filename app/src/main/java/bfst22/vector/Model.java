@@ -5,10 +5,12 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
 
+import javax.management.relation.RelationType;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -28,7 +30,6 @@ import static java.util.stream.Collectors.toList;
 public class Model {
     float minlat, minlon, maxlat, maxlon;
     Address address = null;
-    TrieTree trie;
     OSMNode osmnode = null;
     ArrayList<Address> addresses = new ArrayList<>();
     KDTree OSMNodeTree;
@@ -57,7 +58,6 @@ public class Model {
                 maxlat = input.readFloat();
                 maxlon = input.readFloat();
                 lines = (Map<WayType, List<Drawable>>) input.readObject();
-                loadOSM(input);
             }
         } else {
             lines.put(WayType.UNKNOWN, Files.lines(Paths.get(filename))
@@ -65,7 +65,7 @@ public class Model {
                     .collect(toList()));
         }
         time += System.nanoTime();
-        System.out.println("Total load time: " + (long) (time / 1e6) + " ms");
+        System.out.println("Load time: " + (long) (time / 1e6) + " ms");
         if (!filename.endsWith(".obj"))
             save(filename);
     }
@@ -89,7 +89,6 @@ public class Model {
         var rel = new ArrayList<OSMWay>();
         long relID = 0;
         var type = WayType.UNKNOWN;
-        var timeTwo = -System.nanoTime();
         var relationType = "";
         var multipolygonWays = new ArrayList<OSMWay>();
 
@@ -123,109 +122,34 @@ public class Model {
                         case "tag":
                             var k = reader.getAttributeValue(null, "k");
                             var v = reader.getAttributeValue(null, "v");
+                            if(k.equals("type")) relationType = v;
                             switch (k) {
-                                case "place":
-                                    if (v.equals("island"))
-                                        type = WayType.ISLAND;
-                                    break;
-                                case "name":
-                                    if (v.equals("bornholm")){
-                                        type = WayType.ISLAND;
-                                        break;
-                                    }
-                                case "waterway":
-                                    type = WayType.LAKE;
-                                    break;
-                                case "water":
-                                    type = WayType.LAKE;
-                                    break;
                                 case "natural":
-                                    if (v.equals("water")){
+                                    if (v.equals("water"))
                                         type = WayType.LAKE;
-                                        break;
-                                    }
-                                    else if (v.equals("coastline")){
+                                    else if (v.equals("coastline"))
                                         type = WayType.COASTLINE;
-                                        break;
-                                    }
-                                    else if (v.equals("scrub") || v.equals("tree_row")){
-                                        type = WayType.FOREST;
-                                        break;
-                                    }
-                                    else if (v.equals("wetland")){
-                                        type = WayType.LANDUSE;
-                                        break;
-                                    }
-                                    else if (v.equals("bare_rock")){
-                                        type = WayType.STONE;
-                                        break;
-                                    }else{
-                                        break;
-                                    }
+                                    break;
                                 case "building":
                                     type = WayType.BUILDING;
                                     break;
-                                case "leisure":
-                                    if (v.equals("pitch"))
-                                        type = WayType.FOREST;
-                                    break;
-                                case "highway":
-                                    switch (v) {
-                                        case "primary":
-                                        case "trunk":
-                                        case "secondary":
-                                        case "trunk_link":
-                                        case "secondary_link":
-                                            type = WayType.HIGHWAY;
-                                            break;
-                                        case "residential":
-                                        case "tertiary":
-                                        case "road":
-                                            type = WayType.CITYWAY;
-                                            break;
-                                        case "motorway":
-                                        case "motorway_link":
-                                            type = WayType.MOTORWAY;
-                                            break;
-                                        case "track":
-                                        case "path":
-                                        case "footway":
-                                            type = WayType.DIRTTRACK;
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                    break;
-                                    
-                                case "barrier":
-                                    if (v.equals("hedge"))
-                                        type = WayType.FOREST;
-                                    break;
                                 case "landuse":
-                                    if (v.equals("forest") || v.equals("meadow") || v.equals("allotments")){
+                                    if (v.equals("forest") || v.equals("meadow"))
                                         type = WayType.FOREST;
-                                        break;
-                                    }
-                                    else if (v.equals("residential") || v.equals("industrial")){
-                                        type = WayType.CITY;
-                                        break;
-                                    }
-                                    else if (v.equals("port")){
-                                        type = WayType.LAKE;
-                                        break;
-                                    }
-                                    else if (v.equals("quarry")){
-                                        type = WayType.STONE;
-                                        break;
-                                    }
-                                    else if (v.equals("military")){
-                                        type = WayType.MILITARY;
-                                        break;
-                                    }
-                                    else{
+                                    else
                                         type = WayType.LANDUSE;
-                                        break;
+                                case "highway":
+                                    if (v.equals("primary") || v.equals("trunk") || v.equals("secondary")
+                                            || v.equals("trunk_link") || v.equals("secondary_link")) {
+                                        type = WayType.HIGHWAY;
+                                    } else if (v.equals("residential") || v.equals("service") || v.equals("cycleway")
+                                            || v.equals("tertiary") || v.equals("unclassified")
+                                            || v.equals("tertiary_link") || v.equals("road")) {
+                                        type = WayType.CITYWAY;
+                                    } else if (v.equals("motorway") || v.equals("motorway_link")) {
+                                        type = WayType.MOTORWAY;
                                     }
+                                    break;
                                 case "addr:city":
                                     if (address == null) {
                                         address = new Address(osmnode);
@@ -267,24 +191,22 @@ public class Model {
                             }
                             break;
                         case "member":
-                        var member = id2way.get(Long.parseLong(reader.getAttributeValue(null, "ref")));
-                        if(member != null){
-                            multipolygonWays.add(member);
-                        }
-                        ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
-                        var elm = id2way.get(ref);
-                        if (elm != null)
-                            rel.add(elm);
-                        break;
-                            case "relation":
-                            if(relationType.equals("multipolygon")){
-                                MultiPolygon multiPolygon = new MultiPolygon(multipolygonWays);
-                                lines.get(type).add(multiPolygon);
-                            } 
-                            relationType = "";
-                            multipolygonWays.clear();
-                            rel.clear();
+                            var member = id2way.get(Long.parseLong(reader.getAttributeValue(null, "ref")));
+                            if(member != null){
+                                multipolygonWays.add(member);
+                            }
+                            ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
+                            var elm = id2way.get(ref);
+                            if (elm != null)
+                                rel.add(elm);
                             break;
+                        case "relation":
+                            id = Long.parseLong(reader.getAttributeValue(null, "id"));
+                            if (id == 1305702) {
+                                System.out.println("Done");
+                            }
+                            break;
+
                     }
                     break;
                 case XMLStreamConstants.END_ELEMENT:
@@ -296,28 +218,22 @@ public class Model {
                             nodes.clear();
                             break;
                         case "relation":
-                            if (type == WayType.LAKE && !rel.isEmpty()) {
-                                lines.get(type).add(new MultiPolygon(rel));
-                            }
+                            if(relationType.equals("multipolygon")){
+                                MultiPolygon multiPolygon = new MultiPolygon(multipolygonWays);
+                                lines.get(type).add(multiPolygon);
+                            } 
+                            relationType = "";
+                            multipolygonWays.clear();
                             rel.clear();
                             break;
                     }
                     break;
             }
         }
-        timeTwo += System.nanoTime();
-        System.out.println("Parsing Done in " + (long) (timeTwo / 1e6) + "ms.");
-        timeTwo = -System.nanoTime();
-        makeTrie();
-        timeTwo += System.nanoTime(); 
-        System.out.println("TrieTree done in: " + (long) (timeTwo / 1e6) + "ms.");
-        // System.out.println(id2nodeList.size());
-        timeTwo = -System.nanoTime();
+        System.out.println("Done");
+        System.out.println(id2nodeList.size());
         OSMNodeTree.fillTree(id2nodeList, 0);
-        timeTwo += System.nanoTime();
-        System.out.println("KDTree filled in: " + (long) (timeTwo / 1e6) + " ms");
-        // OSMNodeTree.printTree(OSMNodeTree.getRoot());
-        // System.out.println("root: " + OSMNodeTree.getRoot
+        System.out.println("root: " + OSMNodeTree.getRoot());
     }
 
     public void addObserver(Runnable observer) {
@@ -335,15 +251,14 @@ public class Model {
     }
 
     public void addAddress() {
+        //System.out.println(address.getStreet());
         addresses.add(address);
         address = null;
     }
 
-    public void makeTrie() {
-        trie = new TrieTree();
-        for (Address a : addresses) {
-            //System.out.println(a.getStreet());
-            trie.insert(a.toString(), a.getCords());
+    public void addressRunthrough(){
+        for (Address a : addresses){
+            //System.out.println(a.getAddress());
         }
     }
 }
