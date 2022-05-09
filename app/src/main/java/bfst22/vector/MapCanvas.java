@@ -1,7 +1,10 @@
 package bfst22.vector;
 
+<<<<<<< HEAD
 import java.util.ArrayList;
 
+=======
+>>>>>>> prototype-luczito
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
@@ -30,6 +33,7 @@ public class MapCanvas extends Canvas {
 
         var gc = getGraphicsContext2D();
         gc.setTransform(new Affine());
+<<<<<<< HEAD
         gc.setFill(WayType.LAKE.getColor());
         gc.fillRect(0, 0, getWidth(), getHeight());
         gc.setTransform(trans);
@@ -59,6 +63,96 @@ public class MapCanvas extends Canvas {
         Point2D topLeft = mouseToModel(new Point2D(0, 0));
         Point2D bottomRight = mouseToModel(new Point2D(gc.getCanvas().getWidth(), gc.getCanvas().getHeight()));
         range.update(topLeft, bottomRight);
+=======
+        gc.setFill(Color.LIGHTBLUE);
+        gc.fillRect(0, 0, getWidth(), getHeight());
+        gc.setTransform(trans);
+
+        /*
+         * gc.setFill(Color.RED);
+         * gc.fillRect(screen.getLeft(), screen.getTop(), screen.getRight() -
+         * screen.getLeft(),
+         * screen.getBottom() - screen.getTop());
+         */
+/*
+        for (var line : model.iterable(WayType.COASTLINE)) {
+            gc.setStroke(Color.BLACK);
+            line.draw(gc);
+        }
+        for (var line : model.iterable(WayType.LANDUSE)) {
+            gc.setFill(Color.BEIGE);
+            line.fill(gc);
+        }
+        for (var line : model.iterable(WayType.FOREST)) {
+            gc.setFill(Color.LIGHTGREEN);
+            line.fill(gc);
+        }
+        for (var line : model.iterable(WayType.CITY)) {
+            gc.setFill(Color.WHITE);
+            line.fill(gc);
+        }
+        for (var line : model.iterable(WayType.STONE)) {
+            gc.setFill(Color.LIGHTGREY);
+            line.fill(gc);
+        }
+
+        for (var line : model.iterable(WayType.MOTORWAY)) {
+            gc.setStroke(Color.RED);
+            line.draw(gc);
+        }
+        for (var line : model.iterable(WayType.HIGHWAY)) {
+            gc.setStroke(Color.ORANGE);
+            line.draw(gc);
+        }
+        if (zoomedIn > 150) {
+            for (var line : model.iterable(WayType.BUILDING)) {
+                if (zoomedIn > 200) {
+                    gc.setStroke(Color.GREY);
+                    line.draw(gc);
+                }
+                gc.setFill(Color.LIGHTGREY);
+                line.fill(gc);
+            }
+        }
+        */
+        for (WayType e : WayType.values()) {
+            if(e.equals(WayType.UNKNOWN) || e.equals(WayType.LAKE)){
+                break;
+            }
+            else{
+            for(var line : model.iterable(e)){
+                if(e.fillTrue()){
+                    gc.setFill(e.getColor());
+                    line.fill(gc);
+                }else{
+                    gc.setStroke(e.getColor());
+                    line.draw(gc);
+                }
+            }
+        }
+        }
+        /*
+        if (zoomedIn > 170) {
+            for (var line : model.iterable(WayType.CITYWAY)) {
+                gc.setStroke(Color.BLACK);
+                line.draw(gc);
+            }
+            for (var line : model.iterable(WayType.DIRTTRACK)) {
+                gc.setStroke(Color.BURLYWOOD);
+                line.draw(gc);
+            }
+        }
+        */
+        gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
+        /*
+         * if (zoomedIn > 150) {
+         * for (var line : model.iterable(WayType.UNKNOWN)) {
+         * gc.setStroke(Color.BLACK);
+         * line.draw(gc);
+         * }
+         * }
+         */
+>>>>>>> prototype-luczito
     }
 
     void pan(double dx, double dy) {

@@ -153,6 +153,10 @@ public class KDTree {
       }
     }
     // return all the found nodes
+<<<<<<< HEAD
+=======
+    // System.out.println(found.size());
+>>>>>>> prototype-luczito
     return found;
   }
 
@@ -161,7 +165,7 @@ public class KDTree {
       System.out.println("Tree is empty");
       return;
     }
-    System.out.println(n);
+    // System.out.println(n);
 
     if (n.left != null)
       printTree(n.left);

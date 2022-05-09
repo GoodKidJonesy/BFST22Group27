@@ -85,10 +85,16 @@ public class Model {
         List<OSMNode> nodes = new ArrayList<>();
         List<OSMWay> rel = new ArrayList<>();
         long relID = 0;
+<<<<<<< HEAD
         WayType type = WayType.UNKNOWN;
         var relationType = "";
         var multipolygonWays = new ArrayList<OSMWay>();
         var timeTwo = -System.nanoTime();
+=======
+        var type = WayType.UNKNOWN;
+        var relationType = "";
+        var multipolygonWays = new ArrayList<OSMWay>();
+>>>>>>> prototype-luczito
 
         while (reader.hasNext()) {
             switch (reader.next()) {
@@ -117,8 +123,13 @@ public class Model {
                             type = WayType.UNKNOWN;
                             break;
                         case "tag":
+<<<<<<< HEAD
                             String k = reader.getAttributeValue(null, "k");
                             String v = reader.getAttributeValue(null, "v");
+=======
+                            var k = reader.getAttributeValue(null, "k");
+                            var v = reader.getAttributeValue(null, "v");
+>>>>>>> prototype-luczito
                             if(k.equals("type")) relationType = v;
                             switch (k) {
                                 case "natural":
@@ -133,10 +144,13 @@ public class Model {
                                 case "landuse":
                                     if (v.equals("forest") || v.equals("meadow"))
                                         type = WayType.FOREST;
+<<<<<<< HEAD
                                     else if (v.equals("military"))
                                         type = WayType.MILITARY;
                                     else if(v.equals("residential") || v.equals("port"))
                                         type = WayType.CITY;
+=======
+>>>>>>> prototype-luczito
                                     else
                                         type = WayType.LANDUSE;
                                 case "highway":
@@ -220,7 +234,11 @@ public class Model {
                             break;
                         case "relation":
                             if(relationType.equals("multipolygon")){
+<<<<<<< HEAD
                                 MultiPolygon multiPolygon = new MultiPolygon(multipolygonWays, WayType.FOREST);
+=======
+                                MultiPolygon multiPolygon = new MultiPolygon(multipolygonWays);
+>>>>>>> prototype-luczito
                                 lines.get(type).add(multiPolygon);
                             } 
                             relationType = "";
@@ -231,6 +249,7 @@ public class Model {
                     break;
             }
         }
+<<<<<<< HEAD
         timeTwo += System.nanoTime();
         System.out.println("Parsing Done in " + (long) (timeTwo / 1e6) + "ms.");
         timeTwo = -System.nanoTime();
@@ -241,6 +260,12 @@ public class Model {
         test();
         timeTwo += System.nanoTime();
         System.out.println("KDTree filled in: " + (long) (timeTwo / 1e6) + " ms");
+=======
+        System.out.println("Done");
+        System.out.println(id2nodeList.size());
+        OSMNodeTree.fillTree(id2nodeList, 0);
+        System.out.println("root: " + OSMNodeTree.getRoot());
+>>>>>>> prototype-luczito
     }
 
     public void addObserver(Runnable observer) {
@@ -258,10 +283,12 @@ public class Model {
     }
 
     public void addAddress() {
+        //System.out.println(address.getStreet());
         addresses.add(address);
         address = null;
     }
 
+<<<<<<< HEAD
     public void makeTrie() {
         TrieTree trie = new TrieTree();
         for (Address a : addresses) {
@@ -278,5 +305,11 @@ public class Model {
             }
         }
         kdTree.fillTree(temp, 0);
+=======
+    public void addressRunthrough(){
+        for (Address a : addresses){
+            //System.out.println(a.getAddress());
+        }
+>>>>>>> prototype-luczito
     }
 }

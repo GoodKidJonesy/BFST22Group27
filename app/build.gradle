@@ -13,8 +13,12 @@ javafx {
 }
 
 dependencies {
+<<<<<<< HEAD
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
     implementation 'org.controlsfx:controlsfx:11.1.1'
+=======
+    testImplementation 'junit:junit-jupiter:5.7.2'
+>>>>>>> prototype-luczito
 }
 
 compileJava.options.encoding = 'UTF-8'
