@@ -44,9 +44,27 @@ public class Address {
         }
     }
 
-    public String getAddress() {
-        String s = street + " " + houseNumber + " " + city;
-        return s;
+    public String getStreet() {
+        return street.toLowerCase().replace(" ", "");
+    }
+
+    public String getHouseNumber() {
+        return houseNumber;
+    }
+
+    public String getPostcode() {
+        return postcode;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String toString() {
+        return street.toLowerCase().replace("é","e").replace("ü","u").replace("ö", "oe").replace("õ","oe").replace("ä","ae") + " " + houseNumber.toLowerCase() + " " + postcode + " " + city.toLowerCase();
+    }
+    public String getCords(){
+        return x + "." + y;
     }
 
     public float getX(){

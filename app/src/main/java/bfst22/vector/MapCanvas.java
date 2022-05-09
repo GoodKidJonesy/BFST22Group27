@@ -103,4 +103,8 @@ public class MapCanvas extends Canvas {
         gc.lineTo(range.getLeft(), range.getTop());
         gc.stroke();
     }
+
+    public void setRangeDebug(boolean debug) {
+        range.updateDebug(debug);
+    }
 }

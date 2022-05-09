@@ -30,6 +30,7 @@ import java.io.ObjectOutputStream;
 public class Model {
     float minlat, minlon, maxlat, maxlon;
     Address address = null;
+    TrieTree trie;
     OSMNode osmnode = null;
     List<Address> addresses = new ArrayList<>();
     KDTree kdTree;
@@ -87,6 +88,8 @@ public class Model {
         WayType type = WayType.UNKNOWN;
         var relationType = "";
         var multipolygonWays = new ArrayList<OSMWay>();
+        var timeTwo = -System.nanoTime();
+
         while (reader.hasNext()) {
             switch (reader.next()) {
                 case XMLStreamConstants.START_ELEMENT:
@@ -229,6 +232,17 @@ public class Model {
             }
         }
         test();
+        timeTwo += System.nanoTime();
+        System.out.println("Parsing Done in " + (long) (timeTwo / 1e6) + "ms.");
+        timeTwo = -System.nanoTime();
+        makeTrie();
+        timeTwo += System.nanoTime(); 
+        System.out.println("TrieTree done in: " + (long) (timeTwo / 1e6) + "ms.");
+        // System.out.println(id2nodeList.size());
+        timeTwo = -System.nanoTime();
+        System.out.println("KDTree filled in: " + (long) (timeTwo / 1e6) + " ms");
+        // OSMNodeTree.printTree(OSMNodeTree.getRoot());
+        // System.out.println("root: " + OSMNodeTree.getRoot
     }
 
     public void addObserver(Runnable observer) {
@@ -250,9 +264,11 @@ public class Model {
         address = null;
     }
 
-    public void addressRunthrough() {
+    public void makeTrie() {
+        TrieTree trie = new TrieTree();
         for (Address a : addresses) {
-            System.out.println(a.getAddress());
+            //System.out.println(a.getStreet() + " " + a.getHouseNumber() + " " + a.getPostcode() + " " + a.getCity());
+            trie.insert(a.toString(), a.getCords());
         }
     }
 

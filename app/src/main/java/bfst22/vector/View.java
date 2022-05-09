@@ -10,13 +10,12 @@ public class View {
 
     public View(Model model, Stage primaryStage) throws IOException {
 
-
-
         primaryStage.show();
-        var loader = new FXMLLoader(View.class.getResource("ViewTest.fxml"));
+        var loader = new FXMLLoader(View.class.getResource("View.fxml"));
         primaryStage.setScene(loader.load());
         Controller controller = loader.getController();
         controller.init(model);
         primaryStage.setTitle("Bornholm");
+        primaryStage.setMaximized(true);
     }
 }
