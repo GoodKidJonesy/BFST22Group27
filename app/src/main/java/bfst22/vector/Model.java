@@ -90,6 +90,8 @@ public class Model {
         long relID = 0;
         var type = WayType.UNKNOWN;
         var timeTwo = -System.nanoTime();
+        var relationType = "";
+        var multipolygonWays = new ArrayList<OSMWay>();
 
         while (reader.hasNext()) {
             switch (reader.next()) {
@@ -127,8 +129,10 @@ public class Model {
                                         type = WayType.ISLAND;
                                     break;
                                 case "name":
-                                    if (v.equals("bornholm"))
+                                    if (v.equals("bornholm")){
                                         type = WayType.ISLAND;
+                                        break;
+                                    }
                                 case "waterway":
                                     type = WayType.LAKE;
                                     break;
@@ -136,17 +140,28 @@ public class Model {
                                     type = WayType.LAKE;
                                     break;
                                 case "natural":
-                                    if (v.equals("water"))
+                                    if (v.equals("water")){
                                         type = WayType.LAKE;
-                                    else if (v.equals("coastline"))
+                                        break;
+                                    }
+                                    else if (v.equals("coastline")){
                                         type = WayType.COASTLINE;
-                                    else if (v.equals("scrub") || v.equals("tree_row"))
+                                        break;
+                                    }
+                                    else if (v.equals("scrub") || v.equals("tree_row")){
                                         type = WayType.FOREST;
-                                    else if (v.equals("wetland"))
+                                        break;
+                                    }
+                                    else if (v.equals("wetland")){
                                         type = WayType.LANDUSE;
-                                    else if (v.equals("bare_rock"))
+                                        break;
+                                    }
+                                    else if (v.equals("bare_rock")){
                                         type = WayType.STONE;
-                                    break;
+                                        break;
+                                    }else{
+                                        break;
+                                    }
                                 case "building":
                                     type = WayType.BUILDING;
                                     break;
@@ -187,19 +202,30 @@ public class Model {
                                         type = WayType.FOREST;
                                     break;
                                 case "landuse":
-                                    if (v.equals("forest") || v.equals("meadow") || v.equals("allotments"))
+                                    if (v.equals("forest") || v.equals("meadow") || v.equals("allotments")){
                                         type = WayType.FOREST;
-                                    else if (v.equals("residential") || v.equals("industrial"))
+                                        break;
+                                    }
+                                    else if (v.equals("residential") || v.equals("industrial")){
                                         type = WayType.CITY;
-                                    else if (v.equals("port"))
+                                        break;
+                                    }
+                                    else if (v.equals("port")){
                                         type = WayType.LAKE;
-                                    else if (v.equals("quarry"))
+                                        break;
+                                    }
+                                    else if (v.equals("quarry")){
                                         type = WayType.STONE;
-                                    else if (v.equals("military"))
+                                        break;
+                                    }
+                                    else if (v.equals("military")){
                                         type = WayType.MILITARY;
-                                    else
+                                        break;
+                                    }
+                                    else{
                                         type = WayType.LANDUSE;
-                                
+                                        break;
+                                    }
                                 case "addr:city":
                                     if (address == null) {
                                         address = new Address(osmnode);
@@ -241,18 +267,24 @@ public class Model {
                             }
                             break;
                         case "member":
-                            ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
-                            var elm = id2way.get(ref);
-                            if (elm != null)
-                                rel.add(elm);
+                        var member = id2way.get(Long.parseLong(reader.getAttributeValue(null, "ref")));
+                        if(member != null){
+                            multipolygonWays.add(member);
+                        }
+                        ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
+                        var elm = id2way.get(ref);
+                        if (elm != null)
+                            rel.add(elm);
+                        break;
+                            case "relation":
+                            if(relationType.equals("multipolygon")){
+                                MultiPolygon multiPolygon = new MultiPolygon(multipolygonWays);
+                                lines.get(type).add(multiPolygon);
+                            } 
+                            relationType = "";
+                            multipolygonWays.clear();
+                            rel.clear();
                             break;
-                        case "relation":
-                            id = Long.parseLong(reader.getAttributeValue(null, "id"));
-                            if (id == 1305702) {
-                                System.out.println("Done");
-                            }
-                            break;
-
                     }
                     break;
                 case XMLStreamConstants.END_ELEMENT:
