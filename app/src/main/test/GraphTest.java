@@ -8,11 +8,9 @@ import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
 
-public class kdTreeTest {
+import bfst22.vector.KDTree;
+import bfst22.vector.Model;
 
-    @Test
-    public void setUp() {
-
-    }
+public class GraphTest {
 
 }
