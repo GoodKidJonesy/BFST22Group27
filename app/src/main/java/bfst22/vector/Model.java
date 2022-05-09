@@ -231,18 +231,16 @@ public class Model {
                     break;
             }
         }
-        test();
         timeTwo += System.nanoTime();
         System.out.println("Parsing Done in " + (long) (timeTwo / 1e6) + "ms.");
         timeTwo = -System.nanoTime();
         makeTrie();
         timeTwo += System.nanoTime(); 
         System.out.println("TrieTree done in: " + (long) (timeTwo / 1e6) + "ms.");
-        // System.out.println(id2nodeList.size());
         timeTwo = -System.nanoTime();
+        test();
+        timeTwo += System.nanoTime();
         System.out.println("KDTree filled in: " + (long) (timeTwo / 1e6) + " ms");
-        // OSMNodeTree.printTree(OSMNodeTree.getRoot());
-        // System.out.println("root: " + OSMNodeTree.getRoot
     }
 
     public void addObserver(Runnable observer) {
@@ -267,7 +265,6 @@ public class Model {
     public void makeTrie() {
         TrieTree trie = new TrieTree();
         for (Address a : addresses) {
-            //System.out.println(a.getStreet() + " " + a.getHouseNumber() + " " + a.getPostcode() + " " + a.getCity());
             trie.insert(a.toString(), a.getCords());
         }
     }
