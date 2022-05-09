@@ -85,7 +85,8 @@ public class Model {
         List<OSMWay> rel = new ArrayList<>();
         long relID = 0;
         WayType type = WayType.UNKNOWN;
-
+        var relationType = "";
+        var multipolygonWays = new ArrayList<OSMWay>();
         while (reader.hasNext()) {
             switch (reader.next()) {
                 case XMLStreamConstants.START_ELEMENT:
@@ -212,9 +213,12 @@ public class Model {
                             nodes.clear();
                             break;
                         case "relation":
-                            if (type == WayType.LAKE && !rel.isEmpty()) {
-                                lines.get(type).add(new MultiPolygon(rel, type));
-                            }
+                            if(relationType.equals("multipolygon")){
+                                MultiPolygon multiPolygon = new MultiPolygon(multipolygonWays, WayType.FOREST);
+                                lines.get(type).add(multiPolygon);
+                            } 
+                            relationType = "";
+                            multipolygonWays.clear();
                             rel.clear();
                             break;
                     }

@@ -3,7 +3,7 @@ package bfst22.vector;
 import javafx.scene.paint.Color;
 
 public enum WayType {
-    FOREST(Color.rgb(0, 204, 102), .50f),
+    FOREST(Color.rgb(0, 204, 102), 0f),
 
     LANDUSE(Color.rgb(255, 204, 153), 0f),
 
