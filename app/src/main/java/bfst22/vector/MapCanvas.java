@@ -14,7 +14,7 @@ public class MapCanvas extends Canvas {
     Affine trans = new Affine();
     double maxZoom = 1.06;
     double minZoom = -0.06;
-    float zoomedIn = 0;
+    static float zoomedIn = 0;
     Range range = new Range(new Point2D(0, 0), new Point2D(0, 0));
 
     void init(Model model) {
@@ -37,15 +37,16 @@ public class MapCanvas extends Canvas {
         gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
 
         for (Drawable d : query()) {
-            if (d.getType().fillTrue()) {
-                gc.setFill(d.getType().getColor());
-                d.fill(gc);
-            } else {
-                gc.setStroke(d.getType().getColor());
-                d.draw(gc);
+            if(d.getType().draw()){
+                if (d.getType().fillTrue()) {
+                    gc.setFill(d.getType().getColor());
+                    d.fill(gc);
+                } else {
+                    gc.setStroke(d.getType().getColor());
+                    d.draw(gc);
+                }
             }
         }
-
         drawRange();
     }
 
