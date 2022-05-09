@@ -116,6 +116,7 @@ public class Model {
                         case "tag":
                             String k = reader.getAttributeValue(null, "k");
                             String v = reader.getAttributeValue(null, "v");
+                            if(k.equals("type")) relationType = v;
                             switch (k) {
                                 case "natural":
                                     if (v.equals("water"))
@@ -131,6 +132,8 @@ public class Model {
                                         type = WayType.FOREST;
                                     else if (v.equals("military"))
                                         type = WayType.MILITARY;
+                                    else if(v.equals("residential") || v.equals("port"))
+                                        type = WayType.CITY;
                                     else
                                         type = WayType.LANDUSE;
                                 case "highway":

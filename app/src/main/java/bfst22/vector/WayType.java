@@ -23,7 +23,9 @@ public enum WayType {
 
     COASTLINE(Color.rgb(0, 0, 0), 0f),
     
-    MILITARY(Color.TRANSPARENT, 1000f);
+    MILITARY(Color.TRANSPARENT, 1000f),
+
+    CITY(Color.rgb(255,255,255), 0.5f);
 
     private final Color color;
     private final float requiredZoom;
@@ -37,7 +39,7 @@ public enum WayType {
     }
 
     public boolean fillTrue() {
-        return this == WayType.LAKE || this == WayType.FOREST || this == WayType.LANDUSE || this == WayType.BUILDING;
+        return this == WayType.LAKE || this == WayType.FOREST || this == WayType.LANDUSE || this == WayType.BUILDING || this == WayType.CITY;
     }
     public float getRequiredZoom(){
         return requiredZoom;
