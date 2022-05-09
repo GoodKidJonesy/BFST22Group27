@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.Observable;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
+
 import javafx.animation.FadeTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
@@ -32,6 +34,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.control.ListView;
+import java.util.Collections;
 
 import org.controlsfx.control.SearchableComboBox;
 import org.controlsfx.control.ToggleSwitch;
@@ -42,10 +45,6 @@ public class Controller {
     private Point2D lastMouse;
 
     private Model model;
-
-    private Address address;
-
-    private TrieTree trie;
 
     Framerate FPS = new Framerate();
 
@@ -92,11 +91,48 @@ public class Controller {
     @FXML
     BorderPane root;
 
+    private boolean vehicleSelected;
+
+    String[] address;
+
+    private boolean rute1Found;
+
+    private boolean rute2Found;
+
     public void init(Model model) {
         canvas.init(model);
-        String[] address = model.addresses.toString().split(",");
-        TextFields.bindAutoCompletion(rute1, address);
-        TextFields.bindAutoCompletion(rute2, address);
+        this.model = model;
+        address = capitalize(model.addresses.toString().split(", "));
+        TextFields.bindAutoCompletion(rute1, capitalize(model.trie.searchMultiple(rute1.getText())));
+        TextFields.bindAutoCompletion(rute2, capitalize(model.trie.searchMultiple(rute2.getText())));
+    }
+
+   //capitalize first letter of each word in arraylist
+    private List<String> capitalize(List<String> list) {
+        List<String> newList = new ArrayList<>();
+        for (String s : list) {
+            String[] words = s.split(" ");
+            StringBuilder sb = new StringBuilder();
+            for (String word : words) {
+                sb.append(word.substring(0, 1).toUpperCase()).append(word.substring(1)).append(" ");
+            }
+            newList.add(sb.toString().trim());
+        }
+        return newList;
+    }
+
+    //capitalize first letter of each word in array
+    private String[] capitalize(String[] list) {
+        String[] newList = new String[list.length];
+        for (int i = 0; i < list.length; i++) {
+            String[] words = list[i].split(" ");
+            StringBuilder sb = new StringBuilder();
+            for (String word : words) {
+                sb.append(word.substring(0, 1).toUpperCase()).append(word.substring(1)).append(" ");
+            }
+            newList[i] = sb.toString().trim();
+        }
+        return newList;
     }
 
     @FXML
@@ -158,20 +194,39 @@ public class Controller {
             walkBtn.setStyle(transparent);
             bikeBtn.setStyle(transparent);
             carBtn.setStyle(transparent);
+            vehicleSelected = false;
         }
     }
 
     @FXML private void searchPress(MouseEvent e) {
+
+        rute1Found = Arrays.asList(address).contains(rute1.getText());
+        rute2Found = Arrays.asList(address).contains(rute2.getText());
+
         if(!ruteSwitch.isSelected()) {
             if(rute1.getText().isEmpty()) {
                 Notifications.create().title("Error").text("Please enter an address").showError();
+            } else if(rute1Found) {
+                Notifications.create().title("Success").text("Address found: " + rute1.getText()).showInformation();
             } else {
-            trie.search(rute1.getText());
+                Notifications.create().title("Error").text("No address found").showError();
             }
         } else if(ruteSwitch.isSelected()) {
-            if(rute1.getText().isEmpty() || rute2.getText().isEmpty()) {
+            if(!vehicleSelected) {
+                Notifications.create().title("Error").text("Please select your preferred transportation").showError();
+            } else if(rute1.getText().isEmpty() || rute2.getText().isEmpty()) {
                 Notifications.create().title("Error").text("Please fill in both fields").showError();
-            } else {
+            }  else if (!rute1Found && !rute2Found) {
+                Notifications.create().title("Error").text("Neither start nor end address found").showError();
+                directionList.getItems().clear();
+            }
+            else if (!rute1Found) {
+                    Notifications.create().title("Error").text("No start address found").showError();
+                    directionList.getItems().clear();
+                } else if (!rute2Found) {
+                    Notifications.create().title("Error").text("No end address found").showError();
+                    directionList.getItems().clear();
+                    }  else {
                 getDirectionList();
             }
         }
@@ -186,16 +241,19 @@ public class Controller {
             walkBtn.setStyle(transparent);
             bikeBtn.setStyle(transparent);
             carBtn.setStyle(grey);
+            vehicleSelected = true;
         }
         else if(bikeBtn.isPressed()) {
             walkBtn.setStyle(transparent);
             carBtn.setStyle(transparent);
             bikeBtn.setStyle(grey);
+            vehicleSelected = true;
         }
         else if(walkBtn.isPressed()) {
             bikeBtn.setStyle(transparent);
             carBtn.setStyle(transparent);
             walkBtn.setStyle(grey);
+            vehicleSelected = true;
         }
     }
 
@@ -236,8 +294,7 @@ public class Controller {
         //canvas.zoomedIn = 0;
         //zoomBar.setProgress(canvas.zoomedIn);
         //zoomValue.setText(0 + "%");
-        //canvas.pan(-model.minlon, -model.minlat);
-        //canvas.zoom(640 / (model.maxlon - model.minlon), 0, 0);
+        //canvas.init(this.model);
         //canvas.repaint();
         
         

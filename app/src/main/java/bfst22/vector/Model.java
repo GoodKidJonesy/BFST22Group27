@@ -264,7 +264,7 @@ public class Model {
     }
 
     public void makeTrie() {
-        TrieTree trie = new TrieTree();
+        trie = new TrieTree();
         for (Address a : addresses) {
             trie.insert(a.toString(), a.getCords());
         }
