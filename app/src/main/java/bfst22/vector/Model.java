@@ -122,33 +122,78 @@ public class Model {
                             if(k.equals("type")) relationType = v;
                             switch (k) {
                                 case "natural":
-                                    if (v.equals("water"))
-                                        type = WayType.LAKE;
-                                    else if (v.equals("coastline"))
-                                        type = WayType.COASTLINE;
-                                    break;
+                                    switch (v) {
+                                        case "water":
+                                        case "wetland":
+                                            type = WayType.WETLAND;
+                                            break;
+                                        case "coastline":
+                                            type = WayType.COASTLINE;
+                                            break;
+                                        case "scrub":
+                                            type = WayType.WETLAND;
+                                            break;
+                                        case "stone":
+                                            type = WayType.STONE;
+                                            break;
+                                        default:
+                                            break;
+                                    }break;
                                 case "building":
                                     type = WayType.BUILDING;
                                     break;
+                                case "aerodrome":
+                                    type = WayType.CITY;
+                                    break;
+                                case "leisure":
+                                    type = WayType.FOREST;
+                                    break;
                                 case "landuse":
-                                    if (v.equals("forest") || v.equals("meadow"))
-                                        type = WayType.FOREST;
-                                    else if (v.equals("military"))
-                                        type = WayType.MILITARY;
-                                    else if(v.equals("residential") || v.equals("port"))
-                                        type = WayType.CITY;
-                                    else
-                                        type = WayType.LANDUSE;
+                                    switch (v) {
+                                        case "forest":
+                                        case "meadow":
+                                            type = WayType.FOREST;
+                                            break;
+                                        case "military":
+                                            type = WayType.MILITARY;
+                                            break;
+                                        case "residential":
+                                        case "port":
+                                            type = WayType.CITY;
+                                            break;
+                                        case "quarry":
+                                            type = WayType.STONE;
+                                            break;
+                                        default:
+                                            type = WayType.LANDUSE;
+                                            break;
+                                    }break;
                                 case "highway":
-                                    if (v.equals("primary") || v.equals("trunk") || v.equals("secondary")
-                                            || v.equals("trunk_link") || v.equals("secondary_link")) {
-                                        type = WayType.HIGHWAY;
-                                    } else if (v.equals("residential") || v.equals("service") || v.equals("cycleway")
-                                            || v.equals("tertiary") || v.equals("unclassified")
-                                            || v.equals("tertiary_link") || v.equals("road")) {
-                                        type = WayType.CITYWAY;
-                                    } else if (v.equals("motorway") || v.equals("motorway_link")) {
-                                        type = WayType.MOTORWAY;
+                                    switch (v) {
+                                        case "primary":
+                                        case "trunk":
+                                        case "secondary":
+                                        case "trunk_link":
+                                        case "secondary_link":
+                                            type = WayType.HIGHWAY;
+                                            break;
+                                        case "residential":
+                                        case "service":
+                                        case "cycleway":
+                                        case "tertiary":
+                                        case "unclassified":
+                                        case "road":
+                                        case "tertiary_link":
+                                        case "path":
+                                        case "track":
+                                            type = WayType.CITYWAY;
+                                            break;
+                                        case "motorway":
+                                        case "motorway_link":
+                                            type = WayType.MOTORWAY;
+                                            break;
+                                        default:
+                                            break;
                                     }
                                     break;
                                 case "addr:city":
