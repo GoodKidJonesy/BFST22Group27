@@ -11,7 +11,7 @@ public class MultiPolygon extends Drawable implements Serializable {
     List<Drawable> parts = new ArrayList<>();
     private WayType type;
 
-    public MultiPolygon(ArrayList<OSMWay> rel, WayType type) {
+    public MultiPolygon(List<OSMWay> rel, WayType type) {
         for (var way : rel) {
             parts.add(new PolyLine(way.nodes, type));
         }

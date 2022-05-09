@@ -11,6 +11,11 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
+import org.xml.sax.XMLReader;
+
+import javafx.beans.Observable;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -25,11 +30,11 @@ public class Model {
     float minlat, minlon, maxlat, maxlon;
     Address address = null;
     OSMNode osmnode = null;
-    ArrayList<Address> addresses = new ArrayList<>();
-    KDTree drawTree;
+    List<Address> addresses = new ArrayList<>();
+    KDTree kdTree;
     Map<WayType, List<Drawable>> lines = new EnumMap<>(WayType.class);
     {
-        for (var type : WayType.values())
+        for (WayType type : WayType.values())
             lines.put(type, new ArrayList<>());
     }
     List<Runnable> observers = new ArrayList<>();
@@ -37,16 +42,17 @@ public class Model {
     @SuppressWarnings("unchecked")
     public Model(String filename)
             throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
-        var time = -System.nanoTime();
-        drawTree = new KDTree();
+        long time = -System.nanoTime();
+        kdTree = new KDTree();
         if (filename.endsWith(".zip")) {
-            var zip = new ZipInputStream(new FileInputStream(filename));
+            ZipInputStream zip = new ZipInputStream(new FileInputStream(filename));
             zip.getNextEntry();
             loadOSM(zip);
         } else if (filename.endsWith(".osm")) {
             loadOSM(new FileInputStream(filename));
         } else if (filename.endsWith(".obj")) {
-            try (var input = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)))) {
+            try (ObjectInputStream input = new ObjectInputStream(
+                    new BufferedInputStream(new FileInputStream(filename)))) {
                 minlat = input.readFloat();
                 minlon = input.readFloat();
                 maxlat = input.readFloat();
@@ -61,7 +67,7 @@ public class Model {
     }
 
     public void save(String basename) throws FileNotFoundException, IOException {
-        try (var out = new ObjectOutputStream(new FileOutputStream(basename + ".obj"))) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(basename + ".obj"))) {
             out.writeFloat(minlat);
             out.writeFloat(minlon);
             out.writeFloat(maxlat);
@@ -71,19 +77,18 @@ public class Model {
     }
 
     private void loadOSM(InputStream input) throws XMLStreamException, FactoryConfigurationError {
-        var reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input));
-        var id2node = new NodeMap();
-        ArrayList<OSMNode> id2nodeList = new ArrayList<>();
-        var id2way = new HashMap<Long, OSMWay>();
-        var nodes = new ArrayList<OSMNode>();
-        var rel = new ArrayList<OSMWay>();
+        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input));
+        NodeMap id2node = new NodeMap();
+        Map<Long, OSMWay> id2way = new HashMap<>();
+        List<OSMNode> nodes = new ArrayList<>();
+        List<OSMWay> rel = new ArrayList<>();
         long relID = 0;
-        var type = WayType.UNKNOWN;
+        WayType type = WayType.UNKNOWN;
 
         while (reader.hasNext()) {
             switch (reader.next()) {
                 case XMLStreamConstants.START_ELEMENT:
-                    var name = reader.getLocalName();
+                    String name = reader.getLocalName();
                     switch (name) {
                         case "bounds":
                             maxlat = -Float.parseFloat(reader.getAttributeValue(null, "minlat"));
@@ -92,15 +97,14 @@ public class Model {
                             maxlon = 0.56f * Float.parseFloat(reader.getAttributeValue(null, "maxlon"));
                             break;
                         case "node":
-                            var id = Long.parseLong(reader.getAttributeValue(null, "id"));
-                            var lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
-                            var lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
+                            long id = Long.parseLong(reader.getAttributeValue(null, "id"));
+                            float lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
+                            float lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
                             osmnode = new OSMNode(id, 0.56f * lon, -lat);
                             id2node.add(osmnode);
-                            id2nodeList.add(osmnode);
                             break;
                         case "nd":
-                            var ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
+                            long ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
                             nodes.add(id2node.get(ref));
                             break;
                         case "way":
@@ -108,8 +112,8 @@ public class Model {
                             type = WayType.UNKNOWN;
                             break;
                         case "tag":
-                            var k = reader.getAttributeValue(null, "k");
-                            var v = reader.getAttributeValue(null, "v");
+                            String k = reader.getAttributeValue(null, "k");
+                            String v = reader.getAttributeValue(null, "v");
                             switch (k) {
                                 case "natural":
                                     if (v.equals("water"))
@@ -123,6 +127,8 @@ public class Model {
                                 case "landuse":
                                     if (v.equals("forest") || v.equals("meadow"))
                                         type = WayType.FOREST;
+                                    else if (v.equals("military"))
+                                        type = WayType.MILITARY;
                                     else
                                         type = WayType.LANDUSE;
                                 case "highway":
@@ -179,7 +185,7 @@ public class Model {
                             break;
                         case "member":
                             ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
-                            var elm = id2way.get(ref);
+                            OSMWay elm = id2way.get(ref);
                             if (elm != null)
                                 rel.add(elm);
                             break;
@@ -195,7 +201,7 @@ public class Model {
                 case XMLStreamConstants.END_ELEMENT:
                     switch (reader.getLocalName()) {
                         case "way":
-                            var way = new PolyLine(nodes, type);
+                            PolyLine way = new PolyLine(nodes, type);
                             id2way.put(relID, new OSMWay(nodes));
                             lines.get(type).add(way);
                             nodes.clear();
@@ -218,7 +224,7 @@ public class Model {
     }
 
     public void notifyObservers() {
-        for (var observer : observers) {
+        for (Runnable observer : observers) {
             observer.run();
         }
     }
@@ -242,10 +248,10 @@ public class Model {
         ArrayList<Drawable> temp = new ArrayList<>();
 
         for (WayType e : WayType.values()) {
-            for (var l : iterable(e)) {
+            for (Drawable l : iterable(e)) {
                 temp.add(l);
             }
         }
-        drawTree.fillTree(temp, 0);
+        kdTree.fillTree(temp, 0);
     }
 }
