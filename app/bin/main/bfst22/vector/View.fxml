@@ -26,9 +26,9 @@
 <?import javafx.scene.text.Font?>
 <?import org.controlsfx.control.ToggleSwitch?>
 
-<Scene fx:id="scene" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bfst22.vector.Controller">
+<Scene fx:id="scene" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bfst22.vector.Controller">
     <root>
-        <BorderPane prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: transparent;">
+        <BorderPane prefHeight="1080" prefWidth="1920" style="-fx-background-color: transparent;">
             <center>
                 <MapCanvas fx:id="canvas" height="${scene.height}" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" onScroll="#onScroll" width="${scene.width}" />
             </center>
@@ -159,14 +159,11 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
                   </Label>
-                  <ListView fx:id="directionList" prefHeight="218.0" prefWidth="246.0" visible="false"/>
+                  <ListView fx:id="directionList" prefHeight="218.0" prefWidth="246.0" visible="false" />
                   <Separator>
                      <VBox.margin>
                         <Insets />
-                     </VBox.margin>
-                     <padding>
-                        <Insets top="300.0" />
-                     </padding></Separator>
+                     </VBox.margin></Separator>
                   <Label alignment="CENTER" text="Debugger Menu">
                      <VBox.margin>
                         <Insets left="10.0" right="10.0" top="10.0" />
@@ -190,7 +187,7 @@
                         <CheckBox fx:id="KdBox" mnemonicParsing="false" onAction="#KdDebugger" text="KDTree" GridPane.columnIndex="1" />
                         <CheckBox mnemonicParsing="false" text="CheckBox" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <CheckBox mnemonicParsing="false" text="CheckBox" GridPane.rowIndex="1" />
-                        <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="25.0" prefWidth="103.0" style="-fx-background-radius: 5em;" text="Reset" GridPane.rowIndex="2" fx:id="resetButton" onMouseClicked="#resetZoom">
+                        <Button fx:id="resetButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onMouseClicked="#resetZoom" prefHeight="25.0" prefWidth="103.0" style="-fx-background-radius: 5em;" text="Reset" GridPane.rowIndex="2">
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>

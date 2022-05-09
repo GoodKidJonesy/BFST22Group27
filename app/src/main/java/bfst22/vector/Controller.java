@@ -16,6 +16,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -37,6 +38,7 @@ import javafx.scene.control.ListView;
 import org.controlsfx.control.SearchableComboBox;
 import org.controlsfx.control.ToggleSwitch;
 import org.controlsfx.control.textfield.*;
+import org.controlsfx.control.Notifications;
 
 public class Controller {
     private Point2D lastMouse;
@@ -69,8 +71,8 @@ public class Controller {
                     resetButton;
 
     @FXML
-    private TextField   rute1 = TextFields.createClearableTextField(),
-                        rute2 = TextFields.createClearableTextField();
+    private TextField   rute1,
+                        rute2;
 
     @FXML 
     Label totalDistanceLabel,
@@ -144,8 +146,10 @@ public class Controller {
             totalDistanceLabel.setVisible(true);
             totalTimeLabel.setVisible(true);
             directionList.setVisible(true);
+            searchButton.setText("Route");
         }
         else {
+            searchButton.setText("Search");
             rute1.setPromptText("Address");
             rute2.setVisible(false);
             vehicleBox.setVisible(false);
@@ -161,10 +165,14 @@ public class Controller {
 
     @FXML private void searchPress(MouseEvent e) {
         if(!ruteSwitch.isSelected()) {
+            if(rute1.getText().isEmpty()) {
+                Notifications.create().title("Error").text("Please enter an address").showError();
+            } else {
             trie.search(rute1.getText());
+            }
         } else if(ruteSwitch.isSelected()) {
-            if(rute1.getText().equals("") || rute2.getText().equals("")) {
-                System.out.println("Please fill in both fields");
+            if(rute1.getText().isEmpty() || rute2.getText().isEmpty()) {
+                Notifications.create().title("Error").text("Please fill in both fields").showError();
             } else {
                 getDirectionList();
             }
@@ -226,12 +234,14 @@ public class Controller {
     }
 
     @FXML
-    private void resetZoom(MouseEvent e) throws ClassNotFoundException, IOException, XMLStreamException, FactoryConfigurationError {
-        //canvas.zoomedIn = canvas.minZoom;
+    private void resetZoom(MouseEvent e) {
+        //canvas.zoomedIn = 0;
         //zoomBar.setProgress(canvas.zoomedIn);
         //zoomValue.setText(0 + "%");
-        //MapCanvas newCanvas = new MapCanvas();
-        //newCanvas.init(model);
+        //canvas.pan(-model.minlon, -model.minlat);
+        //canvas.zoom(640 / (model.maxlon - model.minlon), 0, 0);
+        //canvas.repaint();
+        
         
         //Aner ikke hvordan jeg resetter kortet, til at resettes til samme zoom og position, som når man starter programmet.
         //TODO: FIX
@@ -241,6 +251,8 @@ public class Controller {
     private void getDirectionList() {
         //HARDCODED FOR TEST PURPSES
         //TODO: FIX THIS
+
+        directionList.getItems().clear();
         directionList.getItems().add("1. Start point: " + rute1.getText());
         directionList.getItems().add("2. Turn left after 50 meters");
         directionList.getItems().add("3. Turn right after 100 meters");
