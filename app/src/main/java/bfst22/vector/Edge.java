@@ -52,8 +52,8 @@ public class Edge implements Serializable {
         this.fromC[1] = lon;
     }
     public void addToC(float lat, float lon){
-        this.fromC[0] = lat;
-        this.fromC[1] = lon;
+        this.toC[0] = lat;
+        this.toC[1] = lon;
     }
 
 

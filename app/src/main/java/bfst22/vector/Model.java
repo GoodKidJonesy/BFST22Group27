@@ -34,15 +34,16 @@ public class Model {
     int id2 = 0;
     Address address = null;
     OSMNode osmnode = null;
-    HashMap<Long, OSMWay> id2way = new HashMap<Long, OSMWay>();
-    ArrayList<Address> addresses = new ArrayList<>();
-    ArrayList<OSMWay> highways = new ArrayList<OSMWay>();
-    ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
-    ArrayList<OSMNode> highwayNodeList = new ArrayList<>();
-    HashMap<Long, Vertex> vertexMap = new HashMap<Long, Vertex>();
-    Map<WayType, List<Drawable>> lines = new EnumMap<>(WayType.class);
-    NodeMap id2node = new NodeMap();
-    EdgeWeightedDigraph graf;
+    private HashMap<Long, OSMWay> id2way = new HashMap<Long, OSMWay>();
+    private ArrayList<Address> addresses = new ArrayList<>();
+    private ArrayList<OSMWay> highways = new ArrayList<OSMWay>();
+    private ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
+    private ArrayList<OSMNode> highwayNodeList = new ArrayList<>();
+    private HashMap<Long, Vertex> vertexMap = new HashMap<Long, Vertex>();
+    private Map<WayType, List<Drawable>> lines = new EnumMap<>(WayType.class);
+    private ArrayList<Edge> edgeList = new ArrayList<>();
+    private NodeMap id2node = new NodeMap();
+    private EdgeWeightedDigraph graf;
     String wayName = null;
     int maxSpeed = 0;
     boolean isHighway = false;
@@ -258,7 +259,7 @@ public class Model {
 
         System.out.println("Done" + " " + id2);
 
-
+        createGraph();
 
     }
 
@@ -288,5 +289,61 @@ public class Model {
 
     public NodeMap getId2node(){
         return id2node;
+    }
+
+    public void createGraph(){
+        /**
+         * constructs Edges from ArrayList highways, and tracks how many vertices there are
+         */
+        for (OSMWay o : highways){
+            for (int j = 0; j < o.nodes.size()-1; j++) {
+                double distance = distanceCalc(o.nodes.get(j).getID(), o.nodes.get(j+1).getID());
+                Edge e = new Edge(o.nodes.get(j).getID(), o.nodes.get(j+1).getID(), o.nodes.get(j).getID2(), o.nodes.get(j+1).getID2(), o.name, distance/o.getSpeedLimit(), distance);
+                e.addFromC(o.nodes.get(j).lat, o.nodes.get(j).lon);
+                e.addToC(o.nodes.get(j+1).lat, o.nodes.get(j+1).lon);
+                Edge f = new Edge(o.nodes.get(j+1).getID(), o.nodes.get(j).getID(), o.nodes.get(j+1).getID2(), o.nodes.get(j).getID2(), o.name, distance/o.getSpeedLimit(), distance);
+                f.addFromC(o.nodes.get(j+1).lat, o.nodes.get(j+1).lon);
+                f.addToC(o.nodes.get(j).lat, o.nodes.get(j).lon);
+                edgeList.add(e);
+                edgeList.add(f);
+
+
+
+
+
+            }
+        }
+        graf = new EdgeWeightedDigraph(id2);
+
+        /**
+         * Adds edges to the graf.
+         */
+
+        for (Edge e : edgeList){
+            graf.addEdge(e);
+        }
+    }
+
+    public EdgeWeightedDigraph getGraf(){
+        return graf;
+    }
+
+    Double distanceCalc(long from, long to){
+        double R = 6371*1000;
+        double lat1 = id2node.get(from).lat*Math.PI/180;
+        double lat2 = id2node.get(to).lat*Math.PI/180;
+        double deltaLat = (lat2-lat1)*Math.PI/180;
+        double lon1 = id2node.get(from).lon;
+        double lon2 = id2node.get(to).lon;
+        double deltaLon = (lon2-lon1) * Math.PI/180;
+
+        double a = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) + Math.cos(lat1) *
+                Math.cos(lat2) * Math.sin(deltaLon/2) * Math.sin(deltaLon/2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+        double d = R * c;
+
+        return d;
     }
 }
