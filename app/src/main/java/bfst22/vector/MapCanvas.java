@@ -1,15 +1,9 @@
 package bfst22.vector;
 
-import java.awt.*;
-import java.awt.geom.Ellipse2D;
-import java.lang.reflect.Array;
-import java.nio.file.WatchKey;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
@@ -24,9 +18,6 @@ public class MapCanvas extends Canvas {
     Range range = new Range(new Point2D(0, 0), new Point2D(0, 0));
     Point2D mousePos = new Point2D(0, 0);
 
-    Dijkstra path;
-
-
     void init(Model model) {
         this.model = model;
         pan(-model.minlon, -model.minlat);
@@ -34,7 +25,6 @@ public class MapCanvas extends Canvas {
         moveRange();
         model.addObserver(this::repaint);
         repaint();
-
     }
 
     void repaint() {
@@ -96,7 +86,7 @@ public class MapCanvas extends Canvas {
     }
 
     private ArrayList<Drawable> query() {
-        return model.getKdTree().query(model.getKdTree().getRoot(), range, 0);
+        return model.kdTree.query(model.kdTree.getRoot(), range, 0);
     }
 
     private void moveRange() {
@@ -156,33 +146,4 @@ public class MapCanvas extends Canvas {
     public void updateMousePos(Point2D m) {
         mousePos = mouseToModel(m);
     }
-
-    void drawEdge(Edge e, GraphicsContext gc){
-        OSMNode fromNode = new OSMNode(69, 420, e.getFromC()[0], e.getFromC()[1]);
-        OSMNode toNode = new OSMNode(69, 420, e.getToC()[0], e.getToC()[1]);
-
-        ArrayList<OSMNode> temp = new ArrayList<>();
-        temp.add(fromNode);
-        temp.add(toNode);
-
-        PolyLine l = new PolyLine(temp, WayType.ROUTE);
-        
-        l.draw(gc);
-    }
-
-    void drawRoute(int v, int w, EdgeWeightedDigraph G){
-        Dijkstra path = new Dijkstra(G, v);
-        float distance = 0;
-        var gc = getGraphicsContext2D();
-        gc.setStroke(Color.GOLD);
-        gc.setLineWidth(0.0005);
-        for (Edge e : path.pathTo(w)){
-            distance += e.getDistance();
-            drawEdge(e, gc);
-            System.out.println(e.getToC()[0] + " " + e.getToC()[1]);
-        }
-        System.out.println("Afstand: " + distance + " m?");
-    }
-
-
 }

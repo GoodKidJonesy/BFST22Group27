@@ -115,6 +115,4 @@ public class MultiPolygon extends Drawable implements Serializable {
     public WayType getType() {
         return type;
     }
-
-
 }

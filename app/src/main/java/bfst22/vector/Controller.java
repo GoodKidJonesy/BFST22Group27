@@ -94,7 +94,7 @@ public class Controller {
 
     public void init(Model model) {
         canvas.init(model);
-        String[] address = model.getAddresses().toString().split(",");
+        String[] address = model.addresses.toString().split(",");
         TextFields.bindAutoCompletion(rute1, address);
         TextFields.bindAutoCompletion(rute2, address);
     }
