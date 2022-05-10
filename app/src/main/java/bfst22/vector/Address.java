@@ -8,7 +8,7 @@ public class Address {
     public Address(OSMNode node) {
         this.x = node.getX();
         this.y = node.getY();
-        this.id = node.getId();
+        this.id = node.getID();
     }
 
     public void setCity(String city) {

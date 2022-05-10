@@ -17,6 +17,8 @@ public enum WayType {
 
     BUILDING(Color.rgb(192, 192, 192), .5f),
 
+    ROUTE(Color.rgb(255, 0, 0 ), 1000f),
+
     HIGHWAY(Color.rgb(233, 132, 31), 0f),
 
     SUBWAY(Color.rgb(233, 132, 31), .2f),

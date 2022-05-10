@@ -6,17 +6,21 @@ import java.util.List;
 
 public class OSMWay implements Serializable {
     public static final long serialVersionUID = 42;
-    private long length;
+    public long length;
     private int speedLimit;
-    private boolean oneWay;
+    public String name;
+    public Boolean oneWay;
     private OSMNode from,to;
 
     List<OSMNode> nodes;
 
-    public OSMWay(List<OSMNode> nodes) {
+    public OSMWay(List<OSMNode> nodes, String name, int speedLimit) {
         this.nodes = new ArrayList<>(nodes);
         this.from = nodes.get(0);
         this.to = nodes.get(nodes.size() - 1);
+        this.name = name;
+        this.speedLimit = speedLimit;
+
     }
 
     public long getLength(){

@@ -19,6 +19,7 @@ public class PolyLine extends Drawable implements Serializable {
         for (var node : nodes) {
             coords[i++] = node.lat;
             coords[i++] = node.lon;
+
         }
         this.type = type;
         this.size = coords.length / 2;

@@ -18,5 +18,8 @@ public class App extends Application {
         var model = new Model(defaultMap);
 
         new View(model, primaryStage);
+
+
+        }
     }
-}
+
