@@ -192,6 +192,7 @@ public class KDTree {
     return Math.hypot(r.getAvgX() - target.getX(), r.getAvgY() - target.getY());
   }
 
+  //Used to check whether we should check other side of kdtree
   private double distTo(Point2D refference, Point2D target) {
     return Math.hypot(refference.getX() - target.getX(), refference.getY() - target.getY());
   }
@@ -203,7 +204,6 @@ public class KDTree {
 
     if (distTo(r, target) < shortestDist) {
       shortestDist = distTo(r, target);
-      //System.out.println(distTo(r, target));
       nearest = r;
     }
 
@@ -240,9 +240,6 @@ public class KDTree {
     nearest = root;
     shortestDist = distTo(root, target);
     nearestNeighbor(target, root, 0);
-    //System.out.println(target);
-    //System.out.println();
-
     return nearest;
   }
 }

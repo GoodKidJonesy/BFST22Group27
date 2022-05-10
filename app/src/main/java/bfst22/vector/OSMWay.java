@@ -34,4 +34,7 @@ public class OSMWay implements Serializable {
     public OSMNode getTo(){
         return to;
     }
+    public List<OSMNode> getNodes(){
+        return nodes;
+    }
 }

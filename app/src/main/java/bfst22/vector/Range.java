@@ -1,10 +1,8 @@
 package bfst22.vector;
 
-import java.awt.Window;
 import java.io.Serializable;
 
 import javafx.geometry.Point2D;
-import javafx.scene.canvas.Canvas;
 
 //Range class is for defining the users screen as a range in the program
 public class Range {

@@ -51,12 +51,4 @@ public abstract class Drawable {
     public WayType getType() {
         return type;
     }
-
-    public float coord(int depth) {
-        return 0;
-    }
-
-    public void setType(WayType type) {
-
-    }
 }

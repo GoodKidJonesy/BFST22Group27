@@ -37,9 +37,29 @@ public class MapCanvas extends Canvas {
 
         gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
 
+        for (Drawable d : model.iterable(WayType.LAND)) {
+            if (d.getType().fillTrue()) {
+                gc.setFill(d.getType().getColor());
+                d.fill(gc);
+            }
+        }
+
+        for (Drawable d : query()) {
+            if (d.getType() != WayType.LAND) {
+                if (d.getType().getRequiredZoom() <= zoomedIn) {
+                    if (d.getType().fillTrue()) {
+                        gc.setFill(d.getType().getColor());
+                        d.fill(gc);
+                    } else {
+                        gc.setStroke(d.getType().getColor());
+                        d.draw(gc);
+                    }
+                }
+            }
+        }
+
         /*
-         * for (Drawable d : query()) {
-         * if (d.getType().getRequiredZoom() <= zoomedIn) {
+         * for (Drawable d : model.roadTree.query(model.roadTree.getRoot(), range, 0)) {
          * if (d.getType().fillTrue()) {
          * gc.setFill(d.getType().getColor());
          * d.fill(gc);
@@ -48,31 +68,19 @@ public class MapCanvas extends Canvas {
          * d.draw(gc);
          * }
          * }
+         * 
+         * Drawable n = model.roadTree.getNearestNeighbor(mousePos);
+         * 
+         * gc.setLineWidth(4 / Math.sqrt(trans.determinant()));
+         * if (n.getType().fillTrue()) {
+         * gc.setFill(Color.RED);
+         * n.fill(gc);
+         * } else {
+         * gc.setStroke(Color.RED);
+         * n.draw(gc);
          * }
          */
 
-        for (Drawable d : model.roadTree.query(model.roadTree.getRoot(), range, 0)) {
-            if (d.getType().fillTrue()) {
-                gc.setFill(d.getType().getColor());
-                d.fill(gc);
-            } else {
-                gc.setStroke(d.getType().getColor());
-                d.draw(gc);
-            }
-        }
-        
-
-        Drawable n = model.roadTree.getNearestNeighbor(mousePos);
-
-        gc.setLineWidth(4 / Math.sqrt(trans.determinant()));
-        if (n.getType().fillTrue()) {
-            gc.setFill(Color.RED);
-            n.fill(gc);
-        } else {
-            gc.setStroke(Color.RED);
-            n.draw(gc);
-        }
-        
         gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
         drawRange();
     }

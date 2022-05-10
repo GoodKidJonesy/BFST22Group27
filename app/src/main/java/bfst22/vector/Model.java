@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.DecimalFormat;
 
 public class Model {
     float minlat, minlon, maxlat, maxlon;
@@ -85,6 +86,7 @@ public class Model {
         NodeMap id2node = new NodeMap();
         Map<Long, OSMWay> id2way = new HashMap<>();
         List<OSMNode> nodes = new ArrayList<>();
+        List<OSMWay> coastlines = new ArrayList<>();
         List<OSMWay> rel = new ArrayList<>();
         long relID = 0;
         WayType type = WayType.UNKNOWN;
@@ -124,6 +126,13 @@ public class Model {
                             if (k.equals("type"))
                                 relationType = v;
                             switch (k) {
+                                case "place":
+                                    switch (v) {
+                                        case "island":
+                                        case "islet":
+                                        case "peninsula":
+                                            type = WayType.LAND;
+                                    }
                                 case "natural":
                                     switch (v) {
                                         case "water":
@@ -270,7 +279,7 @@ public class Model {
                             break;
                         case "relation":
                             if (relationType.equals("multipolygon")) {
-                                MultiPolygon multiPolygon = new MultiPolygon(multipolygonWays, WayType.FOREST);
+                                MultiPolygon multiPolygon = new MultiPolygon(multipolygonWays, type);
                                 lines.get(type).add(multiPolygon);
                             }
                             relationType = "";
@@ -326,7 +335,8 @@ public class Model {
 
         for (WayType e : WayType.values()) {
             for (Drawable l : iterable(e)) {
-                if (l.getType() == WayType.HIGHWAY || l.getType() == WayType.CITYWAY || l.getType() == WayType.MOTORWAY) {
+                if (l.getType() == WayType.HIGHWAY || l.getType() == WayType.CITYWAY
+                        || l.getType() == WayType.MOTORWAY) {
                     roads.add(l);
                 } else {
                     main.add(l);

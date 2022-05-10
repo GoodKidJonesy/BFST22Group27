@@ -3,11 +3,15 @@ package bfst22.vector;
 import javafx.scene.paint.Color;
 
 public enum WayType {
+    LAND(Color.WHITE, 0f),
+
     FOREST(Color.rgb(0, 204, 102), 0f),
 
     LANDUSE(Color.rgb(255, 204, 153), 0f),
 
     LAKE(Color.rgb(51, 153, 255), 0f),
+    
+    CITY(Color.rgb(255, 255, 255), 0.5f),
 
     UNKNOWN(Color.rgb(64, 64, 64), .2f),
 
@@ -24,8 +28,6 @@ public enum WayType {
     COASTLINE(Color.rgb(0, 0, 0), 0f),
 
     MILITARY(Color.TRANSPARENT, 1000f),
-
-    CITY(Color.rgb(255, 255, 255), 0.5f),
 
     STONE(Color.rgb(192, 192, 192), 0f),
 
@@ -45,7 +47,7 @@ public enum WayType {
 
     public boolean fillTrue() {
         return this == WayType.LAKE || this == WayType.FOREST || this == WayType.LANDUSE || this == WayType.BUILDING
-                || this == WayType.CITY || this == WayType.STONE || this == WayType.WETLAND;
+                || this == WayType.CITY || this == WayType.STONE || this == WayType.WETLAND || this == WayType.LAND;
     }
 
     public float getRequiredZoom() {

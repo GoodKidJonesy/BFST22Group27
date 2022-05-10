@@ -21,8 +21,16 @@ public class MultiPolygon extends Drawable implements Serializable {
 
     @Override
     public void trace(GraphicsContext gc) {
-        for (var part : parts)
-            part.trace(gc);
+        OSMNode prevLastNode = null;
+
+        for (Drawable d : parts) {
+            if (prevLastNode != null && ((PolyLine) d).getFrom() == prevLastNode) {
+                ((PolyLine) d).relationTrace(gc);
+            } else {
+                d.trace(gc);
+            }
+            prevLastNode = ((PolyLine) d).getTo();
+        }
     }
 
     @Override
@@ -106,15 +114,5 @@ public class MultiPolygon extends Drawable implements Serializable {
     @Override
     public WayType getType() {
         return type;
-    }
-
-    @Override
-    public void setType(WayType type){
-        this.type = type;
-    }
-
-    @Override
-    public float coord(int depth){
-        return (depth % 2 == 0) ? getAvgX() : getAvgY();
     }
 }
