@@ -34,6 +34,7 @@ public class Model {
     OSMNode osmnode = null;
     List<Address> addresses = new ArrayList<>();
     KDTree kdTree;
+    KDTree roadTree;
     Map<WayType, List<Drawable>> lines = new EnumMap<>(WayType.class);
     {
         for (WayType type : WayType.values())
@@ -46,6 +47,7 @@ public class Model {
             throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
         long time = -System.nanoTime();
         kdTree = new KDTree();
+        roadTree = new KDTree();
         if (filename.endsWith(".zip")) {
             ZipInputStream zip = new ZipInputStream(new FileInputStream(filename));
             zip.getNextEntry();
@@ -119,7 +121,8 @@ public class Model {
                         case "tag":
                             String k = reader.getAttributeValue(null, "k");
                             String v = reader.getAttributeValue(null, "v");
-                            if(k.equals("type")) relationType = v;
+                            if (k.equals("type"))
+                                relationType = v;
                             switch (k) {
                                 case "natural":
                                     switch (v) {
@@ -138,7 +141,8 @@ public class Model {
                                             break;
                                         default:
                                             break;
-                                    }break;
+                                    }
+                                    break;
                                 case "building":
                                     type = WayType.BUILDING;
                                     break;
@@ -167,7 +171,8 @@ public class Model {
                                         default:
                                             type = WayType.LANDUSE;
                                             break;
-                                    }break;
+                                    }
+                                    break;
                                 case "highway":
                                     switch (v) {
                                         case "primary":
@@ -238,7 +243,7 @@ public class Model {
                             break;
                         case "member":
                             var member = id2way.get(Long.parseLong(reader.getAttributeValue(null, "ref")));
-                            if(member != null){
+                            if (member != null) {
                                 multipolygonWays.add(member);
                             }
                             ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
@@ -264,10 +269,10 @@ public class Model {
                             nodes.clear();
                             break;
                         case "relation":
-                            if(relationType.equals("multipolygon")){
+                            if (relationType.equals("multipolygon")) {
                                 MultiPolygon multiPolygon = new MultiPolygon(multipolygonWays, WayType.FOREST);
                                 lines.get(type).add(multiPolygon);
-                            } 
+                            }
                             relationType = "";
                             multipolygonWays.clear();
                             rel.clear();
@@ -280,10 +285,10 @@ public class Model {
         System.out.println("Parsing Done in " + (long) (timeTwo / 1e6) + "ms.");
         timeTwo = -System.nanoTime();
         makeTrie();
-        timeTwo += System.nanoTime(); 
+        timeTwo += System.nanoTime();
         System.out.println("TrieTree done in: " + (long) (timeTwo / 1e6) + "ms.");
         timeTwo = -System.nanoTime();
-        test();
+        fillTrees();
         timeTwo += System.nanoTime();
         System.out.println("KDTree filled in: " + (long) (timeTwo / 1e6) + " ms");
     }
@@ -303,7 +308,7 @@ public class Model {
     }
 
     public void addAddress() {
-        //System.out.println(address.getStreet());
+        // System.out.println(address.getStreet());
         addresses.add(address);
         address = null;
     }
@@ -315,14 +320,20 @@ public class Model {
         }
     }
 
-    public void test() {
-        ArrayList<Drawable> temp = new ArrayList<>();
+    public void fillTrees() {
+        ArrayList<Drawable> main = new ArrayList<>();
+        ArrayList<Drawable> roads = new ArrayList<>();
 
         for (WayType e : WayType.values()) {
             for (Drawable l : iterable(e)) {
-                temp.add(l);
+                if (l.getType() == WayType.HIGHWAY || l.getType() == WayType.CITYWAY || l.getType() == WayType.MOTORWAY) {
+                    roads.add(l);
+                } else {
+                    main.add(l);
+                }
             }
         }
-        kdTree.fillTree(temp, 0);
+        roadTree.fillTree(roads, 0);
+        kdTree.fillTree(main, 0);
     }
 }

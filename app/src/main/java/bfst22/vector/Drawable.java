@@ -5,6 +5,7 @@ import javafx.scene.canvas.GraphicsContext;
 public abstract class Drawable {
     public Drawable left = null;
     public Drawable right = null;
+    public Drawable parent = null;
     private WayType type = null;
 
     public void draw(GraphicsContext gc) {
@@ -12,34 +13,50 @@ public abstract class Drawable {
         trace(gc);
         gc.stroke();
     }
+
     public void fill(GraphicsContext gc) {
         gc.beginPath();
         trace(gc);
         gc.fill();
     }
-    void trace(GraphicsContext gc){
+
+    void trace(GraphicsContext gc) {
 
     }
 
-    public float getAvgX(){
+    public float getAvgX() {
         return 0;
     }
-    public float getAvgY(){
+
+    public float getAvgY() {
         return 0;
     }
-    public float getMinX(){
+
+    public float getMinX() {
         return 0;
     }
-    public float getMinY(){
+
+    public float getMinY() {
         return 0;
     }
-    public float getMaxX(){
+
+    public float getMaxX() {
         return 0;
     }
-    public float getMaxY(){
+
+    public float getMaxY() {
         return 0;
     }
-    public WayType getType(){
+
+    public WayType getType() {
         return type;
+    }
+
+    public float coord(int depth) {
+        return 0;
+    }
+
+    public void setType(WayType type) {
+
     }
 }

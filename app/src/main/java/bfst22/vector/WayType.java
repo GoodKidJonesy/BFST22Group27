@@ -17,22 +17,23 @@ public enum WayType {
 
     SUBWAY(Color.rgb(233, 132, 31), .2f),
 
-    CITYWAY(Color.rgb(128, 128, 128), .4f),
+    CITYWAY(Color.rgb(0, 0, 0), .4f),
 
     MOTORWAY(Color.rgb(255, 51, 51), 0f),
 
     COASTLINE(Color.rgb(0, 0, 0), 0f),
-    
+
     MILITARY(Color.TRANSPARENT, 1000f),
 
-    CITY(Color.rgb(255,255,255), 0.5f),
+    CITY(Color.rgb(255, 255, 255), 0.5f),
 
-    STONE(Color.rgb(192,192,192), 0f),
+    STONE(Color.rgb(192, 192, 192), 0f),
 
     WETLAND(Color.rgb(135, 255, 195), 0f);
 
     private final Color color;
     private final float requiredZoom;
+
     WayType(Color color, float requiredZoom) {
         this.color = color;
         this.requiredZoom = requiredZoom;
@@ -43,9 +44,11 @@ public enum WayType {
     }
 
     public boolean fillTrue() {
-        return this == WayType.LAKE || this == WayType.FOREST || this == WayType.LANDUSE || this == WayType.BUILDING || this == WayType.CITY || this == WayType.STONE || this == WayType.WETLAND;
+        return this == WayType.LAKE || this == WayType.FOREST || this == WayType.LANDUSE || this == WayType.BUILDING
+                || this == WayType.CITY || this == WayType.STONE || this == WayType.WETLAND;
     }
-    public float getRequiredZoom(){
+
+    public float getRequiredZoom() {
         return requiredZoom;
     }
 }

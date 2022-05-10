@@ -1,7 +1,11 @@
 package bfst22.vector;
 
 import java.io.Serializable;
+import java.net.PortUnreachableException;
 import java.util.*;
+
+import javafx.geometry.Point2D;
+import javafx.scene.effect.Light.Point;
 
 public class KDTree {
   int nodes = 0;
@@ -22,6 +26,8 @@ public class KDTree {
   }
 
   private Drawable root;
+  public Drawable nearest;
+  public double shortestDist;
 
   public KDTree() {
     this.root = null;
@@ -176,5 +182,67 @@ public class KDTree {
     if (n.right != null)
       getAvgSize(n.right);
     return nodes;
+  }
+
+  public boolean isEmpty() {
+    return root == null ? true : false;
+  }
+
+  private double distTo(Drawable r, Point2D target) {
+    return Math.hypot(r.getAvgX() - target.getX(), r.getAvgY() - target.getY());
+  }
+
+  private double distTo(Point2D refference, Point2D target) {
+    return Math.hypot(refference.getX() - target.getX(), refference.getY() - target.getY());
+  }
+
+  private void nearestNeighbor(Point2D target, Drawable r, int depth) {
+    if (r == null) {
+      return;
+    }
+
+    if (distTo(r, target) < shortestDist) {
+      shortestDist = distTo(r, target);
+      //System.out.println(distTo(r, target));
+      nearest = r;
+    }
+
+    if (depth % 2 == 0) {
+      if (target.getX() < r.getAvgX()) {
+        nearestNeighbor(target, r.left, depth + 1);
+        if (distTo(new Point2D(r.getAvgX(), target.getY()), target) < distTo(r, target)) {
+          nearestNeighbor(target, r.right, depth + 1);
+        }
+      } else {
+        nearestNeighbor(target, r.right, depth + 1);
+        if (distTo(new Point2D(r.getAvgX(), target.getY()), target) < distTo(r, target)) {
+          nearestNeighbor(target, r.left, depth + 1);
+        }
+      }
+      
+    } else {
+      if (target.getY() < r.getAvgY()) {
+        nearestNeighbor(target, r.left, depth + 1);
+        if (distTo(new Point2D(target.getX(), r.getAvgY()), target) < distTo(r, target)) {
+          nearestNeighbor(target, r.right, depth + 1);
+        }
+      } else {
+        nearestNeighbor(target, r.right, depth + 1);
+        if (distTo(new Point2D(target.getX(), r.getAvgY()), target) < distTo(r, target)) {
+          nearestNeighbor(target, r.left, depth + 1);
+        }
+      }
+      
+    }
+  }
+
+  public Drawable getNearestNeighbor(Point2D target) {
+    nearest = root;
+    shortestDist = distTo(root, target);
+    nearestNeighbor(target, root, 0);
+    //System.out.println(target);
+    //System.out.println();
+
+    return nearest;
   }
 }

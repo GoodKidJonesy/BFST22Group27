@@ -8,7 +8,7 @@ import javafx.scene.canvas.GraphicsContext;
 public class PolyLine extends Drawable implements Serializable {
     public static final long serialVersionUID = 134123;
     public float[] coords;
-    public PolyLine left,right;
+    public PolyLine left, right, parent;
     public WayType type;
     public int size = 0;
 
@@ -26,30 +26,30 @@ public class PolyLine extends Drawable implements Serializable {
     @Override
     public void trace(GraphicsContext gc) {
         gc.moveTo(coords[0], coords[1]);
-        for (var i = 2 ; i < coords.length ; i += 2) {
-            gc.lineTo(coords[i], coords[i+1]);
+        for (var i = 2; i < coords.length; i += 2) {
+            gc.lineTo(coords[i], coords[i + 1]);
         }
     }
 
     @Override
-    public float getAvgX(){
+    public float getAvgX() {
         float tempX = 0;
 
-        for (int i = 0; i < coords.length; i++){
-            if (i % 2 == 0){
+        for (int i = 0; i < coords.length; i++) {
+            if (i % 2 == 0) {
                 tempX += coords[i];
             }
         }
         float avgX = tempX / (coords.length / 2);
         return avgX;
     }
-    
+
     @Override
-    public float getAvgY(){
+    public float getAvgY() {
         float tempY = 0;
 
-        for (int i = 0; i < coords.length; i++){
-            if (i % 2 == 1){
+        for (int i = 0; i < coords.length; i++) {
+            if (i % 2 == 1) {
                 tempY += coords[i];
             }
         }
@@ -58,55 +58,69 @@ public class PolyLine extends Drawable implements Serializable {
     }
 
     @Override
-    public float getMinX(){
+    public float getMinX() {
         float minX = 0;
 
-        for (int i = 0; i < coords.length; i++){
-            if (i % 2 == 0){
-                if (coords[i] < minX) minX = coords[i];
+        for (int i = 0; i < coords.length; i++) {
+            if (i % 2 == 0) {
+                if (coords[i] < minX)
+                    minX = coords[i];
             }
         }
         return minX;
     }
 
     @Override
-    public float getMinY(){
+    public float getMinY() {
         float minY = 0;
 
-        for (int i = 0; i < coords.length; i++){
-            if (i % 2 == 1){
-                if (coords[i] < minY) minY = coords[i];
+        for (int i = 0; i < coords.length; i++) {
+            if (i % 2 == 1) {
+                if (coords[i] < minY)
+                    minY = coords[i];
             }
         }
         return minY;
     }
 
     @Override
-    public float getMaxX(){
+    public float getMaxX() {
         float maxX = 0;
 
-        for (int i = 0; i < coords.length; i++){
-            if (i % 2 == 0){
-                if (coords[i] < maxX) maxX = coords[i];
+        for (int i = 0; i < coords.length; i++) {
+            if (i % 2 == 0) {
+                if (coords[i] < maxX)
+                    maxX = coords[i];
             }
         }
         return maxX;
     }
 
     @Override
-    public float getMaxY(){
+    public float getMaxY() {
         float maxY = 0;
 
-        for (int i = 0; i < coords.length; i++){
-            if (i % 2 == 0){
-                if (coords[i] < maxY) maxY = coords[i];
+        for (int i = 0; i < coords.length; i++) {
+            if (i % 2 == 0) {
+                if (coords[i] < maxY)
+                    maxY = coords[i];
             }
         }
         return maxY;
     }
 
     @Override
-    public WayType getType(){
+    public WayType getType() {
         return type;
+    }
+
+    @Override
+    public void setType(WayType type){
+        this.type = type;
+    }
+
+    @Override
+    public float coord(int depth){
+        return (depth % 2 == 0) ? getAvgX() : getAvgY();
     }
 }

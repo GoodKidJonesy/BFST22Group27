@@ -10,6 +10,7 @@ public class MultiPolygon extends Drawable implements Serializable {
     public static final long serialVersionUID = 1325234;
     List<Drawable> parts = new ArrayList<>();
     private WayType type;
+    public MultiPolygon left, right, parent;
 
     public MultiPolygon(List<OSMWay> rel, WayType type) {
         for (var way : rel) {
@@ -25,10 +26,10 @@ public class MultiPolygon extends Drawable implements Serializable {
     }
 
     @Override
-    public float getAvgX(){
+    public float getAvgX() {
         float tempX = 0;
 
-        for (int i = 0; i < parts.size(); i++){
+        for (int i = 0; i < parts.size(); i++) {
             PolyLine l = (PolyLine) parts.get(i);
             tempX += l.getAvgX();
         }
@@ -37,12 +38,12 @@ public class MultiPolygon extends Drawable implements Serializable {
 
         return avgX;
     }
-    
+
     @Override
-    public float getAvgY(){
+    public float getAvgY() {
         float tempY = 0;
 
-        for (int i = 0; i < parts.size(); i++){
+        for (int i = 0; i < parts.size(); i++) {
             PolyLine l = (PolyLine) parts.get(i);
             tempY += l.getAvgY();
         }
@@ -53,53 +54,67 @@ public class MultiPolygon extends Drawable implements Serializable {
     }
 
     @Override
-    public float getMinX(){
+    public float getMinX() {
         float minX = 0;
 
-        for (int i = 0; i < parts.size(); i++){
+        for (int i = 0; i < parts.size(); i++) {
             PolyLine l = (PolyLine) parts.get(i);
-            if (l.getMinX() < minX) minX = l.getMinX();
+            if (l.getMinX() < minX)
+                minX = l.getMinX();
         }
 
         return minX;
     }
 
     @Override
-    public float getMinY(){
+    public float getMinY() {
         float minY = 0;
 
-        for (int i = 0; i < parts.size(); i++){
+        for (int i = 0; i < parts.size(); i++) {
             PolyLine l = (PolyLine) parts.get(i);
-            if (l.getMinY() < minY) minY = l.getMinY();
+            if (l.getMinY() < minY)
+                minY = l.getMinY();
         }
 
         return minY;
     }
 
     @Override
-    public float getMaxX(){
+    public float getMaxX() {
         float maxX = 0;
 
-        for (int i = 0; i < parts.size(); i++){
+        for (int i = 0; i < parts.size(); i++) {
             PolyLine l = (PolyLine) parts.get(i);
-            if (l.getMaxX() < maxX) maxX = l.getMaxX();
+            if (l.getMaxX() < maxX)
+                maxX = l.getMaxX();
         }
         return maxX;
     }
 
     @Override
-    public float getMaxY(){
+    public float getMaxY() {
         float maxY = 0;
 
-        for (int i = 0; i < parts.size(); i++){
+        for (int i = 0; i < parts.size(); i++) {
             PolyLine l = (PolyLine) parts.get(i);
-            if (l.getMaxY() < maxY) maxY = l.getMaxY();
+            if (l.getMaxY() < maxY)
+                maxY = l.getMaxY();
         }
         return maxY;
     }
 
     @Override
-    public WayType getType(){
+    public WayType getType() {
         return type;
+    }
+
+    @Override
+    public void setType(WayType type){
+        this.type = type;
+    }
+
+    @Override
+    public float coord(int depth){
+        return (depth % 2 == 0) ? getAvgX() : getAvgY();
     }
 }

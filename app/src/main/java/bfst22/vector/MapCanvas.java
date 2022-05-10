@@ -16,6 +16,7 @@ public class MapCanvas extends Canvas {
     double minZoom = -0.06;
     float zoomedIn = 0;
     Range range = new Range(new Point2D(0, 0), new Point2D(0, 0));
+    Point2D mousePos = new Point2D(0, 0);
 
     void init(Model model) {
         this.model = model;
@@ -36,17 +37,43 @@ public class MapCanvas extends Canvas {
 
         gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
 
-        for (Drawable d : query()) {
-            if(d.getType().getRequiredZoom() <= zoomedIn){
-                if (d.getType().fillTrue()) {
-                    gc.setFill(d.getType().getColor());
-                    d.fill(gc);
-                } else {
-                    gc.setStroke(d.getType().getColor());
-                    d.draw(gc);
-                }
+        /*
+         * for (Drawable d : query()) {
+         * if (d.getType().getRequiredZoom() <= zoomedIn) {
+         * if (d.getType().fillTrue()) {
+         * gc.setFill(d.getType().getColor());
+         * d.fill(gc);
+         * } else {
+         * gc.setStroke(d.getType().getColor());
+         * d.draw(gc);
+         * }
+         * }
+         * }
+         */
+
+        for (Drawable d : model.roadTree.query(model.roadTree.getRoot(), range, 0)) {
+            if (d.getType().fillTrue()) {
+                gc.setFill(d.getType().getColor());
+                d.fill(gc);
+            } else {
+                gc.setStroke(d.getType().getColor());
+                d.draw(gc);
             }
         }
+        
+
+        Drawable n = model.roadTree.getNearestNeighbor(mousePos);
+
+        gc.setLineWidth(4 / Math.sqrt(trans.determinant()));
+        if (n.getType().fillTrue()) {
+            gc.setFill(Color.RED);
+            n.fill(gc);
+        } else {
+            gc.setStroke(Color.RED);
+            n.draw(gc);
+        }
+        
+        gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
         drawRange();
     }
 
@@ -106,5 +133,9 @@ public class MapCanvas extends Canvas {
 
     public void setRangeDebug(boolean debug) {
         range.updateDebug(debug);
+    }
+
+    public void updateMousePos(Point2D m) {
+        mousePos = mouseToModel(m);
     }
 }

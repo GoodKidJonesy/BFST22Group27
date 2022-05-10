@@ -126,6 +126,7 @@ public class Controller {
         var dy = e.getY() - lastMouse.getY();
         canvas.pan(dx, dy);
         lastMouse = new Point2D(e.getX(), e.getY());
+        canvas.updateMousePos(lastMouse);
     }
 
     @FXML
@@ -228,7 +229,6 @@ public class Controller {
     @FXML
     private void onMouseMoved(MouseEvent e){
         lastMouse = new Point2D(e.getX(), e.getY());
-        System.out.println(lastMouse);
     }
 
     @FXML
