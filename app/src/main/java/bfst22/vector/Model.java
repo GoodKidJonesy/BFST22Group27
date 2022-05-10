@@ -38,8 +38,6 @@ public class Model {
     private ArrayList<Address> addresses = new ArrayList<>();
     private ArrayList<OSMWay> highways = new ArrayList<OSMWay>();
     private ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
-    private ArrayList<OSMNode> highwayNodeList = new ArrayList<>();
-    private HashMap<Long, Vertex> vertexMap = new HashMap<Long, Vertex>();
     private Map<WayType, List<Drawable>> lines = new EnumMap<>(WayType.class);
     private ArrayList<Edge> edgeList = new ArrayList<>();
     private NodeMap id2node = new NodeMap();
@@ -96,8 +94,6 @@ public class Model {
     private void loadOSM(InputStream input) throws XMLStreamException, FactoryConfigurationError {
 
         var reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input));
-
-
         var nodes = new ArrayList<OSMNode>();
         var rel = new ArrayList<OSMWay>();
 
@@ -236,13 +232,8 @@ public class Model {
                                 isHighway = false;
                             }
                             var way = new PolyLine(nodes);
-
-
-
                             id2way.put(relID, new OSMWay(nodes, wayName, maxSpeed));
-
                             lines.get(type).add(way);
-
                             nodes.clear();
                             break;
                         case "relation":
@@ -257,10 +248,10 @@ public class Model {
         }
 
 
-        System.out.println("Done" + " " + id2);
+
 
         createGraph();
-
+        System.out.println("Done" + " " + id2 + " " + highways.size());
     }
 
     public void addObserver(Runnable observer) {

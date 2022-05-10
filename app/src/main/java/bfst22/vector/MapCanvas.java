@@ -155,7 +155,7 @@ public class MapCanvas extends Canvas {
         for (Edge e : path.pathTo(w)){
             distance += e.getDistance();
             drawEdge(e, gc);
-            System.out.println(e.getToC()[0] + " " + e.getToC()[1]);
+
         }
         System.out.println("Afstand: " + distance + " m?");
     }
