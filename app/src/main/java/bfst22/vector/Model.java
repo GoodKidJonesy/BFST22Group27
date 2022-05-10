@@ -34,6 +34,7 @@ public class Model {
     int id2 = 0;
     Address address = null;
     OSMNode osmnode = null;
+    HashMap<Long, OSMWay> id2way = new HashMap<Long, OSMWay>();
     ArrayList<Address> addresses = new ArrayList<>();
     ArrayList<OSMWay> highways = new ArrayList<OSMWay>();
     ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
@@ -94,7 +95,7 @@ public class Model {
     private void loadOSM(InputStream input) throws XMLStreamException, FactoryConfigurationError {
 
         var reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input));
-        var id2way = new HashMap<Long, OSMWay>();
+
 
         var nodes = new ArrayList<OSMNode>();
         var rel = new ArrayList<OSMWay>();

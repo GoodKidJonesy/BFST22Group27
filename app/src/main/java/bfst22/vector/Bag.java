@@ -3,7 +3,7 @@ package bfst22.vector;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class Bag<Item> implements Iterable<Item> {
+public class  Bag<Item> implements Iterable<Item> {
     private Node<Item> first;    // beginning of bag
     private int n;               // number of elements in bag
 
@@ -82,7 +82,13 @@ public class Bag<Item> implements Iterable<Item> {
         }
     }
 
+    /**
+     * Unit tests the {@code Bag} data type.
+     *
+     * @param args the command-line arguments
+     */
 
 
 }
+
 

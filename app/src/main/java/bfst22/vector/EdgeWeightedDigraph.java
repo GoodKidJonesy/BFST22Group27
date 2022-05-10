@@ -1,37 +1,34 @@
 package bfst22.vector;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 public class EdgeWeightedDigraph {
     private final int V;                // number of vertices in this digraph
     private int E;                      // number of edges in this digraph
-    private Bag<Edge>[] adj;    // adj[v] = adjacency list for vertex v
+
+    private HashMap<Integer, ArrayList<Edge>> adjacencyMap;
+    private ArrayList<Edge> edgeList = new ArrayList<>();
     private int[] indegree;
 
     public EdgeWeightedDigraph(int V) {
+        adjacencyMap = new HashMap<Integer, ArrayList<Edge>>();
         if (V < 0) throw new IllegalArgumentException("Number of vertices in a Digraph must be non-negative");
         this.V = V;
         this.E = 0;
         this.indegree = new int[V];
-        adj = (Bag<Edge>[]) new Bag[V];
-        for (int v = 0; v < V; v++)
-            adj[v] = new Bag<Edge>();
+        for (int v = 0; v < V; v++) {
+            adjacencyMap.put(v, new ArrayList<Edge>());
+        }
+
     }
 
 
-
-    /**
-     * Returns the number of vertices in this edge-weighted digraph.
-     *
-     * @return the number of vertices in this edge-weighted digraph
-     */
     public int V() {
         return V;
     }
 
-    /**
-     * Returns the number of edges in this edge-weighted digraph.
-     *
-     * @return the number of edges in this edge-weighted digraph
-     */
+
     public int E() {
         return E;
     }
@@ -50,11 +47,15 @@ public class EdgeWeightedDigraph {
      *                                  and {@code V-1}
      */
     public void addEdge(Edge e) {
+
         int v = e.getFrom2();
         int w = e.getTo2();
         validateVertex(v);
         validateVertex(w);
-        adj[E].add(e);
+        adjacencyMap.get(v).add(e);
+        adjacencyMap.get(w).add(e);
+
+
         indegree[w]++;
         E++;
     }
@@ -67,44 +68,25 @@ public class EdgeWeightedDigraph {
      * @return the directed edges incident from vertex {@code v} as an Iterable
      * @throws IllegalArgumentException unless {@code 0 <= v < V}
      */
-    public Iterable<Edge> adj(int v) {
+    public ArrayList<Edge> adj(int v) {
         validateVertex(v);
-        return adj[v];
+        return adjacencyMap.get(v);
     }
 
-    /**
-     * Returns the number of directed edges incident from vertex {@code v}.
-     * This is known as the <em>outdegree</em> of vertex {@code v}.
-     *
-     * @param v the vertex
-     * @return the outdegree of vertex {@code v}
-     * @throws IllegalArgumentException unless {@code 0 <= v < V}
-     */
-    public long outdegree(int v) {
+
+    public int outdegree(int v) {
         validateVertex(v);
-        return adj[v].size();
+        System.out.println(adjacencyMap.size());
+        return adjacencyMap.get(v).size();
     }
 
-    /**
-     * Returns the number of directed edges incident to vertex {@code v}.
-     * This is known as the <em>indegree</em> of vertex {@code v}.
-     *
-     * @param v the vertex
-     * @return the indegree of vertex {@code v}
-     * @throws IllegalArgumentException unless {@code 0 <= v < V}
-     */
-    public long indegree(int v) {
+
+    public int indegree(int v) {
         validateVertex(v);
         return indegree[v];
     }
 
-    /**
-     * Returns all directed edges in this edge-weighted digraph.
-     * To iterate over the edges in this edge-weighted digraph, use foreach notation:
-     * {@code for (DirectedEdge e : G.edges())}.
-     *
-     * @return all edges in this edge-weighted digraph, as an iterable
-     */
+
     public Iterable<Edge> edges() {
         Bag<Edge> list = new Bag<Edge>();
         for (int v = 0; v < V; v++) {
@@ -115,8 +97,13 @@ public class EdgeWeightedDigraph {
         return list;
     }
 
+    public HashMap<Integer, ArrayList<Edge>> getAdjacencyMap() {
+        return adjacencyMap;
+    }
+
 
 }
+
 
 
 
