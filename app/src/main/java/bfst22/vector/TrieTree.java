@@ -133,7 +133,8 @@ public class TrieTree {
     }
     private String replaceKey(String key){
         key = key.replace("æ", "ae").replace("ø","oe").replace("å", "aa").replace("é","e").replace("ü","u").replace("ö", "oe").replace("õ","oe").replace("ä","ae"); 
-        return key;
+
+        return key.toLowerCase().trim();
     }
 }
 

@@ -43,7 +43,7 @@ public class Controller {
 
     private Model model;
 
-    private TrieTree trie;
+
 
     Framerate FPS = new Framerate();
 
@@ -91,6 +91,7 @@ public class Controller {
     BorderPane root;
 
     public void init(Model model) {
+        this.model = model;
         canvas.init(model);
         TextFields.bindAutoCompletion(rute1, model.trie.searchMuliple(rute1.getText()));
         TextFields.bindAutoCompletion(rute2, model.trie.searchMuliple(rute2.getText()));
@@ -164,13 +165,14 @@ public class Controller {
             if(rute1.getText().isEmpty()) {
                 Notifications.create().title("Error").text("Please enter an address").showError();
             } else {
-            trie.searchForID(rute1.getText());
+            model.trie.searchForID(rute1.getText());
             }
         } else if(ruteSwitch.isSelected()) {
             if(rute1.getText().isEmpty() || rute2.getText().isEmpty()) {
                 Notifications.create().title("Error").text("Please fill in both fields").showError();
             } else {
-                getDirectionList();
+                //getDirectionList();
+                System.out.println(model.trie.searchForID(rute1.getText()));
             }
         }
     }
