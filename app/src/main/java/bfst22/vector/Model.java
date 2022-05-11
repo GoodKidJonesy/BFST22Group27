@@ -203,18 +203,6 @@ public class Model {
                                     break;
                                 case "highway":
                                 isHighway = true;
-
-                                    if (v.equals("primary") || v.equals("trunk") || v.equals("secondary")
-                                            || v.equals("trunk_link") || v.equals("secondary_link")) {
-                                        type = WayType.HIGHWAY;
-                                    } else if (v.equals("residential") || v.equals("service") || v.equals("cycleway")
-                                            || v.equals("tertiary") || v.equals("unclassified")
-                                            || v.equals("tertiary_link") || v.equals("road")) {
-                                        type = WayType.CITYWAY;
-                                    } else if (v.equals("motorway") || v.equals("motorway_link")) {
-                                        type = WayType.MOTORWAY;
-                                    }
-
                                     switch (v) {
                                         case "primary":
                                         case "trunk":
@@ -241,7 +229,6 @@ public class Model {
                                         default:
                                             break;
                                     }
-
                                     break;
                                 case "addr:city":
                                     if (address == null) {
@@ -360,7 +347,7 @@ public class Model {
 
     public void addAddress() {
         // System.out.println(address.getStreet());
-        trie.insert(address.toString(), address.getCords());
+        trie.insert(address.toString(), address.getCords(), address.getID2());
         address = null;
     }
 

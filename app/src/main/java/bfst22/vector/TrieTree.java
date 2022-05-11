@@ -1,5 +1,6 @@
 package bfst22.vector;
 
+import java.lang.annotation.Repeatable;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -21,9 +22,11 @@ public class TrieTree {
         String cords;
         boolean endOfString;
         char character;
+        int id2;
         public TrieNode(){}
-        TrieNode(String cords, char c) {
+        TrieNode(String cords, char c, int id2) {
             this.character = c;
+            this.id2 = id2;
             endOfString = false;
             this.cords = cords;
             for (int i = 0; i < alhabet_size; i++) {
@@ -38,8 +41,8 @@ public class TrieTree {
     // insert metode der tager en String som argument og indsætter denne i træet.
     // hver char i key bliver indsat efter den forrige og hver node har en parent
     // samt børn.
-    public void insert(String key, String cords) {
-        key = key.replace("æ", "ae").replace("ø","oe").replace("å", "aa").replace("é","e").replace("ü","u").replace("ö", "oe").replace("õ","oe").replace("ä","ae");
+    public void insert(String key, String cords, int id2) {
+        key = replaceKey(key);
         int depth;
         int index;
 
@@ -56,7 +59,7 @@ public class TrieTree {
             if(index < 0)
                 index += 75;
             if (parent.children[index] == null)
-                parent.children[index] = new TrieNode(cords, key.charAt(depth));
+                parent.children[index] = new TrieNode(cords, key.charAt(depth), id2);
 
             parent = parent.children[index];
         }
@@ -65,8 +68,8 @@ public class TrieTree {
 
     // search metode, fungerer ligesom insert. metode bare hvor den tjekker hver
     // node og sammenligner med input.
-    public static String search(String key) {
-        key = key.replace("æ", "ae").replace("ø","oe").replace("å", "aa").replace("é","e").replace("ü","u").replace("ö", "oe").replace("õ","oe").replace("ä","ae");
+    public int searchForID(String key) {
+        key = replaceKey(key);
         int depth;
         int index;
         TrieNode parent = root;
@@ -79,15 +82,13 @@ public class TrieTree {
                 index += 75;            
             if (parent.children[index] == null){
                 found = false;
-                return "No such address found";
+                return Integer.MAX_VALUE;
             }
 
             parent = parent.children[index];
         }
         found = true;
-        System.out.println(found);
-        System.out.println(parent.cords);
-        return parent.cords;
+        return parent.id2;
     }
 
     //metode til at søge efter alle ord der indeholder bruger input i trietree.
@@ -95,7 +96,7 @@ public class TrieTree {
     //finder den node som er sidste character i inputtet og kalder derefter DFS metoden med denne node, input og arraylist.
     public ArrayList<String> searchMuliple(String key){
         ArrayList<String> words = new ArrayList<>();
-        key = key.replace("æ", "ae").replace("ø","oe").replace("å", "aa").replace("é","e").replace("ü","u").replace("ö", "oe").replace("õ","oe").replace("ä","ae");
+        key = replaceKey(key);
         TrieNode currentNode = root;
         for(int i = 0; i < key.length(); i++){
             inner : for(TrieNode n : currentNode.children){
@@ -129,6 +130,10 @@ public class TrieTree {
             }
         }
         return words;
+    }
+    private String replaceKey(String key){
+        key = key.replace("æ", "ae").replace("ø","oe").replace("å", "aa").replace("é","e").replace("ü","u").replace("ö", "oe").replace("õ","oe").replace("ä","ae"); 
+        return key;
     }
 }
 

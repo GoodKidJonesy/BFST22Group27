@@ -4,11 +4,12 @@ public class Address {
     private String city, postcode, houseNumber, street;
     private final float x, y;
     private final long id;
-
+    private int id2;
     public Address(OSMNode node) {
         this.x = node.getX();
         this.y = node.getY();
         this.id = node.getID();
+        this.id2 = node.getID2();
     }
 
     public void setCity(String city) {
@@ -74,6 +75,9 @@ public class Address {
     }
     public long getId(){
         return id;
+    }
+    public int getID2(){
+        return id2;
     }
 
 }

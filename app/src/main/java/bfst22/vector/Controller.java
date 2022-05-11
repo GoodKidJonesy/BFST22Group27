@@ -43,8 +43,6 @@ public class Controller {
 
     private Model model;
 
-    private Address address;
-
     private TrieTree trie;
 
     Framerate FPS = new Framerate();
@@ -166,7 +164,7 @@ public class Controller {
             if(rute1.getText().isEmpty()) {
                 Notifications.create().title("Error").text("Please enter an address").showError();
             } else {
-            trie.search(rute1.getText());
+            trie.searchForID(rute1.getText());
             }
         } else if(ruteSwitch.isSelected()) {
             if(rute1.getText().isEmpty() || rute2.getText().isEmpty()) {
