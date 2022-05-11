@@ -7,7 +7,8 @@ public class OSMNode implements Serializable {
     long id;
     int id2;
     float lat, lon;
-    OSMNode right,left;
+    OSMNode right, left;
+    String streetName;
 
     public OSMNode(long id, int id2, float lat, float lon) {
         this.id = id;
@@ -18,6 +19,16 @@ public class OSMNode implements Serializable {
         this.left = null;
     }
 
+    public OSMNode(long id, int id2, float lat, float lon, String streetName) {
+        this.id = id;
+        this.lat = lat;
+        this.lon = lon;
+        this.id2 = id2;
+        this.right = null;
+        this.left = null;
+        this.streetName = streetName;
+    }
+
     public float getX() {
         return lat;
     }
@@ -26,7 +37,15 @@ public class OSMNode implements Serializable {
         return lon;
     }
 
-    public long getID(){ return id; }
+    public long getID() {
+        return id;
+    }
 
-    public int getID2(){ return id2;}
+    public int getID2() {
+        return id2;
+    }
+
+    public String getStreetName(){
+        return streetName;
+    }
 }

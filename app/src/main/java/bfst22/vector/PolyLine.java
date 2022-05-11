@@ -13,6 +13,7 @@ public class PolyLine extends Drawable implements Serializable {
     public int size = 0;
     public OSMNode from, to;
     public List<OSMNode> nodes;
+    public String name;
 
     public PolyLine(List<OSMNode> nodes, WayType type) {
         coords = new float[nodes.size() * 2];
@@ -27,6 +28,22 @@ public class PolyLine extends Drawable implements Serializable {
         this.size = coords.length / 2;
         this.from = nodes.get(0);
         this.to = nodes.get(nodes.size() - 1);
+    }
+
+    public PolyLine(List<OSMNode> nodes, WayType type, String name) {
+        coords = new float[nodes.size() * 2];
+        int i = 0;
+        for (var node : nodes) {
+            coords[i++] = node.lat;
+            coords[i++] = node.lon;
+
+        }
+        this.nodes = nodes;
+        this.type = type;
+        this.size = coords.length / 2;
+        this.from = nodes.get(0);
+        this.to = nodes.get(nodes.size() - 1);
+        this.name = name;
     }
 
     public List<OSMNode> getNodes(){
@@ -135,5 +152,9 @@ public class PolyLine extends Drawable implements Serializable {
 
     public OSMNode getTo(){
         return to;
+    }
+
+    public String getName(){
+        return name;
     }
 }

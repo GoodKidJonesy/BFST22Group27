@@ -12,7 +12,7 @@ public class Range {
   public Range(Point2D topLeft, Point2D bottomRight) {
     this.topLeft = topLeft;
     this.bottomRight = bottomRight;
-    this.debug = true;
+    this.debug = false;
   }
 
   public void update(Point2D tL, Point2D bR) {

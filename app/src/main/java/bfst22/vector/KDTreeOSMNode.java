@@ -2,6 +2,8 @@ package bfst22.vector;
 
 import java.util.*;
 
+import javafx.geometry.Point2D;
+
 public class KDTreeOSMNode {
   int nodes = 0;
 
@@ -21,6 +23,8 @@ public class KDTreeOSMNode {
   }
 
   private OSMNode root;
+  public OSMNode nearest;
+  public double shortestDist;
 
   public KDTreeOSMNode() {
     this.root = null;
@@ -173,5 +177,60 @@ public class KDTreeOSMNode {
     if (n.left != null) getSize(n.left);
     if (n.right != null) getSize(n.right);
     return nodes;
+  }
+
+  private double distTo(OSMNode r, Point2D target) {
+    return Math.hypot(r.getX() - target.getX(), r.getY() - target.getY());
+  }
+
+  //Used to check whether we should check other side of kdtree
+  private double distTo(Point2D refference, Point2D target) {
+    return Math.hypot(refference.getX() - target.getX(), refference.getY() - target.getY());
+  }
+
+  private void nearestNeighbor(Point2D target, OSMNode r, int depth) {
+    if (r == null) {
+      return;
+    }
+
+    if (distTo(r, target) < shortestDist) {
+      shortestDist = distTo(r, target);
+      nearest = r;
+    }
+
+    if (depth % 2 == 0) {
+      if (target.getX() < r.getX()) {
+        nearestNeighbor(target, r.left, depth + 1);
+        if (distTo(new Point2D(r.getX(), target.getY()), target) < distTo(r, target)) {
+          nearestNeighbor(target, r.right, depth + 1);
+        }
+      } else {
+        nearestNeighbor(target, r.right, depth + 1);
+        if (distTo(new Point2D(r.getX(), target.getY()), target) < distTo(r, target)) {
+          nearestNeighbor(target, r.left, depth + 1);
+        }
+      }
+      
+    } else {
+      if (target.getY() < r.getY()) {
+        nearestNeighbor(target, r.left, depth + 1);
+        if (distTo(new Point2D(target.getX(), r.getY()), target) < distTo(r, target)) {
+          nearestNeighbor(target, r.right, depth + 1);
+        }
+      } else {
+        nearestNeighbor(target, r.right, depth + 1);
+        if (distTo(new Point2D(target.getX(), r.getY()), target) < distTo(r, target)) {
+          nearestNeighbor(target, r.left, depth + 1);
+        }
+      }
+      
+    }
+  }
+
+  public OSMNode getNearestNeighbor(Point2D target) {
+    nearest = root;
+    shortestDist = distTo(root, target);
+    nearestNeighbor(target, root, 0);
+    return nearest;
   }
 }

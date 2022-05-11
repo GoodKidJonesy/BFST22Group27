@@ -47,8 +47,8 @@ public class Model {
     private ArrayList<Edge> edgeList = new ArrayList<>();
     private NodeMap id2node = new NodeMap();
     private EdgeWeightedDigraph graf;
-    KDTree kdTree;
-    KDTree roadTree;
+    KDTree kdTree = new KDTree();
+    KDTree roadTree = new KDTree();
     String wayName = null;
     int maxSpeed = 0;
     boolean isHighway = false;
@@ -63,8 +63,6 @@ public class Model {
     public Model(String filename)
             throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
         long time = -System.nanoTime();
-        kdTree = new KDTree();
-        roadTree = new KDTree();
         if (filename.endsWith(".zip")) {
             ZipInputStream zip = new ZipInputStream(new FileInputStream(filename));
             zip.getNextEntry();
@@ -127,7 +125,7 @@ public class Model {
                             osmnode = new OSMNode(id, id2, 0.56f * lon, -lat);
                             id2++;
                             id2node.add(osmnode);
-                            Vertex V = new Vertex(id,0.56f*lon, -lat);
+                            Vertex V = new Vertex(id, 0.56f * lon, -lat);
                             vertexList.add(V);
                             break;
                         case "nd":
@@ -203,7 +201,7 @@ public class Model {
                                     }
                                     break;
                                 case "highway":
-                                isHighway = true;
+                                    isHighway = true;
 
                                     if (v.equals("primary") || v.equals("trunk") || v.equals("secondary")
                                             || v.equals("trunk_link") || v.equals("secondary_link")) {
@@ -311,13 +309,16 @@ public class Model {
                 case XMLStreamConstants.END_ELEMENT:
                     switch (reader.getLocalName()) {
                         case "way":
-                            if (isHighway){
-                                //System.out.println(osmnode.id);
+                            PolyLine way;
+                            if (isHighway) {
+                                // System.out.println(osmnode.id);
                                 OSMWay highway = new OSMWay(nodes, wayName, maxSpeed);
                                 highways.add(highway);
                                 isHighway = false;
+                                way = new PolyLine(nodes, type, wayName);
+                            } else {
+                                way = new PolyLine(nodes, type);
                             }
-                            PolyLine way = new PolyLine(nodes, type);
                             id2way.put(relID, new OSMWay(nodes, wayName, maxSpeed));
                             lines.get(type).add(way);
                             nodes.clear();
@@ -369,7 +370,7 @@ public class Model {
         address = null;
     }
 
-    public List<Address> getAddresses(){
+    public List<Address> getAddresses() {
         return addresses;
     }
 
@@ -410,11 +411,13 @@ public class Model {
         for (OSMWay o : highways) {
             for (int j = 0; j < o.getNodes().size() - 1; j++) {
                 double distance = distanceCalc(o.getNodes().get(j).getID(), o.getNodes().get(j + 1).getID());
-                Edge e = new Edge(o.getNodes().get(j).getID(), o.getNodes().get(j + 1).getID(), o.getNodes().get(j).getID2(),
+                Edge e = new Edge(o.getNodes().get(j).getID(), o.getNodes().get(j + 1).getID(),
+                        o.getNodes().get(j).getID2(),
                         o.getNodes().get(j + 1).getID2(), o.getName(), distance / o.getSpeedLimit(), distance);
                 e.addFromC(o.getNodes().get(j).lat, o.getNodes().get(j).lon);
                 e.addToC(o.getNodes().get(j + 1).lat, o.getNodes().get(j + 1).lon);
-                Edge f = new Edge(o.getNodes().get(j + 1).getID(), o.getNodes().get(j).getID(), o.getNodes().get(j + 1).getID2(),
+                Edge f = new Edge(o.getNodes().get(j + 1).getID(), o.getNodes().get(j).getID(),
+                        o.getNodes().get(j + 1).getID2(),
                         o.getNodes().get(j).getID2(), o.getName(), distance / o.getSpeedLimit(), distance);
                 f.addFromC(o.getNodes().get(j + 1).lat, o.getNodes().get(j + 1).lon);
                 f.addToC(o.getNodes().get(j).lat, o.getNodes().get(j).lon);

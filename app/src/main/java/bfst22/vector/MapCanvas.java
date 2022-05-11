@@ -6,6 +6,8 @@ import java.awt.geom.Ellipse2D;
 import java.lang.reflect.Array;
 import java.nio.file.WatchKey;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
@@ -22,6 +24,7 @@ public class MapCanvas extends Canvas {
     double minZoom = -0.06;
     float zoomedIn = 0;
     Range range = new Range(new Point2D(0, 0), new Point2D(0, 0));
+    Range buffer = new Range(new Point2D(0, 0), new Point2D(0, 0));
     Point2D mousePos = new Point2D(0, 0);
 
     Dijkstra path;
@@ -54,7 +57,7 @@ public class MapCanvas extends Canvas {
         }
 
         for (Drawable d : query()) {
-            if (d.getType() != WayType.LAND) {
+            if (d.getType() != WayType.LAND && d.getType() != WayType.BUILDING && d.getType() != WayType.LANDUSE) {
                 if (d.getType().getRequiredZoom() <= zoomedIn) {
                     if (d.getType().fillTrue()) {
                         gc.setFill(d.getType().getColor());
@@ -67,43 +70,52 @@ public class MapCanvas extends Canvas {
             }
         }
 
-        /*
-         * for (Drawable d : model.roadTree.query(model.roadTree.getRoot(), range, 0)) {
-         * if (d.getType().fillTrue()) {
-         * gc.setFill(d.getType().getColor());
-         * d.fill(gc);
-         * } else {
-         * gc.setStroke(d.getType().getColor());
-         * d.draw(gc);
-         * }
-         * }
-         * 
-         * Drawable n = model.roadTree.getNearestNeighbor(mousePos);
-         * 
-         * gc.setLineWidth(4 / Math.sqrt(trans.determinant()));
-         * if (n.getType().fillTrue()) {
-         * gc.setFill(Color.RED);
-         * n.fill(gc);
-         * } else {
-         * gc.setStroke(Color.RED);
-         * n.draw(gc);
-         * }
-         */
+        for (Drawable d : model.roadTree.query(model.roadTree.getRoot(), buffer, 0)) {
+            if (d.getType().getRequiredZoom() <= zoomedIn) {
+                if (d.getType().fillTrue()) {
+                    gc.setFill(d.getType().getColor());
+                    d.fill(gc);
+                } else {
+                    gc.setStroke(d.getType().getColor());
+                    d.draw(gc);
+                }
+            }
+        }
 
-        drawRoute(1572, 615782, model.getGraf());
-        gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
-        drawRange();
+        Drawable n = model.roadTree.getNearestNeighbor(mousePos);
+        System.out.println(((PolyLine) n).getName());
+
+        gc.setLineWidth(4 / Math.sqrt(trans.determinant()));
+        if (n.getType().fillTrue()) {
+            gc.setFill(Color.RED);
+            n.fill(gc);
+        } else {
+            gc.setStroke(Color.RED);
+            n.draw(gc);
+        }
+
+        //drawRoute(1572, 615782, model.getGraf());
+
+        gc.setLineWidth(5 / Math.sqrt(trans.determinant()));
+        drawRange(range, Color.BLACK);
+        drawRange(buffer, Color.RED);
     }
 
     private ArrayList<Drawable> query() {
-        return model.kdTree.query(model.kdTree.getRoot(), range, 0);
+        return model.kdTree.query(model.kdTree.getRoot(), buffer, 0);
     }
 
     private void moveRange() {
         var gc = getGraphicsContext2D();
-        Point2D topLeft = mouseToModel(new Point2D(0, 0));
-        Point2D bottomRight = mouseToModel(new Point2D(gc.getCanvas().getWidth(), gc.getCanvas().getHeight()));
-        range.update(topLeft, bottomRight);
+        Point2D topLeft = new Point2D(0, 0);
+        Point2D bottomRight = new Point2D(gc.getCanvas().getWidth() - 218, gc.getCanvas().getHeight());
+        range.update(mouseToModel(topLeft), mouseToModel(bottomRight));
+
+        topLeft = new Point2D(0 - (bottomRight.getX() - topLeft.getX()),
+                0 - (bottomRight.getY() - topLeft.getY()));
+        bottomRight = new Point2D(gc.getCanvas().getWidth() + (bottomRight.getX() - topLeft.getX()) - 218,
+                gc.getCanvas().getHeight() + (bottomRight.getY() - topLeft.getY()));
+        buffer.update(mouseToModel(topLeft), mouseToModel(bottomRight));
     }
 
     void pan(double dx, double dy) {
@@ -137,20 +149,21 @@ public class MapCanvas extends Canvas {
         }
     }
 
-    private void drawRange() {
+    private void drawRange(Range r, Color c) {
         var gc = getGraphicsContext2D();
-        gc.setStroke(Color.BLACK);
+        gc.setStroke(c);
         gc.beginPath();
-        gc.moveTo(range.getLeft(), range.getTop());
-        gc.lineTo(range.getRight(), range.getTop());
-        gc.lineTo(range.getRight(), range.getBottom());
-        gc.lineTo(range.getLeft(), range.getBottom());
-        gc.lineTo(range.getLeft(), range.getTop());
+        gc.moveTo(r.getLeft(), r.getTop());
+        gc.lineTo(r.getRight(), r.getTop());
+        gc.lineTo(r.getRight(), r.getBottom());
+        gc.lineTo(r.getLeft(), r.getBottom());
+        gc.lineTo(r.getLeft(), r.getTop());
         gc.stroke();
     }
 
     public void setRangeDebug(boolean debug) {
         range.updateDebug(debug);
+        buffer.updateDebug(debug);
     }
 
     public void updateMousePos(Point2D m) {
@@ -165,13 +178,13 @@ public class MapCanvas extends Canvas {
 
     }
 
-    void drawRoute(int v, int w, EdgeWeightedDigraph G){
+    void drawRoute(int v, int w, EdgeWeightedDigraph G) {
         Dijkstra path = new Dijkstra(G, v, w);
         float distance = 0;
         var gc = getGraphicsContext2D();
         gc.setStroke(Color.GOLD);
         gc.setLineWidth(0.0005);
-        for (Edge e : path.pathTo(w)){
+        for (Edge e : path.pathTo(w)) {
             distance += e.getDistance();
             drawEdge(e, gc);
 

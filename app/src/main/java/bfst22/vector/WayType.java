@@ -3,35 +3,35 @@ package bfst22.vector;
 import javafx.scene.paint.Color;
 
 public enum WayType {
-    LAND(Color.WHITE, 0f),
+    LAND(Color.WHITE, 0.1f),
 
-    FOREST(Color.rgb(0, 204, 102), 0f),
+    FOREST(Color.rgb(0, 204, 102), 0.1f),
 
-    LANDUSE(Color.rgb(255, 204, 153), 0f),
+    LANDUSE(Color.rgb(255, 204, 153), 0.1f),
 
-    LAKE(Color.rgb(51, 153, 255), 0f),
-    
-    CITY(Color.rgb(255, 255, 255), 0.5f),
+    LAKE(Color.rgb(51, 153, 255), 0.1f),
+
+    CITY(Color.rgb(192, 192, 192), 0.1f),
 
     UNKNOWN(Color.rgb(64, 64, 64), .2f),
 
-    BUILDING(Color.rgb(192, 192, 192), .5f),
+    BUILDING(Color.rgb(100, 100, 100), .2f),
 
-    HIGHWAY(Color.rgb(233, 132, 31), 0f),
+    HIGHWAY(Color.rgb(233, 132, 31), 0.1f),
 
-    SUBWAY(Color.rgb(233, 132, 31), .2f),
+    SUBWAY(Color.rgb(233, 132, 31), 0.2f),
 
-    CITYWAY(Color.rgb(0, 0, 0), .4f),
+    CITYWAY(Color.rgb(0, 0, 0), 0.3f),
 
-    MOTORWAY(Color.rgb(255, 51, 51), 0f),
+    MOTORWAY(Color.rgb(255, 51, 51), 0.1f),
 
     COASTLINE(Color.rgb(0, 0, 0), 0f),
 
-    MILITARY(Color.TRANSPARENT, 1000f),
+    MILITARY(Color.TRANSPARENT, 2f),
 
-    STONE(Color.rgb(192, 192, 192), 0f),
+    STONE(Color.rgb(192, 192, 192), 0.1f),
 
-    WETLAND(Color.rgb(135, 255, 195), 0f);
+    WETLAND(Color.rgb(135, 255, 195), 0.1f);
 
     private final Color color;
     private final float requiredZoom;

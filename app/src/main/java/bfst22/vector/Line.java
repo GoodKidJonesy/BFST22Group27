@@ -3,8 +3,6 @@ package bfst22.vector;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 
-import java.awt.*;
-
 public class Line extends Drawable {
     Point2D from, to;
 
