@@ -94,9 +94,8 @@ public class Controller {
 
     public void init(Model model) {
         canvas.init(model);
-        String[] address = model.getAddresses().toString().split(",");
-        TextFields.bindAutoCompletion(rute1, address);
-        TextFields.bindAutoCompletion(rute2, address);
+        TextFields.bindAutoCompletion(rute1, model.trie.searchMuliple(rute1.getText()));
+        TextFields.bindAutoCompletion(rute2, model.trie.searchMuliple(rute2.getText()));
     }
 
     @FXML

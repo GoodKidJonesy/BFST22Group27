@@ -8,7 +8,7 @@ public class App extends Application {
     private final long[] frameTimes = new long[100];
     private int frameTimeIndex = 0;
     private boolean arrayFilled = false;
-    private final String defaultMap = "data/bornholm.osm";
+    private final String defaultMap = "data/map2.osm";
 
 
     @Override

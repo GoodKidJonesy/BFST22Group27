@@ -11,7 +11,7 @@ public enum WayType {
 
     LAKE(Color.rgb(51, 153, 255), 0f),
     
-    CITY(Color.rgb(255, 255, 255), 0.5f),
+    CITY(Color.rgb(255, 255, 255), 110f),
 
     UNKNOWN(Color.rgb(64, 64, 64), .2f),
 
@@ -29,9 +29,9 @@ public enum WayType {
 
     MILITARY(Color.TRANSPARENT, 1000f),
 
-    STONE(Color.rgb(192, 192, 192), 0f),
+    STONE(Color.rgb(192, 192, 192), 0.5f),
 
-    WETLAND(Color.rgb(135, 255, 195), 0f);
+    WETLAND(Color.rgb(135, 255, 195), 0.5f);
 
     private final Color color;
     private final float requiredZoom;
