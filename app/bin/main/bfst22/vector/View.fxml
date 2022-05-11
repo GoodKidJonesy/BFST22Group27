@@ -185,7 +185,7 @@
                      <children>
                         <CheckBox fx:id="FPSBox" mnemonicParsing="false" text="FPS" />
                         <CheckBox fx:id="KdBox" mnemonicParsing="false" onAction="#KdDebugger" text="KDTree" GridPane.columnIndex="1" />
-                        <CheckBox mnemonicParsing="false" text="CheckBox" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <CheckBox fx:id="ColorBlind" mnemonicParsing="false" text="ColorBlind mode" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <CheckBox mnemonicParsing="false" text="CheckBox" GridPane.rowIndex="1" />
                         <Button fx:id="resetButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onMouseClicked="#resetZoom" prefHeight="25.0" prefWidth="103.0" style="-fx-background-radius: 5em;" text="Reset" GridPane.rowIndex="2">
                            <cursor>

@@ -1,7 +1,5 @@
 package bfst22.vector;
 
-import bfst22.vector.OSMNode;
-
 public class Address {
     private String city, postcode, houseNumber, street;
     private final float x, y;
@@ -50,6 +48,13 @@ public class Address {
         return street.toLowerCase().replace(" ", "");
     }
 
+    public String toString() {
+        return street.toLowerCase().replace("é","e").replace("ü","u").replace("ö", "oe").replace("õ","oe").replace("ä","ae") + " " + houseNumber.toLowerCase() + " " + postcode + " " + city.toLowerCase();
+    }
+    public String getCords(){
+        return x + "." + y;
+    }
+
     public String getHouseNumber() {
         return houseNumber;
     }
@@ -61,14 +66,6 @@ public class Address {
     public String getCity() {
         return city;
     }
-
-    public String toString() {
-        return street.toLowerCase().replace("é","e").replace("ü","u").replace("ö", "oe").replace("õ","oe").replace("ä","ae") + " " + houseNumber.toLowerCase() + " " + postcode + " " + city.toLowerCase();
-    }
-    public String getCords(){
-        return x + "." + y;
-    }
-
     public float getX(){
         return this.x;
     }

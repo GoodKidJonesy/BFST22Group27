@@ -1,6 +1,5 @@
 package bfst22.vector;
 
-import java.awt.*;
 import java.io.IOException;
 
 import javafx.fxml.FXMLLoader;

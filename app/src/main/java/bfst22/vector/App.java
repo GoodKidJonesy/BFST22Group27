@@ -1,8 +1,6 @@
 package bfst22.vector;
 
-import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 
