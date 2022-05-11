@@ -4,8 +4,12 @@ import javax.swing.Action;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
+import java.io.Console;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.lang.System.Logger;
 //import observableValue
 import java.util.Observable;
 import java.util.List;
@@ -13,20 +17,27 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
@@ -69,11 +80,16 @@ public class Controller {
                     searchButton,
                     resetButton,
                     plusBtn,
-                    minusBtn;
+                    minusBtn,
+                    loadCustomBtn,
+                    loadDenmarkBtn;
 
     @FXML
     private TextField   rute1,
                         rute2;
+
+    @FXML
+    TextArea logger;
 
     @FXML 
     Label totalDistanceLabel,
@@ -89,6 +105,9 @@ public class Controller {
 
     @FXML 
     CheckBox FPSBox, KdBox;
+
+    @FXML
+    MenuItem loadCustom;
 
     App app;
 
@@ -106,7 +125,7 @@ public class Controller {
     public void init(Model model) {
         this.model = model;
         canvas.init(model);
-        address = model.addresses.toString().split(", ");
+        //address = model.addresses.toString().split(", ");
         TextFields.bindAutoCompletion(rute1, model.trie.searchMultiple(rute1.getText()));
         TextFields.bindAutoCompletion(rute2, model.trie.searchMultiple(rute2.getText()));
     }
@@ -293,7 +312,10 @@ public class Controller {
         canvas.zoomedIn = 0;
         zoomBar.setProgress(canvas.zoomedIn);
         zoomValue.setText(0 + "%");
-        init(this.model);
+        canvas.init(model);
+        canvas.repaint();
+   
+
         
         
         //Aner ikke hvordan jeg resetter kortet, til at resettes til samme zoom og position, som når man starter programmet.
@@ -320,15 +342,29 @@ public class Controller {
         
 
     @FXML
-    private void loadDenmark(ActionEvent e) {
+    private void loadDenmark(ActionEvent e) throws ClassNotFoundException, IOException, XMLStreamException, FactoryConfigurationError {
+        
+        Stage currentStage = (Stage) loadCustomBtn.getScene().getWindow();
+        var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
+        currentStage.setScene(loader.load());
+        currentStage.show();
 
-    }
-
+        Thread thread = new Thread(() -> {
+            try {
+                var newModel = new Model(App.defaultMap);
+                currentStage.close();
+                Stage stage = new Stage();
+                new View(newModel, stage);
+            } catch (ClassNotFoundException | IOException | XMLStreamException | FactoryConfigurationError ex) {
+                System.out.println(ex.getMessage());
+            }
+        });
+            thread.start();
+    }   
+       
 
     @FXML
     private void loadCustom(ActionEvent e) throws ClassNotFoundException, IOException, XMLStreamException, FactoryConfigurationError {
-        //when pressing button, a file chooser will appear and you can select a file to load
-        //you can choose an osm file
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open File");
@@ -337,11 +373,22 @@ public class Controller {
         File selectedFile = fileChooser.showOpenDialog(null);
         String filePath = selectedFile.getAbsolutePath();
 
-        //load the file
-        this.model = new Model(filePath);
-        init(model);
 
+        Stage currentStage = (Stage) loadCustomBtn.getScene().getWindow();
+        var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
+        currentStage.setScene(loader.load());
+        currentStage.show();
 
-
+        Thread thread = new Thread(() -> {
+            try {
+                var newModel = new Model(filePath);
+                currentStage.close();
+                Stage stage = new Stage();
+                new View(newModel, stage);
+            } catch (ClassNotFoundException | IOException | XMLStreamException | FactoryConfigurationError ex) {
+                System.out.println(ex.getMessage());
+            }
+        });
+            thread.start();
     }   
 }

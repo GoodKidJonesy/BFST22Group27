@@ -252,7 +252,7 @@
               <menus>
                 <Menu mnemonicParsing="false" text="File">
                   <items>
-                    <MenuItem fx:id="loadCustomBtn" mnemonicParsing="false" onAction="#loadCustom" text="Load Custom File" />
+                    <MenuItem fx:id="loadCustom" mnemonicParsing="false" onAction="#loadCustom" text="Load Custom File" />
                   </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
