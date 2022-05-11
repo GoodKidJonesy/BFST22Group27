@@ -1,16 +1,14 @@
 package bfst22.vector;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import javafx.scene.canvas.GraphicsContext;
 
-public class MultiPolygon extends Drawable implements Serializable {
-    public static final long serialVersionUID = 1325234;
-    List<Drawable> parts = new ArrayList<>();
+public class MultiPolygon extends Drawable {
+    private List<Drawable> parts = new ArrayList<>();
     private WayType type;
-    public MultiPolygon left, right, parent;
+    public MultiPolygon left, right;
 
     public MultiPolygon(List<OSMWay> rel, WayType type) {
         for (var way : rel) {

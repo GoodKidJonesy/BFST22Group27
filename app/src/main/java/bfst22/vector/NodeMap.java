@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 public class NodeMap extends ArrayList<OSMNode> {
-    boolean sorted;
+    private boolean sorted;
 
     public boolean add(OSMNode node) {
         sorted = false;
@@ -13,20 +13,20 @@ public class NodeMap extends ArrayList<OSMNode> {
     
     public OSMNode get(long ref) {
         if (!sorted) {
-            sort(Comparator.comparing(node -> node.id));
+            sort(Comparator.comparing(node -> node.getID()));
             sorted = true;
         }
         int lo = 0;
         int hi = size();
         while (hi - lo > 1) {
             int mi = (lo + hi) / 2;
-            if (get(mi).id <= ref) {
+            if (get(mi).getID() <= ref) {
                 lo = mi;
             } else {
                 hi = mi;
             }
         }
         var node = get(lo);
-        return node.id == ref ? node : null;
+        return node.getID() == ref ? node : null;
     }
 }

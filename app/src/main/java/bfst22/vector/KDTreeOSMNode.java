@@ -5,7 +5,9 @@ import java.util.*;
 import javafx.geometry.Point2D;
 
 public class KDTreeOSMNode {
-  int nodes = 0;
+  private OSMNode root;
+  private OSMNode nearest;
+  private float shortestDist;
 
   // Sorter. It is parsed a list of nodes to sort, and an axis for it to sort by
   private static class OSMNodeSorter {
@@ -22,16 +24,20 @@ public class KDTreeOSMNode {
     }
   }
 
-  private OSMNode root;
-  public OSMNode nearest;
-  public double shortestDist;
-
   public KDTreeOSMNode() {
     this.root = null;
   }
 
   public OSMNode getRoot() {
     return root;
+  }
+
+  public OSMNode getNearest(){
+    return nearest;
+  }
+
+  public float getShortestDist(){
+    return shortestDist;
   }
 
   // Void for outsiders to call when they want to add a node
@@ -64,7 +70,7 @@ public class KDTreeOSMNode {
     ArrayList<OSMNode> right = new ArrayList<>();
     int median;
 
-    // If 0 nodes are parsed in, get out
+    // If 0 nodes are parsed in, getAvg out
     if (OSMNodes.size() == 0) {
       return;
     }
@@ -164,7 +170,7 @@ public class KDTreeOSMNode {
       System.out.println("Tree is empty");
       return;
     }
-    System.out.println(n);
+    // System.out.println(n);
 
     if (n.left != null)
       printTree(n.left);
@@ -172,18 +178,15 @@ public class KDTreeOSMNode {
       printTree(n.right);
   }
 
-  public int getSize(OSMNode n) {
-    nodes++;
-    if (n.left != null) getSize(n.left);
-    if (n.right != null) getSize(n.right);
-    return nodes;
+  public boolean isEmpty() {
+    return root == null ? true : false;
   }
 
   private double distTo(OSMNode r, Point2D target) {
     return Math.hypot(r.getX() - target.getX(), r.getY() - target.getY());
   }
 
-  //Used to check whether we should check other side of kdtree
+  // Used to check whether we should check other side of kdtree
   private double distTo(Point2D refference, Point2D target) {
     return Math.hypot(refference.getX() - target.getX(), refference.getY() - target.getY());
   }
@@ -194,7 +197,7 @@ public class KDTreeOSMNode {
     }
 
     if (distTo(r, target) < shortestDist) {
-      shortestDist = distTo(r, target);
+      shortestDist = (float) distTo(r, target);
       nearest = r;
     }
 
@@ -210,7 +213,7 @@ public class KDTreeOSMNode {
           nearestNeighbor(target, r.left, depth + 1);
         }
       }
-      
+
     } else {
       if (target.getY() < r.getY()) {
         nearestNeighbor(target, r.left, depth + 1);
@@ -223,13 +226,13 @@ public class KDTreeOSMNode {
           nearestNeighbor(target, r.left, depth + 1);
         }
       }
-      
+
     }
   }
 
   public OSMNode getNearestNeighbor(Point2D target) {
     nearest = root;
-    shortestDist = distTo(root, target);
+    shortestDist = (float) distTo(root, target);
     nearestNeighbor(target, root, 0);
     return nearest;
   }

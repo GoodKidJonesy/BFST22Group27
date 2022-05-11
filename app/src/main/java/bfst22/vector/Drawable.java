@@ -2,11 +2,15 @@ package bfst22.vector;
 
 import javafx.scene.canvas.GraphicsContext;
 
-public abstract class Drawable {
+public abstract class Drawable implements Comparable<Drawable> {
     public Drawable left = null;
     public Drawable right = null;
-    public Drawable parent = null;
     private WayType type = null;
+
+    @Override
+    public int compareTo(Drawable d){
+        return this.getType().compareTo(d.getType());
+    }
 
     public void draw(GraphicsContext gc) {
         gc.beginPath();
@@ -21,7 +25,6 @@ public abstract class Drawable {
     }
 
     void trace(GraphicsContext gc) {
-
     }
 
     public float getAvgX() {

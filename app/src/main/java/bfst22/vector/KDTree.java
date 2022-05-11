@@ -1,14 +1,13 @@
 package bfst22.vector;
 
-import java.io.Serializable;
-import java.net.PortUnreachableException;
 import java.util.*;
 
 import javafx.geometry.Point2D;
-import javafx.scene.effect.Light.Point;
 
 public class KDTree {
-  int nodes = 0;
+  private Drawable root;
+  private Drawable nearest;
+  private float shortestDist;
 
   // Sorter. It is parsed a list of nodes to sort, and an axis for it to sort by
   private static class DrawableSorter {
@@ -25,16 +24,20 @@ public class KDTree {
     }
   }
 
-  private Drawable root;
-  public Drawable nearest;
-  public double shortestDist;
-
   public KDTree() {
     this.root = null;
   }
 
   public Drawable getRoot() {
     return root;
+  }
+
+  public Drawable getNearest(){
+    return nearest;
+  }
+
+  public float getShortestDist(){
+    return shortestDist;
   }
 
   // Void for outsiders to call when they want to add a node
@@ -175,15 +178,6 @@ public class KDTree {
       printTree(n.right);
   }
 
-  public int getAvgSize(Drawable n) {
-    nodes++;
-    if (n.left != null)
-      getAvgSize(n.left);
-    if (n.right != null)
-      getAvgSize(n.right);
-    return nodes;
-  }
-
   public boolean isEmpty() {
     return root == null ? true : false;
   }
@@ -192,7 +186,7 @@ public class KDTree {
     return Math.hypot(r.getAvgX() - target.getX(), r.getAvgY() - target.getY());
   }
 
-  //Used to check whether we should check other side of kdtree
+  // Used to check whether we should check other side of kdtree
   private double distTo(Point2D refference, Point2D target) {
     return Math.hypot(refference.getX() - target.getX(), refference.getY() - target.getY());
   }
@@ -203,7 +197,7 @@ public class KDTree {
     }
 
     if (distTo(r, target) < shortestDist) {
-      shortestDist = distTo(r, target);
+      shortestDist = (float) distTo(r, target);
       nearest = r;
     }
 
@@ -219,7 +213,7 @@ public class KDTree {
           nearestNeighbor(target, r.left, depth + 1);
         }
       }
-      
+
     } else {
       if (target.getY() < r.getAvgY()) {
         nearestNeighbor(target, r.left, depth + 1);
@@ -232,13 +226,13 @@ public class KDTree {
           nearestNeighbor(target, r.left, depth + 1);
         }
       }
-      
+
     }
   }
 
   public Drawable getNearestNeighbor(Point2D target) {
     nearest = root;
-    shortestDist = distTo(root, target);
+    shortestDist = (float) distTo(root, target);
     nearestNeighbor(target, root, 0);
     return nearest;
   }

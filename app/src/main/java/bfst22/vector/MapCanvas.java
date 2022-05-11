@@ -1,12 +1,7 @@
 package bfst22.vector;
 
 import java.util.ArrayList;
-import java.awt.*;
-import java.awt.geom.Ellipse2D;
-import java.lang.reflect.Array;
-import java.nio.file.WatchKey;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javafx.geometry.Point2D;
@@ -17,22 +12,21 @@ import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 
 public class MapCanvas extends Canvas {
+    private Model model;
+    private Affine trans = new Affine();
+    private double maxZoom = 1.06;
+    private double minZoom = -0.06;
+    private float zoomedIn = 0;
+    private Range range = new Range(new Point2D(0, 0), new Point2D(0, 0));
+    private Range buffer = new Range(new Point2D(0, 0), new Point2D(0, 0));
+    private Point2D mousePos = new Point2D(0, 0);
 
-    Model model;
-    Affine trans = new Affine();
-    double maxZoom = 1.06;
-    double minZoom = -0.06;
-    float zoomedIn = 0;
-    Range range = new Range(new Point2D(0, 0), new Point2D(0, 0));
-    Range buffer = new Range(new Point2D(0, 0), new Point2D(0, 0));
-    Point2D mousePos = new Point2D(0, 0);
-
-    Dijkstra path;
+    private Dijkstra path;
 
     void init(Model model) {
         this.model = model;
-        pan(-model.minlon, -model.minlat);
-        zoom(640 / (model.maxlon - model.minlon), 0, 0);
+        pan(-model.getMinlon(), -model.getMinlat());
+        zoom(1280 / (model.getMaxlon() - model.getMinlon()), 0, 0);
         moveRange();
         model.addObserver(this::repaint);
         repaint();
@@ -40,7 +34,6 @@ public class MapCanvas extends Canvas {
     }
 
     void repaint() {
-
         var gc = getGraphicsContext2D();
         gc.setTransform(new Affine());
         gc.setFill(WayType.LAKE.getColor());
@@ -55,9 +48,13 @@ public class MapCanvas extends Canvas {
                 d.fill(gc);
             }
         }
+        
+        List<Drawable> queryResult = query();
+        Collections.sort(queryResult);
 
-        for (Drawable d : query()) {
-            if (d.getType() != WayType.LAND && d.getType() != WayType.BUILDING && d.getType() != WayType.LANDUSE) {
+        
+        for (Drawable d : queryResult) {
+            if (d.getType() != WayType.LAND && d.getType() != WayType.LANDUSE && d.getType() != WayType.FOREST) {
                 if (d.getType().getRequiredZoom() <= zoomedIn) {
                     if (d.getType().fillTrue()) {
                         gc.setFill(d.getType().getColor());
@@ -70,7 +67,7 @@ public class MapCanvas extends Canvas {
             }
         }
 
-        for (Drawable d : model.roadTree.query(model.roadTree.getRoot(), buffer, 0)) {
+        for (Drawable d : model.getRoadTree().query(model.getRoadTree().getRoot(), buffer, 0)) {
             if (d.getType().getRequiredZoom() <= zoomedIn) {
                 if (d.getType().fillTrue()) {
                     gc.setFill(d.getType().getColor());
@@ -82,7 +79,7 @@ public class MapCanvas extends Canvas {
             }
         }
 
-        Drawable n = model.roadTree.getNearestNeighbor(mousePos);
+        Drawable n = model.getRoadTree().getNearestNeighbor(mousePos);
         System.out.println(((PolyLine) n).getName());
 
         gc.setLineWidth(4 / Math.sqrt(trans.determinant()));
@@ -101,8 +98,18 @@ public class MapCanvas extends Canvas {
         drawRange(buffer, Color.RED);
     }
 
+    public double getMaxZoom(){
+        return maxZoom;
+    }
+    public double getMinZoom(){
+        return minZoom;
+    }
+    public double getZoomedIn(){
+        return zoomedIn;
+    }
+
     private ArrayList<Drawable> query() {
-        return model.kdTree.query(model.kdTree.getRoot(), buffer, 0);
+        return model.getKdTree().query(model.getKdTree().getRoot(), buffer, 0);
     }
 
     private void moveRange() {
@@ -187,7 +194,6 @@ public class MapCanvas extends Canvas {
         for (Edge e : path.pathTo(w)) {
             distance += e.getDistance();
             drawEdge(e, gc);
-
         }
         System.out.println("Afstand: " + distance + " m?");
     }

@@ -4,11 +4,11 @@ import java.io.Serializable;
 
 public class OSMNode implements Serializable {
     public static final long serialVersionUID = 9082413;
-    long id;
-    int id2;
-    float lat, lon;
-    OSMNode right, left;
-    String streetName;
+    private long id;
+    private int id2;
+    private float lat, lon;
+    public OSMNode right, left;
+    private String streetName;
 
     public OSMNode(long id, int id2, float lat, float lon) {
         this.id = id;

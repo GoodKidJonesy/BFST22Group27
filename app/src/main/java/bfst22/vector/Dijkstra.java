@@ -1,14 +1,12 @@
 package bfst22.vector;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
-public class Dijkstra {
+public class Dijkstra{
 
     private Edge[] edgeTo;
     private IndexMinPQ<Double> pq;
     private double[] dist;
-
 
     public Dijkstra(EdgeWeightedDigraph G, int s, int t) {
         //set array of distances to hold infinity, and visited vertex boolean to false

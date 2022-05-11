@@ -1,49 +1,25 @@
 package bfst22.vector;
 
-import javax.swing.Action;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamException;
-
-import java.io.IOException;
-//import observableValue
-import java.util.Observable;
-import java.util.List;
-import java.util.ArrayList;
-import javafx.animation.FadeTransition;
-import javafx.beans.value.ChangeListener;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
-import javafx.util.Duration;
-import javafx.scene.control.ListView;
 
-import org.controlsfx.control.SearchableComboBox;
 import org.controlsfx.control.ToggleSwitch;
 import org.controlsfx.control.textfield.*;
 import org.controlsfx.control.Notifications;
 
 public class Controller {
     private Point2D lastMouse;
-
-    private Model model;
-
-    private Address address;
 
     private TrieTree trie;
 
@@ -105,13 +81,13 @@ public class Controller {
         var factor = e.getDeltaY();
 
         if(factor > 0) {
-            if(canvas.zoomedIn+0.1 < canvas.maxZoom) {
+            if(canvas.getZoomedIn()+0.1 < canvas.getMaxZoom()) {
                 canvas.getZoom(factor);
                 canvas.zoom(Math.pow(1.01, factor), e.getX(), e.getY());
                 zoomBarValue();
             }
         } else {
-            if(canvas.zoomedIn-0.1 > canvas.minZoom) {
+            if(canvas.getZoomedIn()-0.1 > canvas.getMinZoom()) {
                 canvas.getZoom(factor);
                 canvas.zoom(Math.pow(1.01, factor), e.getX(), e.getY());
                 zoomBarValue();
@@ -222,8 +198,8 @@ public class Controller {
     }
 
     private void zoomBarValue() {
-        zoomBar.setProgress(canvas.zoomedIn);
-        zoomValue.setText(Math.round(canvas.zoomedIn * 100) + "%");
+        zoomBar.setProgress(canvas.getZoomedIn());
+        zoomValue.setText(Math.round(canvas.getZoomedIn() * 100) + "%");
     }
 
     @FXML
@@ -233,8 +209,8 @@ public class Controller {
 
     @FXML
     private void resetZoom(MouseEvent e) {
-        //canvas.zoomedIn = 0;
-        //zoomBar.setProgress(canvas.zoomedIn);
+        //canvas.getZoomedIn() = 0;
+        //zoomBar.setProgress(canvas.getZoomedIn());
         //zoomValue.setText(0 + "%");
         //canvas.pan(-model.minlon, -model.minlat);
         //canvas.zoom(640 / (model.maxlon - model.minlon), 0, 0);

@@ -1,23 +1,19 @@
 package bfst22.vector;
 
-import java.io.Serializable;
-
-public class Edge implements Serializable {
+public class Edge {
     private final long from, to;
     private final int from2, to2;
     private final double weight, distance;
     private final float[] fromC, toC;
     String name;
-    //private final boolean forCar, forBike, forWalk;
-
+    // private final boolean forCar, forBike, forWalk;
 
     public Edge(
-                long from,
-                long to, int from2, int to2,
-                String name,
-                double weight,
-                double distance
-                ){
+            long from,
+            long to, int from2, int to2,
+            String name,
+            double weight,
+            double distance) {
 
         this.from = from;
         this.to = to;
@@ -34,28 +30,43 @@ public class Edge implements Serializable {
     public long getFrom() {
         return from;
     }
-    public long getTo(){
+
+    public long getTo() {
         return to;
     }
-    public double getWeight(){
+
+    public double getWeight() {
         return weight;
     }
-    public double getDistance(){
+
+    public double getDistance() {
         return distance;
     }
-    public int getTo2(){return to2;}
-    public int getFrom2(){return from2;}
-    public float[] getFromC(){return fromC;}
-    public float[] getToC(){return toC;}
-    public void addFromC(float lat, float lon){
+
+    public int getTo2() {
+        return to2;
+    }
+
+    public int getFrom2() {
+        return from2;
+    }
+
+    public float[] getFromC() {
+        return fromC;
+    }
+
+    public float[] getToC() {
+        return toC;
+    }
+
+    public void addFromC(float lat, float lon) {
         this.fromC[0] = lat;
         this.fromC[1] = lon;
     }
-    public void addToC(float lat, float lon){
+
+    public void addToC(float lat, float lon) {
         this.toC[0] = lat;
         this.toC[1] = lon;
     }
-
-
 
 }

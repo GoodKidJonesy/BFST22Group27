@@ -1,7 +1,5 @@
 package bfst22.vector;
 
-import java.io.Serializable;
-
 import javafx.geometry.Point2D;
 
 //Range class is for defining the users screen as a range in the program

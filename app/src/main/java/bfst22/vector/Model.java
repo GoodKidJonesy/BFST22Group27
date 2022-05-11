@@ -1,10 +1,5 @@
 package bfst22.vector;
 
-import org.w3c.dom.Node;
-
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -12,16 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
 
-import javax.management.relation.RelationType;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-
-import org.xml.sax.XMLReader;
-
-import javafx.beans.Observable;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -31,27 +21,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.text.DecimalFormat;
 
 public class Model {
-    float minlat, minlon, maxlat, maxlon;
-    int id2 = 0;
-    Address address = null;
-    TrieTree trie;
-    OSMNode osmnode = null;
-    private HashMap<Long, OSMWay> id2way = new HashMap<Long, OSMWay>();
+    private float minlat, minlon, maxlat, maxlon;
+    private int id2 = 0;
+    private Address address = null;
+    private TrieTree trie;
+    private OSMNode osmnode = null;
     private ArrayList<Address> addresses = new ArrayList<>();
     private ArrayList<OSMWay> highways = new ArrayList<OSMWay>();
-    private ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
     private Map<WayType, List<Drawable>> lines = new EnumMap<>(WayType.class);
     private ArrayList<Edge> edgeList = new ArrayList<>();
     private NodeMap id2node = new NodeMap();
     private EdgeWeightedDigraph graf;
-    KDTree kdTree = new KDTree();
-    KDTree roadTree = new KDTree();
-    String wayName = null;
-    int maxSpeed = 0;
-    boolean isHighway = false;
+    private KDTree kdTree = new KDTree();
+    private KDTree roadTree = new KDTree();
+    private String wayName = null;
+    private int maxSpeed = 0;
+    private boolean isHighway = false;
 
     {
         for (WayType type : WayType.values())
@@ -81,8 +68,9 @@ public class Model {
         }
         time += System.nanoTime();
         System.out.println("Load time: " + (long) (time / 1e6) + " ms");
-        if (!filename.endsWith(".obj"))
-            save(filename);
+        if (!filename.endsWith(".obj")) {
+            // save(filename);
+        }
     }
 
     public void save(String basename) throws FileNotFoundException, IOException {
@@ -99,7 +87,6 @@ public class Model {
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input));
         Map<Long, OSMWay> id2way = new HashMap<>();
         List<OSMNode> nodes = new ArrayList<>();
-        List<OSMWay> coastlines = new ArrayList<>();
         List<OSMWay> rel = new ArrayList<>();
         long relID = 0;
         WayType type = WayType.UNKNOWN;
@@ -125,8 +112,6 @@ public class Model {
                             osmnode = new OSMNode(id, id2, 0.56f * lon, -lat);
                             id2++;
                             id2node.add(osmnode);
-                            Vertex V = new Vertex(id, 0.56f * lon, -lat);
-                            vertexList.add(V);
                             break;
                         case "nd":
                             long ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
@@ -399,10 +384,6 @@ public class Model {
         kdTree.fillTree(main, 0);
     }
 
-    public NodeMap getId2node() {
-        return id2node;
-    }
-
     public void createGraph() {
         /**
          * constructs Edges from ArrayList highways, and tracks how many vertices there
@@ -414,13 +395,13 @@ public class Model {
                 Edge e = new Edge(o.getNodes().get(j).getID(), o.getNodes().get(j + 1).getID(),
                         o.getNodes().get(j).getID2(),
                         o.getNodes().get(j + 1).getID2(), o.getName(), distance / o.getSpeedLimit(), distance);
-                e.addFromC(o.getNodes().get(j).lat, o.getNodes().get(j).lon);
-                e.addToC(o.getNodes().get(j + 1).lat, o.getNodes().get(j + 1).lon);
+                e.addFromC(o.getNodes().get(j).getX(), o.getNodes().get(j).getY());
+                e.addToC(o.getNodes().get(j + 1).getX(), o.getNodes().get(j + 1).getY());
                 Edge f = new Edge(o.getNodes().get(j + 1).getID(), o.getNodes().get(j).getID(),
                         o.getNodes().get(j + 1).getID2(),
                         o.getNodes().get(j).getID2(), o.getName(), distance / o.getSpeedLimit(), distance);
-                f.addFromC(o.getNodes().get(j + 1).lat, o.getNodes().get(j + 1).lon);
-                f.addToC(o.getNodes().get(j).lat, o.getNodes().get(j).lon);
+                f.addFromC(o.getNodes().get(j + 1).getX(), o.getNodes().get(j + 1).getY());
+                f.addToC(o.getNodes().get(j).getX(), o.getNodes().get(j).getY());
                 edgeList.add(e);
                 edgeList.add(f);
 
@@ -443,11 +424,11 @@ public class Model {
 
     Double distanceCalc(long from, long to) {
         double R = 6371 * 1000;
-        double lat1 = id2node.get(from).lat * Math.PI / 180;
-        double lat2 = id2node.get(to).lat * Math.PI / 180;
+        double lat1 = id2node.get(from).getX() * Math.PI / 180;
+        double lat2 = id2node.get(to).getX() * Math.PI / 180;
         double deltaLat = (lat2 - lat1) * Math.PI / 180;
-        double lon1 = id2node.get(from).lon;
-        double lon2 = id2node.get(to).lon;
+        double lon1 = id2node.get(from).getY();
+        double lon2 = id2node.get(to).getY();
         double deltaLon = (lon2 - lon1) * Math.PI / 180;
 
         double a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) + Math.cos(lat1) *
@@ -459,4 +440,33 @@ public class Model {
 
         return d;
     }
+
+    public NodeMap getId2node() {
+        return id2node;
+    }
+
+    public double getMinlon() {
+        return minlon;
+    }
+
+    public double getMinlat() {
+        return minlat;
+    }
+
+    public double getMaxlon() {
+        return maxlon;
+    }
+
+    public double getMaxlat() {
+        return maxlat;
+    }
+
+    public KDTree getRoadTree() {
+        return roadTree;
+    }
+
+    public KDTree getKdTree() {
+        return kdTree;
+    }
+    
 }

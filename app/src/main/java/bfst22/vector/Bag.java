@@ -3,9 +3,9 @@ package bfst22.vector;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class  Bag<Item> implements Iterable<Item> {
-    private Node<Item> first;    // beginning of bag
-    private int n;               // number of elements in bag
+public class Bag<Item> implements Iterable<Item> {
+    private Node<Item> first; // beginning of bag
+    private int n; // number of elements in bag
 
     // helper linked list class
     private static class Node<Item> {
@@ -43,7 +43,7 @@ public class  Bag<Item> implements Iterable<Item> {
     /**
      * Adds the item to this bag.
      *
-     * @param  item the item to add to this bag
+     * @param item the item to add to this bag
      */
     public void add(Item item) {
         Node<Item> oldfirst = first;
@@ -53,13 +53,14 @@ public class  Bag<Item> implements Iterable<Item> {
         n++;
     }
 
-
     /**
-     * Returns an iterator that iterates over the items in this bag in arbitrary order.
+     * Returns an iterator that iterates over the items in this bag in arbitrary
+     * order.
      *
-     * @return an iterator that iterates over the items in this bag in arbitrary order
+     * @return an iterator that iterates over the items in this bag in arbitrary
+     *         order
      */
-    public Iterator<Item> iterator()  {
+    public Iterator<Item> iterator() {
         return new LinkedIterator(first);
     }
 
@@ -71,11 +72,17 @@ public class  Bag<Item> implements Iterable<Item> {
             current = first;
         }
 
-        public boolean hasNext()  { return current != null;                     }
-        public void remove()      { throw new UnsupportedOperationException();  }
+        public boolean hasNext() {
+            return current != null;
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
 
         public Item next() {
-            if (!hasNext()) throw new NoSuchElementException();
+            if (!hasNext())
+                throw new NoSuchElementException();
             Item item = current.item;
             current = current.next;
             return item;
@@ -88,7 +95,4 @@ public class  Bag<Item> implements Iterable<Item> {
      * @param args the command-line arguments
      */
 
-
 }
-
-

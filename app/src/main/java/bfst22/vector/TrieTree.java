@@ -8,7 +8,7 @@ public class TrieTree {
 
     }
 
-    static final int alhabet_size = 37; // antal symboler der bliver brugt, det danske alfabet+tal+mellemrum.
+    public static final int alhabet_size = 37; // antal symboler der bliver brugt, det danske alfabet+tal+mellemrum.
 
     // opretter trienode klassen, hver node har en arraylist af børn samt en bool
     // der afgør om det er en slutnode.
@@ -31,7 +31,7 @@ public class TrieTree {
     }
     
     // opretter root node som altid vil være null;
-    static TrieNode root = new TrieNode();
+    private static TrieNode root = new TrieNode();
 
     // insert metode der tager en String som argument og indsætter denne i træet.
     // hver char i key bliver indsat efter den forrige og hver node har en parent

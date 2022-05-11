@@ -1,14 +1,11 @@
 package bfst22.vector;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 public class EdgeWeightedDigraph {
     private final int V;                // number of vertices in this digraph
     private int E;                      // number of edges in this digraph
 
     private HashMap<Integer, ArrayList<Edge>> adjacencyMap;
-    private ArrayList<Edge> edgeList = new ArrayList<>();
     private int[] indegree;
 
     public EdgeWeightedDigraph(int V) {
@@ -20,7 +17,6 @@ public class EdgeWeightedDigraph {
         for (int v = 0; v < V; v++) {
             adjacencyMap.put(v, new ArrayList<Edge>());
         }
-
     }
 
 

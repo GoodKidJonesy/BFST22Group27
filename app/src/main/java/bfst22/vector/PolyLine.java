@@ -1,14 +1,12 @@
 package bfst22.vector;
 
-import java.io.Serializable;
 import java.util.List;
 
 import javafx.scene.canvas.GraphicsContext;
 
-public class PolyLine extends Drawable implements Serializable {
-    public static final long serialVersionUID = 134123;
+public class PolyLine extends Drawable {
     public float[] coords;
-    public PolyLine left, right, parent;
+    public PolyLine left, right;
     public WayType type;
     public int size = 0;
     public OSMNode from, to;
@@ -19,8 +17,8 @@ public class PolyLine extends Drawable implements Serializable {
         coords = new float[nodes.size() * 2];
         int i = 0;
         for (var node : nodes) {
-            coords[i++] = node.lat;
-            coords[i++] = node.lon;
+            coords[i++] = node.getX();
+            coords[i++] = node.getY();
 
         }
         this.nodes = nodes;
@@ -34,8 +32,8 @@ public class PolyLine extends Drawable implements Serializable {
         coords = new float[nodes.size() * 2];
         int i = 0;
         for (var node : nodes) {
-            coords[i++] = node.lat;
-            coords[i++] = node.lon;
+            coords[i++] = node.getX();
+            coords[i++] = node.getY();
 
         }
         this.nodes = nodes;
@@ -46,9 +44,10 @@ public class PolyLine extends Drawable implements Serializable {
         this.name = name;
     }
 
-    public List<OSMNode> getNodes(){
+    public List<OSMNode> getNodes() {
         return this.nodes;
     }
+
     @Override
     public void trace(GraphicsContext gc) {
         gc.moveTo(coords[0], coords[1]);
@@ -146,15 +145,15 @@ public class PolyLine extends Drawable implements Serializable {
         return type;
     }
 
-    public OSMNode getFrom(){
+    public OSMNode getFrom() {
         return from;
     }
 
-    public OSMNode getTo(){
+    public OSMNode getTo() {
         return to;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 }

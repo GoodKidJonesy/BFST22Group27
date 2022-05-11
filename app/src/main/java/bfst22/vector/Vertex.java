@@ -6,16 +6,15 @@ public class Vertex {
 
     private int[] neighboringEdges = new int[0];
 
-    public Vertex(long id, float x, float y){
+    public Vertex(long id, float x, float y) {
         this.x = x;
         this.y = y;
         this.id = id;
     }
 
-
-    public void addEdge(int id){
+    public void addEdge(int id) {
         int length = neighboringEdges.length;
-        int[] newLength = new int[length+1];
+        int[] newLength = new int[length + 1];
 
         for (int i = 0; i < length; i++) {
             newLength[i] = neighboringEdges[i];
@@ -25,8 +24,8 @@ public class Vertex {
 
     }
 
-    public float[] getCoords(){
-        return new float[]{x, y};
+    public float[] getCoords() {
+        return new float[] { x, y };
     }
 
     public float getX() {
@@ -37,7 +36,7 @@ public class Vertex {
         return y;
     }
 
-    public int[] getNeighboringEdges(){
+    public int[] getNeighboringEdges() {
         return neighboringEdges;
     }
 
