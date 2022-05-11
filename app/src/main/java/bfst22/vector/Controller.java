@@ -4,6 +4,7 @@ import javax.swing.Action;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
+import java.io.File;
 import java.io.IOException;
 //import observableValue
 import java.util.Observable;
@@ -31,6 +32,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.control.ListView;
@@ -102,40 +104,13 @@ public class Controller {
     private boolean rute2Found;
 
     public void init(Model model) {
-        canvas.init(model);
         this.model = model;
-        address = capitalize(model.addresses.toString().split(", "));
-        TextFields.bindAutoCompletion(rute1, capitalize(model.trie.searchMultiple(rute1.getText())));
-        TextFields.bindAutoCompletion(rute2, capitalize(model.trie.searchMultiple(rute2.getText())));
+        canvas.init(model);
+        address = model.addresses.toString().split(", ");
+        TextFields.bindAutoCompletion(rute1, model.trie.searchMultiple(rute1.getText()));
+        TextFields.bindAutoCompletion(rute2, model.trie.searchMultiple(rute2.getText()));
     }
 
-   //capitalize first letter of each word in arraylist
-    private List<String> capitalize(List<String> list) {
-        List<String> newList = new ArrayList<>();
-        for (String s : list) {
-            String[] words = s.split(" ");
-            StringBuilder sb = new StringBuilder();
-            for (String word : words) {
-                sb.append(word.substring(0, 1).toUpperCase()).append(word.substring(1)).append(" ");
-            }
-            newList.add(sb.toString().trim());
-        }
-        return newList;
-    }
-
-    //capitalize first letter of each word in array
-    private String[] capitalize(String[] list) {
-        String[] newList = new String[list.length];
-        for (int i = 0; i < list.length; i++) {
-            String[] words = list[i].split(" ");
-            StringBuilder sb = new StringBuilder();
-            for (String word : words) {
-                sb.append(word.substring(0, 1).toUpperCase()).append(word.substring(1)).append(" ");
-            }
-            newList[i] = sb.toString().trim();
-        }
-        return newList;
-    }
 
     @FXML
     private void onScroll(ScrollEvent e) {
@@ -307,10 +282,6 @@ public class Controller {
             }
     }
 
-
-
-
-
     @FXML
     private void onMouseMoved(MouseEvent e){
         lastMouse = new Point2D(e.getX(), e.getY());
@@ -319,11 +290,10 @@ public class Controller {
 
     @FXML
     private void resetZoom(MouseEvent e) {
-        //canvas.zoomedIn = 0;
-        //zoomBar.setProgress(canvas.zoomedIn);
-        //zoomValue.setText(0 + "%");
-        //canvas.init(this.model);
-        //canvas.repaint();
+        canvas.zoomedIn = 0;
+        zoomBar.setProgress(canvas.zoomedIn);
+        zoomValue.setText(0 + "%");
+        init(this.model);
         
         
         //Aner ikke hvordan jeg resetter kortet, til at resettes til samme zoom og position, som når man starter programmet.
@@ -349,5 +319,29 @@ public class Controller {
     }
         
 
+    @FXML
+    private void loadDenmark(ActionEvent e) {
 
+    }
+
+
+    @FXML
+    private void loadCustom(ActionEvent e) throws ClassNotFoundException, IOException, XMLStreamException, FactoryConfigurationError {
+        //when pressing button, a file chooser will appear and you can select a file to load
+        //you can choose an osm file
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open File");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("OSM Files", "*.osm"));
+        File selectedFile = fileChooser.showOpenDialog(null);
+        String filePath = selectedFile.getAbsolutePath();
+
+        //load the file
+        this.model = new Model(filePath);
+        init(model);
+
+
+
+    }   
 }
