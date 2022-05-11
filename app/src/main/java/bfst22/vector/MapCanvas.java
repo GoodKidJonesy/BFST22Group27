@@ -41,7 +41,7 @@ public class MapCanvas extends Canvas {
             gc.setFill(Color.LIGHTBLUE);
             line.fill(gc);
         }
-        drawRoute(615787, 615782, model.getGraf());
+        drawRoute(1572, 615782, model.getGraf());
 
         gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
 
@@ -58,7 +58,7 @@ public class MapCanvas extends Canvas {
             line.draw(gc);
         }
 
-
+/*
         for (var line : model.iterable(WayType.MOTORWAY)) {
             gc.setStroke(Color.RED);
             line.draw(gc);
@@ -72,7 +72,7 @@ public class MapCanvas extends Canvas {
 
 
 
-        }
+        }*/
         if (zoomedIn > 100) {
             for (var line : model.iterable(WayType.BUILDING)) {
                 gc.setStroke(Color.GREY);
@@ -147,7 +147,7 @@ public class MapCanvas extends Canvas {
     }
 
     void drawRoute(int v, int w, EdgeWeightedDigraph G){
-        Dijkstra path = new Dijkstra(G, v);
+        Dijkstra path = new Dijkstra(G, v, w);
         float distance = 0;
         var gc = getGraphicsContext2D();
         gc.setStroke(Color.GOLD);

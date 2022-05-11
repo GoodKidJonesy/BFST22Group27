@@ -282,6 +282,9 @@ public class Model {
         return id2node;
     }
 
+
+
+
     public void createGraph(){
         /**
          * constructs Edges from ArrayList highways, and tracks how many vertices there are

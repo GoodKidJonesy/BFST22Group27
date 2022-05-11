@@ -1,5 +1,6 @@
 package bfst22.vector;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class Dijkstra {
@@ -9,7 +10,7 @@ public class Dijkstra {
     private double[] dist;
 
 
-    public Dijkstra(EdgeWeightedDigraph G, int s) {
+    public Dijkstra(EdgeWeightedDigraph G, int s, int t) {
         //set array of distances to hold infinity, and visited vertex boolean to false
         Boolean visited[] = new Boolean[G.V()];
         dist = new double[G.V()];
@@ -27,21 +28,41 @@ public class Dijkstra {
         while(!pq.isEmpty()){
             int v = pq.delMin();
             for (Edge e : G.adj(v)){
-                relax(e);
+                relax(e, t);
             }
         }
 
 
     }
 
-    private void relax(Edge e){
+    double h(Edge e, Edge t){
+        double R = 6371*1000;
+        double lat1 = e.getFromC()[0]*Math.PI/180;
+        double lat2 = t.getFromC()[0]*Math.PI/180;
+        double deltaLat = (lat2-lat1)*Math.PI/180;
+        double lon1 = e.getFromC()[1];
+        double lon2 = t.getFromC()[1];
+        double deltaLon = (lon2-lon1) * Math.PI/180;
+
+        double a = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) + Math.cos(lat1) *
+                Math.cos(lat2) * Math.sin(deltaLon/2) * Math.sin(deltaLon/2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+        double d = R * c;
+
+        return d;
+    }
+
+    private void relax(Edge e, int t){
         int v = e.getFrom2(), w = e.getTo2();
         if(dist[w] > dist[v] + e.getWeight()){
             dist[w] = dist[v] + e.getWeight();
             edgeTo[w] = e;
-            if (pq.contains(w)) pq.decreaseKey(w, dist[w]);
+            double priority = dist[w] + h(e, e);
+            if (pq.contains(w)) pq.decreaseKey(w, priority);
             else{
-                pq.insert(w, dist[w]);
+                pq.insert(w, priority);
             }
         }
     }
@@ -62,6 +83,10 @@ public class Dijkstra {
         }
         return path;
     }
+
+
+
+
 
 
 
