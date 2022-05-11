@@ -84,6 +84,19 @@ public class Dijkstra {
         return path;
     }
 
+    public PolyLine drawablePath(int v){
+        if (!hasPath(v)) return null;
+        ArrayList<OSMNode> nodes = new ArrayList<>();
+        for (Edge e = edgeTo[v]; e != null; e = edgeTo[e.getFrom2()]){
+            OSMNode o = new OSMNode(e.getFrom(), e.getFrom2(), e.getFromC()[0], e.getFromC()[1]);
+            nodes.add(o);
+        }
+        PolyLine path = new PolyLine(nodes, WayType.MOTORWAY);
+
+        return path;
+
+    }
+
 
 
 

@@ -23,8 +23,9 @@ public class MapCanvas extends Canvas {
     float zoomedIn = 0;
     Range range = new Range(new Point2D(0, 0), new Point2D(0, 0));
     Point2D mousePos = new Point2D(0, 0);
+    PolyLine drawable;
 
-    Dijkstra path;
+
 
     void init(Model model) {
         this.model = model;
@@ -33,6 +34,7 @@ public class MapCanvas extends Canvas {
         moveRange();
         model.addObserver(this::repaint);
         repaint();
+        drawRoute(1572, 615782, model.getGraf());
 
     }
 
@@ -67,6 +69,10 @@ public class MapCanvas extends Canvas {
             }
         }
 
+        if(drawable != null){
+            drawable.draw(gc);
+        }
+
         /*
          * for (Drawable d : model.roadTree.query(model.roadTree.getRoot(), range, 0)) {
          * if (d.getType().fillTrue()) {
@@ -90,7 +96,7 @@ public class MapCanvas extends Canvas {
          * }
          */
 
-        drawRoute(1572, 615782, model.getGraf());
+
         gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
         drawRange();
     }
@@ -169,13 +175,10 @@ public class MapCanvas extends Canvas {
         Dijkstra path = new Dijkstra(G, v, w);
         float distance = 0;
         var gc = getGraphicsContext2D();
-        gc.setStroke(Color.GOLD);
-        gc.setLineWidth(0.0005);
-        for (Edge e : path.pathTo(w)){
-            distance += e.getDistance();
-            drawEdge(e, gc);
-
-        }
-        System.out.println("Afstand: " + distance + " m?");
+        drawable = path.drawablePath(w);
     }
+
+
+
+
 }
