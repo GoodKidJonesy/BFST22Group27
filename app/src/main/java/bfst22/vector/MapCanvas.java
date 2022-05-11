@@ -21,7 +21,7 @@ public class MapCanvas extends Canvas {
     void init(Model model) {
         this.model = model;
         pan(-model.minlon, -model.minlat);
-        zoom(640 / (model.maxlon - model.minlon), 0, 0);
+        zoom(1280 / (model.maxlon - model.minlon), 0, 0);
         moveRange();
         model.addObserver(this::repaint);
         repaint();

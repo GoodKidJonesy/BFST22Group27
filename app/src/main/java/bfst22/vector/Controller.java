@@ -68,7 +68,9 @@ public class Controller {
                     bikeBtn, 
                     walkBtn,
                     searchButton,
-                    resetButton;
+                    resetButton,
+                    plusBtn,
+                    minusBtn;
 
     @FXML
     private TextField   rute1,
@@ -96,6 +98,7 @@ public class Controller {
 
     public void init(Model model) {
         canvas.init(model);
+        this.model = model;
         String[] address = model.addresses.toString().split(",");
         TextFields.bindAutoCompletion(rute1, address);
         TextFields.bindAutoCompletion(rute2, address);
@@ -226,6 +229,32 @@ public class Controller {
         zoomBar.setProgress(canvas.zoomedIn);
         zoomValue.setText(Math.round(canvas.zoomedIn * 100) + "%");
     }
+
+    @FXML
+    private void buttonZoomIn(ActionEvent e) {
+        startFPS();
+
+            if(canvas.zoomedIn+0.1 < canvas.maxZoom) {
+                canvas.getZoom(30);
+                canvas.zoom(Math.pow(1.01, 30), canvas.getWidth()/2, canvas.getHeight()/2);
+                zoomBarValue();
+            }
+    }
+
+    @FXML
+    private void buttonZoomOut(ActionEvent e) {
+        startFPS();
+
+            if(canvas.zoomedIn-0.1 > canvas.minZoom) {
+                canvas.getZoom(-30);
+                canvas.zoom(Math.pow(1.01, -30), canvas.getWidth()/2, canvas.getHeight()/2);
+                zoomBarValue();
+            }
+    }
+
+
+
+
 
     @FXML
     private void onMouseMoved(MouseEvent e){
