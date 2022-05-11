@@ -10,13 +10,16 @@ public class OSMWay implements Serializable {
     private int speedLimit;
     private boolean oneWay;
     private OSMNode from,to;
+    private String name;
 
     List<OSMNode> nodes;
 
-    public OSMWay(List<OSMNode> nodes) {
+    public OSMWay(List<OSMNode> nodes, String name, int speedLimit) {
         this.nodes = new ArrayList<>(nodes);
         this.from = nodes.get(0);
         this.to = nodes.get(nodes.size() - 1);
+        this.name = name;
+        this.speedLimit = speedLimit;
     }
 
     public long getLength(){
@@ -37,4 +40,8 @@ public class OSMWay implements Serializable {
     public List<OSMNode> getNodes(){
         return nodes;
     }
+    public String getName(){
+        return name;
+    }
+
 }

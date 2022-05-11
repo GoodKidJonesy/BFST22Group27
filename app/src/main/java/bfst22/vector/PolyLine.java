@@ -12,6 +12,7 @@ public class PolyLine extends Drawable implements Serializable {
     public WayType type;
     public int size = 0;
     public OSMNode from, to;
+    public List<OSMNode> nodes;
 
     public PolyLine(List<OSMNode> nodes, WayType type) {
         coords = new float[nodes.size() * 2];
@@ -19,13 +20,18 @@ public class PolyLine extends Drawable implements Serializable {
         for (var node : nodes) {
             coords[i++] = node.lat;
             coords[i++] = node.lon;
+
         }
+        this.nodes = nodes;
         this.type = type;
         this.size = coords.length / 2;
         this.from = nodes.get(0);
         this.to = nodes.get(nodes.size() - 1);
     }
 
+    public List<OSMNode> getNodes(){
+        return this.nodes;
+    }
     @Override
     public void trace(GraphicsContext gc) {
         gc.moveTo(coords[0], coords[1]);

@@ -1,98 +1,95 @@
 package bfst22.vector;
 
+import java.lang.reflect.Array;
 import java.util.*;
-import java.util.Map.Entry;
 
-//Initial code from baeldung.com
 public class Dijkstra {
 
-}
-//graph class, contains a Set of all nodes in the graph.
-class Graph{
-    private Set<Node> nodes = new HashSet<>();
-    public void addNode(Node node){
-        nodes.add(node);
-    }
-    //node class, each node has a name, List of nodes of the shortestpath. Distance from source and a map of adjacent/connected nodes.
-    class Node{
-        String name;
-        List<Node> shortestPath = new LinkedList<>();
-    
-        Integer distance = Integer.MAX_VALUE;
-    
-        Map<Node, Integer> adjacentNodes = new HashMap<>();
-    
-        public void addDestination(Node dest, int dist){
-            adjacentNodes.put(dest, dist);
-        }
-        public Node(String name){
-            this.name = name;
-        }
-        public void setDistance(int dist){
-            this.distance = dist;
-        }
-        public Map<Node, Integer> getAdjacentNodes(){
-            return adjacentNodes;
-        }
-        public Integer getDistance(){
-            return distance;
-        }
-        public List<Node> getShortestPath(){
-            return shortestPath;
-        }
-        public void setShortestPath(List<Node> s){
-            this.shortestPath = s;
-        }
-        
-    }
-    //method to calculate shortestpath from start node in graph to all nodes in graph.
-    public static Graph calculateShortestPath(Graph graph, Node start){
-        start.setDistance(0);
-        Set<Node> settledNodes = new HashSet<>();
-        Set<Node> unsettledNodes = new HashSet<>();
+    private Edge[] edgeTo;
+    private IndexMinPQ<Double> pq;
+    private double[] dist;
 
-        unsettledNodes.add(start);
 
-        while(unsettledNodes.size() != 0){
-            Node currentNode = getLowestDistanceNode(unsettledNodes);
-            unsettledNodes.remove(currentNode);
-
-            for(Entry<Node, Integer> adjacency : 
-                currentNode.getAdjacentNodes().entrySet()){
-                    Node adjacentNode = adjacency.getKey();
-                    Integer weight = adjacency.getValue();
-                    if(!settledNodes.contains(adjacency)){
-                        calculateMinimumDistance(adjacentNode, weight, currentNode);
-                        unsettledNodes.add(adjacentNode);
-                    }
-                }
-                settledNodes.add(currentNode);
+    public Dijkstra(EdgeWeightedDigraph G, int s, int t) {
+        //set array of distances to hold infinity, and visited vertex boolean to false
+        Boolean visited[] = new Boolean[G.V()];
+        dist = new double[G.V()];
+        edgeTo = new Edge[G.V()];
+        for (int i = 0; i < G.V(); i++) {
+            dist[i] = Double.POSITIVE_INFINITY;
+            visited[i] = false;
         }
-        return graph;
-    }
-    //method to calculate the lowestdistance node in the set of unsettled nodes.
-    public static Node getLowestDistanceNode(Set<Node> unsettled){
-        Node lowestDistanceNode = null;
-        int lowestDistance = Integer.MAX_VALUE;
-        for(Node n : unsettled){
-            int nodeDistance = n.getDistance();
-            if(nodeDistance < lowestDistance){
-                lowestDistance = nodeDistance;
-                lowestDistanceNode = n;
+        //Distance to source is always 0
+        dist[s] = 0.0;
+
+        pq = new IndexMinPQ<Double>(G.V());
+        pq.insert(s, dist[s]);
+
+        while(!pq.isEmpty()){
+            int v = pq.delMin();
+            for (Edge e : G.adj(v)){
+                relax(e, t);
             }
         }
-        return lowestDistanceNode;
+
+
     }
-    //method to calculate the minimum distance from a source node to and evaluation node with the edge weight.
-    public static void calculateMinimumDistance(Node eval, Integer weight, Node source){
-        Integer sourceDistance = source.getDistance();
-        if(sourceDistance + weight < eval.getDistance()){
-            eval.setDistance(sourceDistance + weight);
-            LinkedList<Node> shortestPath = new LinkedList<>(source.getShortestPath());
-            shortestPath.add(source);
-            eval.setShortestPath(shortestPath);
+
+    double h(Edge e, Edge t){
+        double R = 6371*1000;
+        double lat1 = e.getFromC()[0]*Math.PI/180;
+        double lat2 = t.getFromC()[0]*Math.PI/180;
+        double deltaLat = (lat2-lat1)*Math.PI/180;
+        double lon1 = e.getFromC()[1];
+        double lon2 = t.getFromC()[1];
+        double deltaLon = (lon2-lon1) * Math.PI/180;
+
+        double a = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) + Math.cos(lat1) *
+                Math.cos(lat2) * Math.sin(deltaLon/2) * Math.sin(deltaLon/2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+        double d = R * c;
+
+        return d;
+    }
+
+    private void relax(Edge e, int t){
+        int v = e.getFrom2(), w = e.getTo2();
+        if(dist[w] > dist[v] + e.getWeight()){
+            dist[w] = dist[v] + e.getWeight();
+            edgeTo[w] = e;
+            double priority = dist[w] + h(e, e);
+            if (pq.contains(w)) pq.decreaseKey(w, priority);
+            else{
+                pq.insert(w, priority);
+            }
         }
     }
 
-}
+    public double dist(int v){
+        return dist[v];
+    }
 
+    public boolean hasPath(int v){
+        return dist[v] < Double.POSITIVE_INFINITY;
+    }
+
+    public Iterable<Edge> pathTo(int v){
+        if (!hasPath(v)) return null;
+        Stack<Edge> path = new Stack<Edge>();
+        for (Edge e = edgeTo[v]; e != null; e = edgeTo[e.getFrom2()]) {
+            path.push(e);
+        }
+        return path;
+    }
+
+
+
+
+
+
+
+
+
+}

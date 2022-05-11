@@ -5,14 +5,15 @@ import java.io.Serializable;
 public class OSMNode implements Serializable {
     public static final long serialVersionUID = 9082413;
     long id;
+    int id2;
     float lat, lon;
     OSMNode right,left;
 
-    //Parent is not necessary for the KDTree structure, defined in case we want to draw lines for debugging
-    public OSMNode(long id, float lat, float lon) {
+    public OSMNode(long id, int id2, float lat, float lon) {
         this.id = id;
         this.lat = lat;
         this.lon = lon;
+        this.id2 = id2;
         this.right = null;
         this.left = null;
     }
@@ -25,7 +26,7 @@ public class OSMNode implements Serializable {
         return lon;
     }
 
-    public long getId(){
-        return id;
-    }
+    public long getID(){ return id; }
+
+    public int getID2(){ return id2;}
 }

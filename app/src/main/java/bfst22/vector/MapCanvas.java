@@ -1,9 +1,15 @@
 package bfst22.vector;
 
 import java.util.ArrayList;
+import java.awt.*;
+import java.awt.geom.Ellipse2D;
+import java.lang.reflect.Array;
+import java.nio.file.WatchKey;
+import java.util.Collections;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
@@ -18,6 +24,8 @@ public class MapCanvas extends Canvas {
     Range range = new Range(new Point2D(0, 0), new Point2D(0, 0));
     Point2D mousePos = new Point2D(0, 0);
 
+    Dijkstra path;
+
     void init(Model model) {
         this.model = model;
         pan(-model.minlon, -model.minlat);
@@ -25,6 +33,7 @@ public class MapCanvas extends Canvas {
         moveRange();
         model.addObserver(this::repaint);
         repaint();
+
     }
 
     void repaint() {
@@ -81,6 +90,7 @@ public class MapCanvas extends Canvas {
          * }
          */
 
+        drawRoute(1572, 615782, model.getGraf());
         gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
         drawRange();
     }
@@ -145,5 +155,27 @@ public class MapCanvas extends Canvas {
 
     public void updateMousePos(Point2D m) {
         mousePos = mouseToModel(m);
+    }
+
+    void drawEdge(Edge e, GraphicsContext gc) {
+        Point2D from = new Point2D(e.getFromC()[0], e.getFromC()[1]);
+        Point2D to = new Point2D(e.getToC()[0], e.getToC()[1]);
+        Line l = new Line(from, to);
+        l.draw(gc);
+
+    }
+
+    void drawRoute(int v, int w, EdgeWeightedDigraph G){
+        Dijkstra path = new Dijkstra(G, v, w);
+        float distance = 0;
+        var gc = getGraphicsContext2D();
+        gc.setStroke(Color.GOLD);
+        gc.setLineWidth(0.0005);
+        for (Edge e : path.pathTo(w)){
+            distance += e.getDistance();
+            drawEdge(e, gc);
+
+        }
+        System.out.println("Afstand: " + distance + " m?");
     }
 }

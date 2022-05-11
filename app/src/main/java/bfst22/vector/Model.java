@@ -1,5 +1,10 @@
 package bfst22.vector;
 
+import org.w3c.dom.Node;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -30,13 +35,24 @@ import java.text.DecimalFormat;
 
 public class Model {
     float minlat, minlon, maxlat, maxlon;
+    int id2 = 0;
     Address address = null;
     TrieTree trie;
     OSMNode osmnode = null;
-    List<Address> addresses = new ArrayList<>();
+    private HashMap<Long, OSMWay> id2way = new HashMap<Long, OSMWay>();
+    private ArrayList<Address> addresses = new ArrayList<>();
+    private ArrayList<OSMWay> highways = new ArrayList<OSMWay>();
+    private ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
+    private Map<WayType, List<Drawable>> lines = new EnumMap<>(WayType.class);
+    private ArrayList<Edge> edgeList = new ArrayList<>();
+    private NodeMap id2node = new NodeMap();
+    private EdgeWeightedDigraph graf;
     KDTree kdTree;
     KDTree roadTree;
-    Map<WayType, List<Drawable>> lines = new EnumMap<>(WayType.class);
+    String wayName = null;
+    int maxSpeed = 0;
+    boolean isHighway = false;
+
     {
         for (WayType type : WayType.values())
             lines.put(type, new ArrayList<>());
@@ -83,7 +99,6 @@ public class Model {
 
     private void loadOSM(InputStream input) throws XMLStreamException, FactoryConfigurationError {
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input));
-        NodeMap id2node = new NodeMap();
         Map<Long, OSMWay> id2way = new HashMap<>();
         List<OSMNode> nodes = new ArrayList<>();
         List<OSMWay> coastlines = new ArrayList<>();
@@ -109,15 +124,20 @@ public class Model {
                             long id = Long.parseLong(reader.getAttributeValue(null, "id"));
                             float lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
                             float lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
-                            osmnode = new OSMNode(id, 0.56f * lon, -lat);
+                            osmnode = new OSMNode(id, id2, 0.56f * lon, -lat);
+                            id2++;
                             id2node.add(osmnode);
+                            Vertex V = new Vertex(id,0.56f*lon, -lat);
+                            vertexList.add(V);
                             break;
                         case "nd":
                             long ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
+
                             nodes.add(id2node.get(ref));
                             break;
                         case "way":
                             relID = Long.parseLong(reader.getAttributeValue(null, "id"));
+
                             type = WayType.UNKNOWN;
                             break;
                         case "tag":
@@ -183,6 +203,19 @@ public class Model {
                                     }
                                     break;
                                 case "highway":
+                                isHighway = true;
+
+                                    if (v.equals("primary") || v.equals("trunk") || v.equals("secondary")
+                                            || v.equals("trunk_link") || v.equals("secondary_link")) {
+                                        type = WayType.HIGHWAY;
+                                    } else if (v.equals("residential") || v.equals("service") || v.equals("cycleway")
+                                            || v.equals("tertiary") || v.equals("unclassified")
+                                            || v.equals("tertiary_link") || v.equals("road")) {
+                                        type = WayType.CITYWAY;
+                                    } else if (v.equals("motorway") || v.equals("motorway_link")) {
+                                        type = WayType.MOTORWAY;
+                                    }
+
                                     switch (v) {
                                         case "primary":
                                         case "trunk":
@@ -209,6 +242,7 @@ public class Model {
                                         default:
                                             break;
                                     }
+
                                     break;
                                 case "addr:city":
                                     if (address == null) {
@@ -246,6 +280,11 @@ public class Model {
                                         addAddress();
                                     }
                                     break;
+                                case "name":
+                                    wayName = v;
+                                    break;
+                                case "maxspeed":
+                                    maxSpeed = Integer.parseInt(v);
                                 default:
                                     break;
                             }
@@ -272,8 +311,14 @@ public class Model {
                 case XMLStreamConstants.END_ELEMENT:
                     switch (reader.getLocalName()) {
                         case "way":
+                            if (isHighway){
+                                //System.out.println(osmnode.id);
+                                OSMWay highway = new OSMWay(nodes, wayName, maxSpeed);
+                                highways.add(highway);
+                                isHighway = false;
+                            }
                             PolyLine way = new PolyLine(nodes, type);
-                            id2way.put(relID, new OSMWay(nodes));
+                            id2way.put(relID, new OSMWay(nodes, wayName, maxSpeed));
                             lines.get(type).add(way);
                             nodes.clear();
                             break;
@@ -300,6 +345,8 @@ public class Model {
         fillTrees();
         timeTwo += System.nanoTime();
         System.out.println("KDTree filled in: " + (long) (timeTwo / 1e6) + " ms");
+
+        createGraph();
     }
 
     public void addObserver(Runnable observer) {
@@ -320,6 +367,10 @@ public class Model {
         // System.out.println(address.getStreet());
         addresses.add(address);
         address = null;
+    }
+
+    public List<Address> getAddresses(){
+        return addresses;
     }
 
     public void makeTrie() {
@@ -345,5 +396,64 @@ public class Model {
         }
         roadTree.fillTree(roads, 0);
         kdTree.fillTree(main, 0);
+    }
+
+    public NodeMap getId2node() {
+        return id2node;
+    }
+
+    public void createGraph() {
+        /**
+         * constructs Edges from ArrayList highways, and tracks how many vertices there
+         * are
+         */
+        for (OSMWay o : highways) {
+            for (int j = 0; j < o.getNodes().size() - 1; j++) {
+                double distance = distanceCalc(o.getNodes().get(j).getID(), o.getNodes().get(j + 1).getID());
+                Edge e = new Edge(o.getNodes().get(j).getID(), o.getNodes().get(j + 1).getID(), o.getNodes().get(j).getID2(),
+                        o.getNodes().get(j + 1).getID2(), o.getName(), distance / o.getSpeedLimit(), distance);
+                e.addFromC(o.getNodes().get(j).lat, o.getNodes().get(j).lon);
+                e.addToC(o.getNodes().get(j + 1).lat, o.getNodes().get(j + 1).lon);
+                Edge f = new Edge(o.getNodes().get(j + 1).getID(), o.getNodes().get(j).getID(), o.getNodes().get(j + 1).getID2(),
+                        o.getNodes().get(j).getID2(), o.getName(), distance / o.getSpeedLimit(), distance);
+                f.addFromC(o.getNodes().get(j + 1).lat, o.getNodes().get(j + 1).lon);
+                f.addToC(o.getNodes().get(j).lat, o.getNodes().get(j).lon);
+                edgeList.add(e);
+                edgeList.add(f);
+
+            }
+        }
+        graf = new EdgeWeightedDigraph(id2);
+
+        /**
+         * Adds edges to the graf.
+         */
+
+        for (Edge e : edgeList) {
+            graf.addEdge(e);
+        }
+    }
+
+    public EdgeWeightedDigraph getGraf() {
+        return graf;
+    }
+
+    Double distanceCalc(long from, long to) {
+        double R = 6371 * 1000;
+        double lat1 = id2node.get(from).lat * Math.PI / 180;
+        double lat2 = id2node.get(to).lat * Math.PI / 180;
+        double deltaLat = (lat2 - lat1) * Math.PI / 180;
+        double lon1 = id2node.get(from).lon;
+        double lon2 = id2node.get(to).lon;
+        double deltaLon = (lon2 - lon1) * Math.PI / 180;
+
+        double a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) + Math.cos(lat1) *
+                Math.cos(lat2) * Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        double d = R * c;
+
+        return d;
     }
 }
