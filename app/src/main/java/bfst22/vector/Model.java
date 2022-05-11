@@ -39,6 +39,7 @@ public class Model {
     Address address = null;
     TrieTree trie = new TrieTree();
     OSMNode osmnode = null;
+    ArrayList<Address> addresses = new ArrayList<>();
     private HashMap<Long, OSMWay> id2way = new HashMap<Long, OSMWay>();
     private ArrayList<OSMWay> highways = new ArrayList<OSMWay>();
     private ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
@@ -347,7 +348,8 @@ public class Model {
 
     public void addAddress() {
         // System.out.println(address.getStreet());
-        trie.insert(address.toString(), address.getCords(), address.getID2());
+        trie.insert(address.toString(), address.getCords(), address.getId());
+        addresses.add(address);
         address = null;
     }
 
@@ -403,6 +405,12 @@ public class Model {
 
         for (Edge e : edgeList) {
             graf.addEdge(e);
+        }
+
+        for (Address a : addresses){
+            if (a.getID2() == 158227){
+                System.out.println(a.getStreet() + a.getHouseNumber());
+            }
         }
     }
 

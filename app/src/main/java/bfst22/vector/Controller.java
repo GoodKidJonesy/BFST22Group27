@@ -172,7 +172,11 @@ public class Controller {
                 Notifications.create().title("Error").text("Please fill in both fields").showError();
             } else {
                 //getDirectionList();
-                System.out.println(model.trie.searchForID(rute1.getText()));
+                int v = Integer.parseInt(rute1.getText());
+                int w = Integer.parseInt(rute2.getText());
+
+
+                canvas.drawRoute(v, w, model.getGraf());
             }
         }
     }

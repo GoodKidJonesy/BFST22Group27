@@ -22,11 +22,11 @@ public class TrieTree {
         String cords;
         boolean endOfString;
         char character;
-        int id2;
+        long id;
         public TrieNode(){}
-        TrieNode(String cords, char c, int id2) {
+        TrieNode(String cords, char c, long id) {
             this.character = c;
-            this.id2 = id2;
+            this.id = id;
             endOfString = false;
             this.cords = cords;
             for (int i = 0; i < alhabet_size; i++) {
@@ -41,7 +41,7 @@ public class TrieTree {
     // insert metode der tager en String som argument og indsætter denne i træet.
     // hver char i key bliver indsat efter den forrige og hver node har en parent
     // samt børn.
-    public void insert(String key, String cords, int id2) {
+    public void insert(String key, String cords, long id) {
         key = replaceKey(key);
         int depth;
         int index;
@@ -59,7 +59,7 @@ public class TrieTree {
             if(index < 0)
                 index += 75;
             if (parent.children[index] == null)
-                parent.children[index] = new TrieNode(cords, key.charAt(depth), id2);
+                parent.children[index] = new TrieNode(cords, key.charAt(depth), id);
 
             parent = parent.children[index];
         }
@@ -68,7 +68,7 @@ public class TrieTree {
 
     // search metode, fungerer ligesom insert. metode bare hvor den tjekker hver
     // node og sammenligner med input.
-    public int searchForID(String key) {
+    public long searchForID(String key) {
         key = replaceKey(key);
         int depth;
         int index;
@@ -88,7 +88,7 @@ public class TrieTree {
             parent = parent.children[index];
         }
         found = true;
-        return parent.id2;
+        return parent.id;
     }
 
     //metode til at søge efter alle ord der indeholder bruger input i trietree.

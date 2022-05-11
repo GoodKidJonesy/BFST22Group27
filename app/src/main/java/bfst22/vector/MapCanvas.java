@@ -34,7 +34,7 @@ public class MapCanvas extends Canvas {
         moveRange();
         model.addObserver(this::repaint);
         repaint();
-        drawRoute(1572, 615782, model.getGraf());
+        drawRoute(15285, 551596, model.getGraf());
 
     }
 
@@ -175,7 +175,14 @@ public class MapCanvas extends Canvas {
         Dijkstra path = new Dijkstra(G, v, w);
         float distance = 0;
         var gc = getGraphicsContext2D();
+        gc.setStroke(Color.GOLD);
+        for (int i = 0; i < 615998; i++) {
+            if (path.hasPath(i)){
+               // System.out.println(i);
+            }
+        }
         drawable = path.drawablePath(w);
+
     }
 
 
