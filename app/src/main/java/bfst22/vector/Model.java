@@ -186,40 +186,45 @@ public class Model {
                                     }
                                     break;
                                 case "highway":
-                                    isHighway = true;
 
-                                    if (v.equals("primary") || v.equals("trunk") || v.equals("secondary")
-                                            || v.equals("trunk_link") || v.equals("secondary_link")) {
-                                        type = WayType.HIGHWAY;
-                                    } else if (v.equals("residential") || v.equals("service") || v.equals("cycleway")
-                                            || v.equals("tertiary") || v.equals("unclassified")
-                                            || v.equals("tertiary_link") || v.equals("road")) {
-                                        type = WayType.CITYWAY;
-                                    } else if (v.equals("motorway") || v.equals("motorway_link")) {
-                                        type = WayType.MOTORWAY;
-                                    }
+
 
                                     switch (v) {
                                         case "primary":
+                                            isHighway = true;
                                         case "trunk":
+                                            isHighway = true;
                                         case "secondary":
+                                            isHighway = true;
                                         case "trunk_link":
+                                            isHighway = true;
                                         case "secondary_link":
+                                            isHighway = true;
                                             type = WayType.HIGHWAY;
                                             break;
                                         case "residential":
+                                            isHighway = true;
                                         case "service":
-                                        case "cycleway":
+                                            isHighway = true;
+                                        //case "cycleway":
                                         case "tertiary":
+                                            isHighway = true;
                                         case "unclassified":
+                                            isHighway = true;
                                         case "road":
+                                            isHighway = true;
                                         case "tertiary_link":
-                                        case "path":
-                                        case "track":
+                                            isHighway = true;
+                                        //case "path":
+
+                                        //case "track":
+
                                             type = WayType.CITYWAY;
                                             break;
                                         case "motorway":
+                                            isHighway = true;
                                         case "motorway_link":
+                                            isHighway = true;
                                             type = WayType.MOTORWAY;
                                             break;
                                         default:

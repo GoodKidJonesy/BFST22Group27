@@ -22,6 +22,7 @@ public class MapCanvas extends Canvas {
     private Point2D mousePos = new Point2D(0, 0);
 
     private Dijkstra path;
+    private PolyLine drawable;
 
     void init(Model model) {
         this.model = model;
@@ -30,6 +31,7 @@ public class MapCanvas extends Canvas {
         moveRange();
         model.addObserver(this::repaint);
         repaint();
+
 
     }
 
@@ -78,21 +80,16 @@ public class MapCanvas extends Canvas {
             }
         }
 
-        PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(mousePos);
-        System.out.println(n.getName());
+
         //System.out.println(n.getNodes());
-        int dest = ((PolyLine) n).getFrom().getID2();
 
-        gc.setLineWidth(4 / Math.sqrt(trans.determinant()));
-        if (n.getType().fillTrue()) {
-            gc.setFill(Color.RED);
-            n.fill(gc);
-        } else {
-            gc.setStroke(Color.RED);
-            n.draw(gc);
+        if (drawable != null){
+            drawable.draw(gc);
         }
+        gc.setLineWidth(4 / Math.sqrt(trans.determinant()));
 
-        drawRoute(1572, dest, model.getGraf());
+
+        //drawRoute(1572, dest, model.getGraf());
 
         gc.setLineWidth(5 / Math.sqrt(trans.determinant()));
         drawRange(range, Color.BLACK);
@@ -190,14 +187,11 @@ public class MapCanvas extends Canvas {
 
     void drawRoute(int v, int w, EdgeWeightedDigraph G) {
         Dijkstra path = new Dijkstra(G, v, w);
-        float distance = 0;
-        var gc = getGraphicsContext2D();
-        gc.setStroke(Color.GOLD);
-        gc.setLineWidth(0.0005);
-        for (Edge e : path.pathTo(w)) {
-            distance += e.getDistance();
-            drawEdge(e, gc);
-        }
-        System.out.println("Afstand: " + distance + " m?");
+        drawable = path.drawablePath(w);
+
+    }
+
+    public Point2D getMousePos(){
+        return mousePos;
     }
 }

@@ -20,9 +20,8 @@ import org.controlsfx.control.Notifications;
 
 public class Controller {
     private Point2D lastMouse;
-
+    Model model;
     private TrieTree trie;
-
     Framerate FPS = new Framerate();
 
     @FXML
@@ -70,6 +69,7 @@ public class Controller {
 
     public void init(Model model) {
         canvas.init(model);
+        this.model = model;
         String[] address = model.getAddresses().toString().split(",");
         TextFields.bindAutoCompletion(rute1, address);
         TextFields.bindAutoCompletion(rute2, address);
@@ -107,6 +107,14 @@ public class Controller {
 
     @FXML
     private void onMousePressed(MouseEvent e) {
+        if (e.isControlDown()){
+            lastMouse = new Point2D(e.getX(), e.getY());
+            canvas.updateMousePos(lastMouse);
+            PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(canvas.getMousePos());
+            int dest = ((PolyLine) n).getFrom().getID2();
+            canvas.drawRoute(1572, dest, model.getGraf());
+            canvas.repaint();
+        }
         lastMouse = new Point2D(e.getX(), e.getY());
         startFPS();
     }
@@ -150,6 +158,7 @@ public class Controller {
                 Notifications.create().title("Error").text("Please fill in both fields").showError();
             } else {
                 getDirectionList();
+
             }
         }
     }
