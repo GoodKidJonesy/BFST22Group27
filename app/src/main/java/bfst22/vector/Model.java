@@ -213,6 +213,9 @@ public class Model {
                                             isHighway = true;
                                         case "road":
                                             isHighway = true;
+                                        case "living_street":
+                                        case "pedestrian":
+
                                         case "tertiary_link":
                                             isHighway = true;
                                         //case "path":
@@ -272,13 +275,14 @@ public class Model {
                                     wayName = v;
                                     break;
                                 case "maxspeed":
-                                    if (v.equals("signals")){
+                                    if(isHighway) {
+                                        if (v.equals("signals")) {
 
-                                    } else{
-                                        Double d = Double.parseDouble(v);
-                                        maxSpeed = (int) Math.round(d);
+                                        } else {
+                                            Double d = Double.parseDouble(v);
+                                            maxSpeed = (int) Math.round(d);
+                                        }
                                     }
-
                                 default:
                                     break;
                             }
@@ -314,8 +318,9 @@ public class Model {
                                 way = new PolyLine(nodes, type, wayName);
                             } else {
                                 way = new PolyLine(nodes, type);
+                                isHighway = false;
                             }
-                            
+                            isHighway = false;
                             id2way.put(relID, new OSMWay(nodes, wayName, maxSpeed));
                             lines.get(type).add(way);
                             nodes.clear();
@@ -402,7 +407,12 @@ public class Model {
          * are
          */
         for (OSMWay o : highways) {
+            if (o.getSpeedLimit() == 0){
+                o.setSpeedLimit(50);
+            }
+
             for (int j = 0; j < o.getNodes().size() - 1; j++) {
+
                 double distance = distanceCalc(o.getNodes().get(j).getID(), o.getNodes().get(j + 1).getID());
                 Edge e = new Edge(o.getNodes().get(j).getID(), o.getNodes().get(j + 1).getID(),
                         o.getNodes().get(j).getID2(),
@@ -412,6 +422,10 @@ public class Model {
                 Edge f = new Edge(o.getNodes().get(j + 1).getID(), o.getNodes().get(j).getID(),
                         o.getNodes().get(j + 1).getID2(),
                         o.getNodes().get(j).getID2(), o.getName(), distance / o.getSpeedLimit(), distance);
+
+                if (o.getName().equals("Middelfartvej")){
+                    System.out.println(distance);
+                }
                 f.addFromC(o.getNodes().get(j + 1).getX(), o.getNodes().get(j + 1).getY());
                 f.addToC(o.getNodes().get(j).getX(), o.getNodes().get(j).getY());
                 edgeList.add(e);

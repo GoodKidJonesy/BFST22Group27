@@ -12,6 +12,7 @@ public class OSMWay implements Serializable {
     private OSMNode from,to;
     private String name;
 
+
     List<OSMNode> nodes;
 
     public OSMWay(List<OSMNode> nodes, String name, int speedLimit) {
@@ -30,6 +31,9 @@ public class OSMWay implements Serializable {
     }
     public boolean getOneWay(){
         return oneWay;
+    }
+    public void setSpeedLimit(int speed){
+        this.speedLimit = speed;
     }
     public OSMNode getFrom(){
         return from;
