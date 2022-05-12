@@ -394,16 +394,13 @@ public class Model {
                 double distance = distanceCalc(o.getNodes().get(j).getID(), o.getNodes().get(j + 1).getID());
                 Edge e = new Edge(o.getNodes().get(j).getID(), o.getNodes().get(j + 1).getID(),
                         o.getNodes().get(j).getID2(),
-                        o.getNodes().get(j + 1).getID2(), o.getName(), distance / o.getSpeedLimit(), distance);
+                        o.getNodes().get(j + 1).getID2(), o.getName(), distance, distance);
                 e.addFromC(o.getNodes().get(j).getX(), o.getNodes().get(j).getY());
                 e.addToC(o.getNodes().get(j + 1).getX(), o.getNodes().get(j + 1).getY());
                 Edge f = new Edge(o.getNodes().get(j + 1).getID(), o.getNodes().get(j).getID(),
                         o.getNodes().get(j + 1).getID2(),
-                        o.getNodes().get(j).getID2(), o.getName(), distance / o.getSpeedLimit(), distance);
+                        o.getNodes().get(j).getID2(), o.getName(), distance, distance);
 
-                if (o.getName().equals("Middelfartvej")){
-                    System.out.println(distance);
-                }
                 f.addFromC(o.getNodes().get(j + 1).getX(), o.getNodes().get(j + 1).getY());
                 f.addToC(o.getNodes().get(j).getX(), o.getNodes().get(j).getY());
                 edgeList.add(e);
