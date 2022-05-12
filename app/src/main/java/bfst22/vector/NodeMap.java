@@ -10,7 +10,7 @@ public class NodeMap extends ArrayList<OSMNode> {
         sorted = false;
         return super.add(node);
     }
-    
+
     public OSMNode get(long ref) {
         if (!sorted) {
             sort(Comparator.comparing(node -> node.getID()));
@@ -26,7 +26,7 @@ public class NodeMap extends ArrayList<OSMNode> {
                 hi = mi;
             }
         }
-        var node = get(lo);
+        OSMNode node = get(lo);
         return node.getID() == ref ? node : null;
     }
 }

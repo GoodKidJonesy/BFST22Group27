@@ -5,23 +5,14 @@ public class Edge {
     private final int from2, to2;
     private final double weight, distance;
     private final float[] fromC, toC;
-    String name;
-    // private final boolean forCar, forBike, forWalk;
 
-    public Edge(
-            long from,
-            long to, int from2, int to2,
-            String name,
-            double weight,
-            double distance) {
-
+    public Edge(long from, long to, int from2, int to2, double weight, double distance) {
         this.from = from;
         this.to = to;
         this.from2 = from2;
         this.to2 = to2;
         this.fromC = new float[2];
         this.toC = new float[2];
-        this.name = name;
         this.weight = weight;
         this.distance = distance;
 

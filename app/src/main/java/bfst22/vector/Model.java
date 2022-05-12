@@ -32,7 +32,7 @@ public class Model {
     private Map<WayType, List<Drawable>> lines = new EnumMap<>(WayType.class);
     private ArrayList<Edge> edgeList = new ArrayList<>();
     private NodeMap id2node = new NodeMap();
-    private EdgeWeightedDigraph graf;
+    private EdgeWeightedDigraph graph;
     private KDTree kdTree = new KDTree();
     private KDTree roadTree = new KDTree();
     private String wayName = null;
@@ -89,9 +89,9 @@ public class Model {
         List<OSMWay> rel = new ArrayList<>();
         long relID = 0;
         WayType type = WayType.UNKNOWN;
-        var relationType = "";
-        var multipolygonWays = new ArrayList<OSMWay>();
-        var timeTwo = -System.nanoTime();
+        String relationType = "";
+        List<OSMWay> multipolygonWays = new ArrayList<>();
+        double timeTwo = -System.nanoTime();
 
         while (reader.hasNext()) {
             switch (reader.next()) {
@@ -265,7 +265,7 @@ public class Model {
                             }
                             break;
                         case "member":
-                            var member = id2way.get(Long.parseLong(reader.getAttributeValue(null, "ref")));
+                            OSMWay member = id2way.get(Long.parseLong(reader.getAttributeValue(null, "ref")));
                             if (member != null) {
                                 multipolygonWays.add(member);
                             }
@@ -376,12 +376,12 @@ public class Model {
                 double distance = distanceCalc(o.getNodes().get(j).getID(), o.getNodes().get(j + 1).getID());
                 Edge e = new Edge(o.getNodes().get(j).getID(), o.getNodes().get(j + 1).getID(),
                         o.getNodes().get(j).getID2(),
-                        o.getNodes().get(j + 1).getID2(), o.getName(), distance, distance);
+                        o.getNodes().get(j + 1).getID2(), distance, distance);
                 e.addFromC(o.getNodes().get(j).getX(), o.getNodes().get(j).getY());
                 e.addToC(o.getNodes().get(j + 1).getX(), o.getNodes().get(j + 1).getY());
                 Edge f = new Edge(o.getNodes().get(j + 1).getID(), o.getNodes().get(j).getID(),
                         o.getNodes().get(j + 1).getID2(),
-                        o.getNodes().get(j).getID2(), o.getName(), distance, distance);
+                        o.getNodes().get(j).getID2(), distance, distance);
 
                 f.addFromC(o.getNodes().get(j + 1).getX(), o.getNodes().get(j + 1).getY());
                 f.addToC(o.getNodes().get(j).getX(), o.getNodes().get(j).getY());
@@ -390,19 +390,19 @@ public class Model {
 
             }
         }
-        graf = new EdgeWeightedDigraph(id2);
+        graph = new EdgeWeightedDigraph(id2);
 
         /**
-         * Adds edges to the graf.
+         * Adds edges to the graph.
          */
 
         for (Edge e : edgeList) {
-            graf.addEdge(e);
+            graph.addEdge(e);
         }
     }
 
-    public EdgeWeightedDigraph getGraf() {
-        return graf;
+    public EdgeWeightedDigraph getGraph() {
+        return graph;
     }
 
     Double distanceCalc(long from, long to) {

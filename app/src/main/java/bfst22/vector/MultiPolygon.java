@@ -11,8 +11,8 @@ public class MultiPolygon extends Drawable {
     public MultiPolygon left, right;
 
     public MultiPolygon(List<OSMWay> rel, WayType type) {
-        for (var way : rel) {
-            parts.add(new PolyLine(way.nodes, type));
+        for (OSMWay way : rel) {
+            parts.add(new PolyLine(way.getNodes(), type));
         }
         this.type = type;
     }
@@ -113,6 +113,5 @@ public class MultiPolygon extends Drawable {
     public WayType getType() {
         return type;
     }
-
 
 }

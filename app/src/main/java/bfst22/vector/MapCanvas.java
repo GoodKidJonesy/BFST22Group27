@@ -14,38 +14,66 @@ import javafx.scene.transform.NonInvertibleTransformException;
 public class MapCanvas extends Canvas {
     private Model model;
     private Affine trans = new Affine();
+
     private int maxZoom = 10;
     private int minZoom = 0;
     private int zoomedIn = 0;
+
     private Range range = new Range(new Point2D(0, 0), new Point2D(0, 0));
     private Range buffer = new Range(new Point2D(0, 0), new Point2D(0, 0));
+
     private Point2D mousePos = new Point2D(0, 0);
+
     private int origin, dest;
+
     private boolean streetDebug = false;
-    private Point2D currentAddress;
     private boolean darkTheme = false;
+    
+    private Point2D currentAddress;
+    
     private List<Pin> pointsOfInterest = new ArrayList<>();
     private Pin originPin, destPin, currentPin;
 
     private PolyLine drawable;
 
-    void init(Model model) {
+    public void init(Model model) {
         this.model = model;
         pan(-model.getMinlon(), -model.getMinlat());
         zoom(640 / (model.getMaxlon() - model.getMinlon()), 0, 0);
         moveRange();
         model.addObserver(this::repaint);
         repaint();
-
     }
 
-    void repaint() {
-        var gc = getGraphicsContext2D();
+    public void repaint() {
+        GraphicsContext gc = getGraphicsContext2D();
         gc.setTransform(new Affine());
-        gc.setFill(calcColor(WayType.LAKE));
-        gc.fillRect(0, 0, getWidth(), getHeight());
+
+        drawBackground(gc);
+
         gc.setTransform(trans);
 
+        drawConstants(gc);
+
+        drawDrawables(gc);
+
+        drawRoads(gc);
+
+        drawCurrentRoute(gc);
+
+        drawNearestRoad(gc);
+
+        drawPins(gc);
+
+        drawRanges(gc);
+    }
+
+    private void drawBackground(GraphicsContext gc) {
+        gc.setFill(calcColor(WayType.LAKE));
+        gc.fillRect(0, 0, getWidth(), getHeight());
+    }
+
+    private void drawConstants(GraphicsContext gc) {
         for (Drawable d : model.iterable(WayType.LAND)) {
             gc.setLineWidth(calcWidth(d.getType().getWidth()));
             if (d.getType().fillTrue()) {
@@ -60,7 +88,9 @@ public class MapCanvas extends Canvas {
                 d.fill(gc);
             }
         }
+    }
 
+    private void drawDrawables(GraphicsContext gc) {
         List<Drawable> queryResult = query();
         Collections.sort(queryResult);
 
@@ -78,7 +108,9 @@ public class MapCanvas extends Canvas {
                 }
             }
         }
+    }
 
+    private void drawRoads(GraphicsContext gc) {
         for (Drawable d : model.getRoadTree().query(model.getRoadTree().getRoot(), buffer, 0)) {
             if (d.getType().getRequiredZoom() <= zoomedIn) {
                 gc.setLineWidth(calcWidth(d.getType().getWidth()));
@@ -91,38 +123,52 @@ public class MapCanvas extends Canvas {
                 }
             }
         }
+    }
 
+    private void drawCurrentRoute(GraphicsContext gc) {
         if (drawable != null) {
             gc.setLineWidth(calcWidth(drawable.getType().getWidth()));
             gc.setStroke(calcColor(drawable.getType()));
             drawable.draw(gc);
         }
+    }
 
+    private void drawNearestRoad(GraphicsContext gc) {
         PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(mousePos);
-
         if (streetDebug) {
             gc.setLineWidth(calcWidth(n.getType().getWidth()));
             gc.setStroke(Color.RED);
             n.draw(gc);
         }
+    }
 
-        /*
-         * if (pointsOfInterest.size() > 0) {
-         * for (Pin p : pointsOfInterest) {
-         * gc.setFill(Color.RED);
-         * gc.fillOval(p.getX(), p.getY(), p.getSize(), p.getSize());
-         * }
-         * }
-         */
+    private void drawPins(GraphicsContext gc) {
+        if (pointsOfInterest.size() > 0) {
+            for (Pin p : pointsOfInterest) {
+                gc.setFill(Color.RED);
+                gc.fillOval(p.getX(), p.getY(), p.getSize(), p.getSize());
+            }
+        }
 
         gc.setFill(Color.RED);
-        if (originPin != null)
-            gc.fillOval(originPin.getX() - originPin.getSize() * (maxZoom - zoomedIn) / 2, originPin.getY() - originPin.getSize() * (maxZoom - zoomedIn) / 2, originPin.getSize() * (maxZoom - zoomedIn), originPin.getSize() * (maxZoom - zoomedIn));
-        if (destPin != null)
-            gc.fillOval(destPin.getX() - destPin.getSize() * (maxZoom - zoomedIn) / 2, destPin.getY() - destPin.getSize() * (maxZoom - zoomedIn) / 2, destPin.getSize() * (maxZoom - zoomedIn), destPin.getSize() * (maxZoom - zoomedIn));
-        if (currentPin != null)
-            gc.fillOval(currentPin.getX() - currentPin.getSize() * (maxZoom - zoomedIn) / 2, currentPin.getY() - currentPin.getSize() * (maxZoom - zoomedIn) / 2, currentPin.getSize() * (maxZoom - zoomedIn), currentPin.getSize() * (maxZoom - zoomedIn));
+        if (originPin != null) {
+            gc.fillOval(originPin.getX() - originPin.getSize() * (maxZoom - zoomedIn) / 2,
+                    originPin.getY() - originPin.getSize() * (maxZoom - zoomedIn) / 2,
+                    originPin.getSize() * (maxZoom - zoomedIn), originPin.getSize() * (maxZoom - zoomedIn));
+        }
+        if (destPin != null) {
+            gc.fillOval(destPin.getX() - destPin.getSize() * (maxZoom - zoomedIn) / 2,
+                    destPin.getY() - destPin.getSize() * (maxZoom - zoomedIn) / 2,
+                    destPin.getSize() * (maxZoom - zoomedIn), destPin.getSize() * (maxZoom - zoomedIn));
+        }
+        if (currentPin != null) {
+            gc.fillOval(currentPin.getX() - currentPin.getSize() * (maxZoom - zoomedIn) / 2,
+                    currentPin.getY() - currentPin.getSize() * (maxZoom - zoomedIn) / 2,
+                    currentPin.getSize() * (maxZoom - zoomedIn), currentPin.getSize() * (maxZoom - zoomedIn));
+        }
+    }
 
+    private void drawRanges(GraphicsContext gc) {
         if (range.getDebug()) {
             gc.setLineWidth(5 / Math.sqrt(trans.determinant()));
             drawRange(range, Color.BLACK);
@@ -146,19 +192,7 @@ public class MapCanvas extends Canvas {
         return f / Math.sqrt(trans.determinant());
     }
 
-    public double getMaxZoom() {
-        return maxZoom;
-    }
-
-    public double getMinZoom() {
-        return minZoom;
-    }
-
-    public int getZoomedIn() {
-        return zoomedIn;
-    }
-
-    public void getStreetDebug(boolean streetDebug) {
+    public void setStreetDebug(boolean streetDebug) {
         this.streetDebug = streetDebug;
     }
 
@@ -167,28 +201,28 @@ public class MapCanvas extends Canvas {
     }
 
     private void moveRange() {
-        var gc = getGraphicsContext2D();
+        GraphicsContext gc = getGraphicsContext2D();
         int bufferSize = 3;
 
         Point2D topLeft = new Point2D(0, 0);
         Point2D bottomRight = new Point2D(gc.getCanvas().getWidth() - 218, gc.getCanvas().getHeight());
-        range.update(mouseToModel(topLeft), mouseToModel(bottomRight));
+        range.update(screenToModel(topLeft), screenToModel(bottomRight));
 
         Point2D topLeftBuffer = new Point2D(0 - ((bottomRight.getX() - topLeft.getX()) / bufferSize),
                 0 - ((bottomRight.getY() - topLeft.getX()) / bufferSize));
         Point2D bottomRightBuffer = new Point2D(
                 gc.getCanvas().getWidth() - 218 + ((bottomRight.getX() - topLeft.getX()) / bufferSize),
                 gc.getCanvas().getHeight() + ((bottomRight.getY() - topLeft.getX()) / bufferSize));
-        buffer.update(mouseToModel(topLeftBuffer), mouseToModel(bottomRightBuffer));
+        buffer.update(screenToModel(topLeftBuffer), screenToModel(bottomRightBuffer));
     }
 
-    void pan(double dx, double dy) {
+    public void pan(double dx, double dy) {
         trans.prependTranslation(dx, dy);
         moveRange();
         repaint();
     }
 
-    void zoom(double factor, double x, double y) {
+    public void zoom(double factor, double x, double y) {
         trans.prependTranslation(-x, -y);
         trans.prependScale(factor, factor);
         trans.prependTranslation(x, y);
@@ -196,16 +230,7 @@ public class MapCanvas extends Canvas {
         repaint();
     }
 
-    void getZoom(double factor) {
-        if (factor > 0) {
-            factor = 1;
-        } else if (factor < 0) {
-            factor = -1;
-        }
-        zoomedIn += factor;
-    }
-
-    public Point2D mouseToModel(Point2D point) {
+    public Point2D screenToModel(Point2D point) {
         try {
             return trans.inverseTransform(point);
         } catch (NonInvertibleTransformException e) {
@@ -214,7 +239,7 @@ public class MapCanvas extends Canvas {
     }
 
     private void drawRange(Range r, Color c) {
-        var gc = getGraphicsContext2D();
+        GraphicsContext gc = getGraphicsContext2D();
         gc.setStroke(c);
         gc.beginPath();
         gc.moveTo(r.getLeft(), r.getTop());
@@ -231,15 +256,7 @@ public class MapCanvas extends Canvas {
     }
 
     public void updateMousePos(Point2D m) {
-        mousePos = mouseToModel(m);
-    }
-
-    void drawEdge(Edge e, GraphicsContext gc) {
-        Point2D from = new Point2D(e.getFromC()[0], e.getFromC()[1]);
-        Point2D to = new Point2D(e.getToC()[0], e.getToC()[1]);
-        Line l = new Line(from, to);
-        l.draw(gc);
-
+        mousePos = screenToModel(m);
     }
 
     public void drawRoute(int v, int w, EdgeWeightedDigraph G) {
@@ -247,8 +264,12 @@ public class MapCanvas extends Canvas {
         drawable = path.drawablePath(w);
     }
 
-    public Point2D getMousePos() {
-        return mousePos;
+    public void drawEdge(Edge e, GraphicsContext gc) {
+        Point2D from = new Point2D(e.getFromC()[0], e.getFromC()[1]);
+        Point2D to = new Point2D(e.getToC()[0], e.getToC()[1]);
+        Line l = new Line(from, to);
+        l.draw(gc);
+
     }
 
     public void setOrigin(int id2) {
@@ -259,14 +280,6 @@ public class MapCanvas extends Canvas {
     public void setDest(int id2) {
         origin = id2;
         destPin = new Pin(mousePos);
-    }
-
-    public int getOrigin() {
-        return origin;
-    }
-
-    public int getDest() {
-        return dest;
     }
 
     public void setRoute(Point2D origin, Point2D dest) {
@@ -280,6 +293,39 @@ public class MapCanvas extends Canvas {
     public void setCurrentAddress(Point2D currentAddress) {
         this.currentAddress = currentAddress;
         this.currentPin = new Pin(currentAddress);
+    }
+
+    public void setZoom(double factor) {
+        if (factor > 0) {
+            factor = 1;
+        } else if (factor < 0) {
+            factor = -1;
+        }
+        zoomedIn += factor;
+    }
+
+    public double getMaxZoom() {
+        return maxZoom;
+    }
+
+    public double getMinZoom() {
+        return minZoom;
+    }
+
+    public int getZoomedIn() {
+        return zoomedIn;
+    }
+
+    public Point2D getMousePos() {
+        return mousePos;
+    }
+
+    public int getOrigin() {
+        return origin;
+    }
+
+    public int getDest() {
+        return dest;
     }
 
     public String getClosestStreet() {

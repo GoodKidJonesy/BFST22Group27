@@ -119,19 +119,19 @@ public class Controller {
     private void onScroll(ScrollEvent e) throws InterruptedException {
 
         startFPS();
-        var factor = e.getDeltaY();
+        double factor = e.getDeltaY();
 
         if (factor > 0) {
             if (canvas.getZoomedIn() + 1 <= canvas.getMaxZoom()) {
                 canvas.zoom(Math.pow(1.01, 50), e.getX(), e.getY());
-                canvas.getZoom(factor);
+                canvas.setZoom(factor);
                 zoomBarValue();
             }
         } else {
             if (canvas.getZoomedIn() - 1 >= canvas.getMinZoom()) {
 
                 canvas.zoom(Math.pow(1.01, -50), e.getX(), e.getY());
-                canvas.getZoom(factor);
+                canvas.setZoom(factor);
                 zoomBarValue();
             }
         }
@@ -150,8 +150,8 @@ public class Controller {
     @FXML
     private void onMouseDragged(MouseEvent e) {
         startFPS();
-        var dx = e.getX() - lastMouse.getX();
-        var dy = e.getY() - lastMouse.getY();
+        double dx = e.getX() - lastMouse.getX();
+        double dy = e.getY() - lastMouse.getY();
         canvas.pan(dx, dy);
         lastMouse = new Point2D(e.getX(), e.getY());
         canvas.updateMousePos(lastMouse);
@@ -174,7 +174,7 @@ public class Controller {
 
         // Draw route if there is an origin and destination
         if (canvas.getDest() != 0 && canvas.getOrigin() != 0) {
-            canvas.drawRoute(canvas.getOrigin(), canvas.getDest(), model.getGraf());
+            canvas.drawRoute(canvas.getOrigin(), canvas.getDest(), model.getGraph());
         }
 
         canvas.repaint();
@@ -242,7 +242,7 @@ public class Controller {
 
                 canvas.setRoute(origin, dest);
                 getDirectionList();
-                canvas.drawRoute(canvas.getOrigin(), canvas.getDest(), model.getGraf());
+                canvas.drawRoute(canvas.getOrigin(), canvas.getDest(), model.getGraph());
                 canvas.repaint();
             }
         }
@@ -293,9 +293,9 @@ public class Controller {
     @FXML
     private void NNDebugger(ActionEvent e) {
         if (Nearest.isSelected()) {
-            canvas.getStreetDebug(true);
+            canvas.setStreetDebug(true);
         } else {
-            canvas.getStreetDebug(false);
+            canvas.setStreetDebug(false);
         }
         canvas.repaint();
     }
@@ -323,7 +323,7 @@ public class Controller {
         startFPS();
 
         if (canvas.getZoomedIn() + 1 <= canvas.getMaxZoom()) {
-            canvas.getZoom(50);
+            canvas.setZoom(50);
             canvas.zoom(Math.pow(1.01, 50), canvas.getWidth() / 2, canvas.getHeight() / 2);
             zoomBarValue();
         }
@@ -334,7 +334,7 @@ public class Controller {
         startFPS();
 
         if (canvas.getZoomedIn() - 1 >= canvas.getMinZoom()) {
-            canvas.getZoom(-50);
+            canvas.setZoom(-50);
             canvas.zoom(Math.pow(1.01, -50), canvas.getWidth() / 2, canvas.getHeight() / 2);
             zoomBarValue();
         }
@@ -362,13 +362,13 @@ public class Controller {
             FactoryConfigurationError, InterruptedException {
 
         Stage splash = (Stage) loadDenmarkBtn.getScene().getWindow();
-        var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
+        FXMLLoader loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
         splash.setScene(loader.load());
   
 
         Thread thread = new Thread(() -> {
         try {
-            var newModel = new Model(App.defaultMap);
+            Model newModel = new Model(App.defaultMap);
             Platform.runLater(() -> {
                 try {
                 Stage stage = new Stage();
@@ -401,12 +401,12 @@ public class Controller {
         String filePath = selectedFile.getAbsolutePath();
 
         Stage splash = (Stage) loadCustomBtn.getScene().getWindow();
-        var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
+        FXMLLoader loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
         splash.setScene(loader.load());
 
         Thread thread = new Thread(() -> {
             try {
-                var newModel = new Model(filePath);
+                Model newModel = new Model(filePath);
                 Platform.runLater(() -> {
                     try {
                     Stage stage = new Stage();
@@ -440,13 +440,13 @@ public class Controller {
         Stage view = (Stage) searchButton.getScene().getWindow();
         view.close();
         Stage splash = new Stage();
-        var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
+        FXMLLoader loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
         splash.setScene(loader.load());
         splash.show();
 
         Thread thread = new Thread(() -> {
             try {
-                var newModel = new Model(filePath);
+                Model newModel = new Model(filePath);
                 Platform.runLater(() -> {
                     try {
                     Stage stage = new Stage();
@@ -474,7 +474,7 @@ public class Controller {
         stage.setResizable(false);
         stage.initModality(Modality.APPLICATION_MODAL);
 
-        var about = new FXMLLoader(View.class.getResource("About.fxml"));
+        FXMLLoader about = new FXMLLoader(View.class.getResource("About.fxml"));
         stage.setScene(about.load());
         stage.show();
     }
