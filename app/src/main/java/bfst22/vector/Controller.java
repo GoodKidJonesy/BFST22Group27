@@ -1,32 +1,14 @@
 package bfst22.vector;
 
-import javax.swing.Action;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
-import java.io.Console;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.lang.System.Logger;
-//import observableValue
-import java.util.Observable;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
 
-import javafx.animation.FadeTransition;
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -35,17 +17,13 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-import javafx.scene.control.ListView;
-import java.util.Collections;
+import java.util.Arrays;
 
 import org.controlsfx.control.ToggleSwitch;
 import org.controlsfx.control.textfield.*;
@@ -167,14 +145,22 @@ public class Controller {
 
     @FXML
     private void onMousePressed(MouseEvent e) {
-        if (e.isControlDown()) {
-            lastMouse = new Point2D(e.getX(), e.getY());
-            canvas.updateMousePos(lastMouse);
-            PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(canvas.getMousePos());
-            int dest = ((PolyLine) n).getFrom().getID2();
-            canvas.drawRoute(1572, dest, model.getGraf());
-            canvas.repaint();
+        lastMouse = new Point2D(e.getX(), e.getY());
+        canvas.updateMousePos(lastMouse);
+        PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(canvas.getMousePos());
+        int id2 = ((PolyLine) n).getFrom().getID2();
+
+        if (e.isPrimaryButtonDown() && e.isControlDown()) {
+            canvas.setDest(id2);
         }
+
+        if (e.isSecondaryButtonDown() && e.isControlDown()) {
+            canvas.setOrigin(id2);
+        }
+
+        canvas.drawRoute(canvas.getOrigin(), canvas.getDest(), model.getGraf());
+        canvas.repaint();
+
         lastMouse = new Point2D(e.getX(), e.getY());
         startFPS();
     }
@@ -309,12 +295,6 @@ public class Controller {
             canvas.zoom(Math.pow(1.01, -50), canvas.getWidth() / 2, canvas.getHeight() / 2);
             zoomBarValue();
         }
-    }
-
-    @FXML
-    private void onMouseMoved(MouseEvent e) {
-        lastMouse = new Point2D(e.getX(), e.getY());
-        System.out.println(lastMouse);
     }
 
     private void getDirectionList() {

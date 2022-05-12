@@ -20,6 +20,7 @@ public class MapCanvas extends Canvas {
     private Range range = new Range(new Point2D(0, 0), new Point2D(0, 0));
     private Range buffer = new Range(new Point2D(0, 0), new Point2D(0, 0));
     private Point2D mousePos = new Point2D(0, 0);
+    private int origin, dest;
 
     private Dijkstra path;
     private PolyLine drawable;
@@ -40,17 +41,16 @@ public class MapCanvas extends Canvas {
         gc.setFill(WayType.LAKE.getColor());
         gc.fillRect(0, 0, getWidth(), getHeight());
         gc.setTransform(trans);
-        System.out.println(zoomedIn);
 
         for (Drawable d : model.iterable(WayType.LAND)) {
-            gc.setLineWidth(d.getType().getWidth() / Math.sqrt(trans.determinant()));
+            gc.setLineWidth(calcWidth(d.getType().getWidth()));
             if (d.getType().fillTrue()) {
                 gc.setFill(d.getType().getColor());
                 d.fill(gc);
             }
         }
         for (Drawable d : model.iterable(WayType.CITY)) {
-            gc.setLineWidth(d.getType().getWidth() / Math.sqrt(trans.determinant()));
+            gc.setLineWidth(calcWidth(d.getType().getWidth()));
             if (d.getType().fillTrue()) {
                 gc.setFill(d.getType().getColor());
                 d.fill(gc);
@@ -63,7 +63,7 @@ public class MapCanvas extends Canvas {
         for (Drawable d : queryResult) {
             if (d.getType() != WayType.LAND && d.getType() != WayType.UNKNOWN && d.getType() != WayType.CITY) {
                 if (d.getType().getRequiredZoom() <= zoomedIn) {
-                    gc.setLineWidth(d.getType().getWidth() / Math.sqrt(trans.determinant()));
+                    gc.setLineWidth(calcWidth(d.getType().getWidth()));
                     if (d.getType().fillTrue()) {
                         gc.setFill(d.getType().getColor());
                         d.fill(gc);
@@ -77,7 +77,7 @@ public class MapCanvas extends Canvas {
 
         for (Drawable d : model.getRoadTree().query(model.getRoadTree().getRoot(), buffer, 0)) {
             if (d.getType().getRequiredZoom() <= zoomedIn) {
-                gc.setLineWidth(d.getType().getWidth() / Math.sqrt(trans.determinant()));
+                gc.setLineWidth(calcWidth(d.getType().getWidth()));
                 if (d.getType().fillTrue()) {
                     gc.setFill(d.getType().getColor());
                     d.fill(gc);
@@ -88,17 +88,13 @@ public class MapCanvas extends Canvas {
             }
         }
 
-        // System.out.println(n.getNodes());
-
         if (drawable != null) {
-            gc.setLineWidth(0.0006);
-            gc.setStroke(Color.AQUAMARINE);
+            gc.setLineWidth(calcWidth(drawable.getType().getWidth()));
+            gc.setStroke(drawable.getType().getColor());
             drawable.draw(gc);
         }
 
         // PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(mousePos);
-        // System.out.println(n.getName());
-        // System.out.println(n.getNodes());
         /*
          * int dest = ((PolyLine) n).getFrom().getID2();
          * 
@@ -121,6 +117,9 @@ public class MapCanvas extends Canvas {
         }
     }
 
+    private double calcWidth(float f){
+        return f / Math.sqrt(trans.determinant());
+    }
     public double getMaxZoom() {
         return maxZoom;
     }
@@ -145,7 +144,6 @@ public class MapCanvas extends Canvas {
         Point2D bottomRight = new Point2D(gc.getCanvas().getWidth() - 218, gc.getCanvas().getHeight());
         range.update(mouseToModel(topLeft), mouseToModel(bottomRight));
 
-        System.out.println(range.getWidth());
         Point2D topLeftBuffer = new Point2D(0 - ((bottomRight.getX() - topLeft.getX()) / bufferSize),
                 0 - ((bottomRight.getY() - topLeft.getX()) / bufferSize));
         Point2D bottomRightBuffer = new Point2D(
@@ -222,5 +220,21 @@ public class MapCanvas extends Canvas {
 
     public Point2D getMousePos() {
         return mousePos;
+    }
+
+    public void setOrigin(int id2) {
+        dest = id2;
+    }
+
+    public void setDest(int id2) {
+        origin = id2;
+    }
+
+    public int getOrigin() {
+        return origin;
+    }
+
+    public int getDest() {
+        return dest;
     }
 }

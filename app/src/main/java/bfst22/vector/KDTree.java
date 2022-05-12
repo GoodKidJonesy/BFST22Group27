@@ -170,10 +170,8 @@ public class KDTree {
 
   public void printTree(Drawable n) {
     if (n == null) {
-      System.out.println("Tree is empty");
       return;
     }
-    // System.out.println(n);
 
     if (n.left != null)
       printTree(n.left);
@@ -243,7 +241,6 @@ public class KDTree {
     if (distTo(r, nodePoint) < shortestDist) {
       shortestDist = (float) distTo(r, nodePoint);
       nearestRoad = (PolyLine) r;
-      System.out.println(((PolyLine) r).getNodes());
     }
 
     if (depth % 2 == 0) {
@@ -287,15 +284,5 @@ public class KDTree {
     shortestDistRoad = (float) distTo(root, new Point2D(target.getX(), target.getY()));
     nearestNeighbor(target, root, 0);
     return nearestRoad;
-  }
-
-  private void printNR(){
-    PolyLine n = (PolyLine) nearestRoad;
-    System.out.println(n.getAvgX());
-    System.out.println(n.getAvgY());
-    System.out.println(n.getName());
-    System.out.println(n.getNodes());
-    System.out.println(n.getTo());
-    System.out.println(n.getFrom());
   }
 }

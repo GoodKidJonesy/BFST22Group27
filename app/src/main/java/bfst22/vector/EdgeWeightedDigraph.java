@@ -72,7 +72,6 @@ public class EdgeWeightedDigraph {
 
     public int outdegree(int v) {
         validateVertex(v);
-        System.out.println(adjacencyMap.size());
         return adjacencyMap.get(v).size();
     }
 

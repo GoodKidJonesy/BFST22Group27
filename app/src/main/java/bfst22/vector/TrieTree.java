@@ -43,7 +43,6 @@ public class TrieTree {
 
         TrieNode parent = root;
         for (depth = 0; depth < key.length(); depth++) {
-            //System.out.println(key.charAt(depth));
             index = key.charAt(depth) - 'a';
             if(key.charAt(depth) == 'ø')
                 index -= 17;
@@ -83,8 +82,6 @@ public class TrieTree {
             parent = parent.children[index];
         }
         found = true;
-        System.out.println(found);
-        System.out.println(parent.cords);
         return parent.cords;
     }
 

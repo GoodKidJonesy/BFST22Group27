@@ -1,7 +1,5 @@
 package bfst22.vector;
 
-import java.util.List;
-
 import javafx.scene.canvas.GraphicsContext;
 
 public abstract class Drawable implements Comparable<Drawable> {
