@@ -125,30 +125,41 @@ public class Controller {
     public void init(Model model) {
         this.model = model;
         canvas.init(model);
-        //address = model.addresses.toString().split(", ");
+        address = model.addresses.toString().split(", ");
         TextFields.bindAutoCompletion(rute1, model.trie.searchMultiple(rute1.getText()));
         TextFields.bindAutoCompletion(rute2, model.trie.searchMultiple(rute2.getText()));
     }
 
+    //OnScroll method that have zoom in and out in levels
+    public void onScroll1(ScrollEvent event) {
+
+    }
+
+
 
     @FXML
-    private void onScroll(ScrollEvent e) {
+    private void onScroll(ScrollEvent e) throws InterruptedException {
+
         startFPS();
         var factor = e.getDeltaY();
-
+                
+    
         if(factor > 0) {
             if(canvas.zoomedIn+0.1 < canvas.maxZoom) {
+                canvas.zoom(Math.pow(1.01, 50), e.getX(), e.getY());
                 canvas.getZoom(factor);
-                canvas.zoom(Math.pow(1.01, factor), e.getX(), e.getY());
                 zoomBarValue();
             }
         } else {
             if(canvas.zoomedIn-0.1 > canvas.minZoom) {
+                
+                canvas.zoom(Math.pow(1.01, -50), e.getX(), e.getY());
                 canvas.getZoom(factor);
-                canvas.zoom(Math.pow(1.01, factor), e.getX(), e.getY());
                 zoomBarValue();
             }
         }
+        Thread.sleep(300);
+
     }
 
     @FXML
@@ -284,8 +295,8 @@ public class Controller {
         startFPS();
 
             if(canvas.zoomedIn+0.1 < canvas.maxZoom) {
-                canvas.getZoom(30);
-                canvas.zoom(Math.pow(1.01, 30), canvas.getWidth()/2, canvas.getHeight()/2);
+                canvas.getZoom(50);
+                canvas.zoom(Math.pow(1.01, 50), canvas.getWidth()/2, canvas.getHeight()/2);
                 zoomBarValue();
             }
     }
@@ -295,8 +306,8 @@ public class Controller {
         startFPS();
 
             if(canvas.zoomedIn-0.1 > canvas.minZoom) {
-                canvas.getZoom(-30);
-                canvas.zoom(Math.pow(1.01, -30), canvas.getWidth()/2, canvas.getHeight()/2);
+                canvas.getZoom(-50);
+                canvas.zoom(Math.pow(1.01, -50), canvas.getWidth()/2, canvas.getHeight()/2);
                 zoomBarValue();
             }
     }
@@ -305,22 +316,6 @@ public class Controller {
     private void onMouseMoved(MouseEvent e){
         lastMouse = new Point2D(e.getX(), e.getY());
         System.out.println(lastMouse);
-    }
-
-    @FXML
-    private void resetZoom(MouseEvent e) {
-        canvas.zoomedIn = 0;
-        zoomBar.setProgress(canvas.zoomedIn);
-        zoomValue.setText(0 + "%");
-        canvas.init(model);
-        canvas.repaint();
-   
-
-        
-        
-        //Aner ikke hvordan jeg resetter kortet, til at resettes til samme zoom og position, som når man starter programmet.
-        //TODO: FIX
-
     }
 
     private void getDirectionList() {
@@ -339,56 +334,91 @@ public class Controller {
         totalDistanceLabel.setText("Total distance: " + "200 meters");
         totalTimeLabel.setText("Total time: " + "20 minutes");
     }
-        
 
     @FXML
-    private void loadDenmark(ActionEvent e) throws ClassNotFoundException, IOException, XMLStreamException, FactoryConfigurationError {
+    private void loadDenmark(ActionEvent e) throws ClassNotFoundException, IOException, XMLStreamException, FactoryConfigurationError, InterruptedException {
         
-        Stage currentStage = (Stage) loadCustomBtn.getScene().getWindow();
-        var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
-        currentStage.setScene(loader.load());
-        currentStage.show();
-
-        Thread thread = new Thread(() -> {
-            try {
+        Stage splash = (Stage) loadDenmarkBtn.getScene().getWindow();
+        //var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
+        //splash.setScene(loader.load());
+        //splash.show();
+                
+        //Thread thread = new Thread(() -> {
+            //try {
                 var newModel = new Model(App.defaultMap);
-                currentStage.close();
+                splash.close();
                 Stage stage = new Stage();
                 new View(newModel, stage);
-            } catch (ClassNotFoundException | IOException | XMLStreamException | FactoryConfigurationError ex) {
-                System.out.println(ex.getMessage());
-            }
-        });
-            thread.start();
+                
+                
+            //} catch (ClassNotFoundException | IOException | XMLStreamException | FactoryConfigurationError ex) {
+                //System.out.println(ex.getMessage());
+            //}
+        //});
+            //thread.start();
+          
     }   
-       
-
+        
     @FXML
     private void loadCustom(ActionEvent e) throws ClassNotFoundException, IOException, XMLStreamException, FactoryConfigurationError {
 
+
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open File");
+        fileChooser.setInitialDirectory(new File("./data/"));
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("OSM Files", "*.osm"));
         File selectedFile = fileChooser.showOpenDialog(null);
         String filePath = selectedFile.getAbsolutePath();
 
 
-        Stage currentStage = (Stage) loadCustomBtn.getScene().getWindow();
-        var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
-        currentStage.setScene(loader.load());
-        currentStage.show();
+        //Stage splash = (Stage) loadCustomBtn.getScene().getWindow();
+        //var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
+        //splash.setScene(loader.load());
+        //splash.show();
 
-        Thread thread = new Thread(() -> {
-            try {
+        //Thread thread = new Thread(() -> {
+            //try {
+                var newModel = new Model(filePath);
+                //splash.close();
+                Stage stage = new Stage();
+                new View(newModel, stage);
+            //} catch (ClassNotFoundException | IOException | XMLStreamException | FactoryConfigurationError ex) {
+                //System.out.println(ex.getMessage());
+            //}
+        //});
+            //thread.start();
+    //}  
+  } 
+
+  @FXML
+    private void loadCustom2(ActionEvent e) throws ClassNotFoundException, IOException, XMLStreamException, FactoryConfigurationError {
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open File");
+        fileChooser.setInitialDirectory(new File("./data/"));
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("OSM Files", "*.osm"));
+        File selectedFile = fileChooser.showOpenDialog(null);
+        String filePath = selectedFile.getAbsolutePath();
+
+
+        Stage currentStage = (Stage) searchButton.getScene().getWindow();
+        //var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
+        //currentStage.setScene(loader.load());
+        //currentStage.show();
+
+        //Thread thread = new Thread(() -> {
+            //try {
                 var newModel = new Model(filePath);
                 currentStage.close();
                 Stage stage = new Stage();
                 new View(newModel, stage);
-            } catch (ClassNotFoundException | IOException | XMLStreamException | FactoryConfigurationError ex) {
-                System.out.println(ex.getMessage());
-            }
-        });
-            thread.start();
-    }   
+            //} catch (ClassNotFoundException | IOException | XMLStreamException | FactoryConfigurationError ex) {
+                //System.out.println(ex.getMessage());
+            //}
+        //});
+            //thread.start();
+    //}  
+  } 
 }

@@ -25,7 +25,7 @@
                         <Image url="@images/icon.png" />
                      </image>
                   </ImageView>
-                  <Button fx:id="loadDenmarkBtn" defaultButton="true" mnemonicParsing="false" onAction="#loadDenmark" prefHeight="85.0" prefWidth="400.0" text="Load Denmark">
+                  <Button fx:id="loadDenmarkBtn" defaultButton="true" mnemonicParsing="false" onAction="#loadDenmark" prefHeight="85.0" prefWidth="400.0" text="Load Bornholm">
                      <font>
                         <Font size="40.0" />
                      </font>

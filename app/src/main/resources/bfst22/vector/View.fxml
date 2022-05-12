@@ -187,11 +187,6 @@
                         <CheckBox fx:id="KdBox" mnemonicParsing="false" onAction="#KdDebugger" text="KDTree" GridPane.columnIndex="1" />
                         <CheckBox fx:id="ColorBlind" mnemonicParsing="false" text="ColorBlind mode" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <CheckBox mnemonicParsing="false" text="CheckBox" GridPane.rowIndex="1" />
-                        <Button fx:id="resetButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onMouseClicked="#resetZoom" prefHeight="25.0" prefWidth="103.0" style="-fx-background-radius: 5em;" text="Reset" GridPane.rowIndex="2">
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </Button>
                      </children>
                      <cursor>
                         <Cursor fx:constant="HAND" />
@@ -252,7 +247,7 @@
               <menus>
                 <Menu mnemonicParsing="false" text="File">
                   <items>
-                    <MenuItem fx:id="loadCustom" mnemonicParsing="false" onAction="#loadCustom" text="Load Custom File" />
+                    <MenuItem fx:id="loadCustom" mnemonicParsing="false" onAction="#loadCustom2" text="Load Custom File" />
                   </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">

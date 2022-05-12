@@ -77,9 +77,9 @@ public class MapCanvas extends Canvas {
 
     void getZoom(double factor) {
         if (factor > 0) {
-            factor = 0.05;
+            factor = 0.1;
         } else if (factor < 0) {
-            factor = -0.05;
+            factor = -0.1;
         }
         zoomedIn += factor;
     }
@@ -107,4 +107,21 @@ public class MapCanvas extends Canvas {
     public void setRangeDebug(boolean debug) {
         range.updateDebug(debug);
     }
+
+   //method to reset canvas to default
+    public void reset() {
+        zoomedIn = 0;
+        zoom(1, 0, 0);
+        pan(0, 0);
+        model.addObserver(this::repaint);
+        repaint();
+        drawRange();
+        moveRange();
+    }
+
+
+
+
+
+
 }
