@@ -138,15 +138,8 @@ public class Model {
                                     }
                                 case "natural":
                                     switch (v) {
-                                        case "water":
-                                        case "wetland":
-                                            type = WayType.WETLAND;
-                                            break;
                                         case "coastline":
                                             type = WayType.COASTLINE;
-                                            break;
-                                        case "scrub":
-                                            type = WayType.WETLAND;
                                             break;
                                         case "stone":
                                             type = WayType.STONE;
@@ -156,6 +149,7 @@ public class Model {
                                     }
                                     break;
                                 case "building":
+                                case "farmyard":
                                     type = WayType.BUILDING;
                                     break;
                                 case "aerodrome":
@@ -170,9 +164,6 @@ public class Model {
                                         case "meadow":
                                             type = WayType.FOREST;
                                             break;
-                                        case "military":
-                                            type = WayType.MILITARY;
-                                            break;
                                         case "residential":
                                         case "port":
                                             type = WayType.CITY;
@@ -180,24 +171,10 @@ public class Model {
                                         case "quarry":
                                             type = WayType.STONE;
                                             break;
-                                        default:
-                                            type = WayType.LANDUSE;
-                                            break;
                                     }
                                     break;
                                 case "highway":
                                     isHighway = true;
-
-                                    if (v.equals("primary") || v.equals("trunk") || v.equals("secondary")
-                                            || v.equals("trunk_link") || v.equals("secondary_link")) {
-                                        type = WayType.HIGHWAY;
-                                    } else if (v.equals("residential") || v.equals("service") || v.equals("cycleway")
-                                            || v.equals("tertiary") || v.equals("unclassified")
-                                            || v.equals("tertiary_link") || v.equals("road")) {
-                                        type = WayType.CITYWAY;
-                                    } else if (v.equals("motorway") || v.equals("motorway_link")) {
-                                        type = WayType.MOTORWAY;
-                                    }
 
                                     switch (v) {
                                         case "primary":
@@ -207,16 +184,20 @@ public class Model {
                                         case "secondary_link":
                                             type = WayType.HIGHWAY;
                                             break;
+                                        case "road":
+                                        case "unclassified":
+                                        case "tertiary":
+                                        case "tertiary_link":
+                                            type = WayType.ROAD;
+                                            break;
                                         case "residential":
                                         case "service":
-                                        case "cycleway":
-                                        case "tertiary":
-                                        case "unclassified":
-                                        case "road":
-                                        case "tertiary_link":
+                                            type = WayType.CITYWAY;
+                                            break;
                                         case "path":
                                         case "track":
-                                            type = WayType.CITYWAY;
+                                        case "cycleway":
+                                            type = WayType.PATH;
                                             break;
                                         case "motorway":
                                         case "motorway_link":
@@ -304,7 +285,7 @@ public class Model {
                             } else {
                                 way = new PolyLine(nodes, type);
                             }
-                            
+
                             id2way.put(relID, new OSMWay(nodes, wayName, maxSpeed));
                             lines.get(type).add(way);
                             nodes.clear();
@@ -325,7 +306,7 @@ public class Model {
         timeTwo += System.nanoTime();
         System.out.println("Parsing Done in " + (long) (timeTwo / 1e6) + "ms.");
         timeTwo = -System.nanoTime();
-        makeTrie();
+        //makeTrie();
         timeTwo += System.nanoTime();
         System.out.println("TrieTree done in: " + (long) (timeTwo / 1e6) + "ms.");
         timeTwo = -System.nanoTime();
@@ -469,5 +450,5 @@ public class Model {
     public KDTree getKdTree() {
         return kdTree;
     }
-    
+
 }

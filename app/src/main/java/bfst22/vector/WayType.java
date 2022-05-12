@@ -2,43 +2,45 @@ package bfst22.vector;
 
 import javafx.scene.paint.Color;
 
-public enum WayType{
-    LAND(Color.rgb(187, 226, 198), 0.1f),
+public enum WayType {
+    LAND(Color.rgb(187, 226, 198), 0.1f, true, 1f),
 
-    FOREST(Color.rgb(0, 204, 102), 0.1f),
+    FOREST(Color.rgb(0, 204, 102), 0.1f, true, 1f),
 
-    LANDUSE(Color.rgb(255, 204, 153), 0.1f),
+    LAKE(Color.rgb(51, 153, 255), 0.1f, true, 1f),
 
-    LAKE(Color.rgb(51, 153, 255), 0.1f),
+    CITY(Color.rgb(192, 192, 192), 0.1f, true, 1f),
 
-    CITY(Color.rgb(192, 192, 192), 0.1f),
+    UNKNOWN(Color.rgb(255, 180, 180), .2f, false, 1f),
 
-    UNKNOWN(Color.rgb(64, 64, 64), .2f),
+    BUILDING(Color.rgb(100, 100, 100), .5f, false, 1f),
 
-    BUILDING(Color.rgb(100, 100, 100), .2f),
+    PATH(Color.rgb(60, 60, 60), .3f, false, 1f),
 
-    HIGHWAY(Color.rgb(233, 132, 31), 0f),
+    HIGHWAY(Color.rgb(255, 180, 50), 0f, false, 2f),
 
-    SUBWAY(Color.rgb(233, 132, 31), 0.2f),
+    SUBWAY(Color.rgb(233, 132, 31), 0.2f, false, 1f),
 
-    CITYWAY(Color.rgb(0, 0, 0), 0.05f),
+    CITYWAY(Color.rgb(0, 0, 0), 0.3f, false, 1f),
 
-    MOTORWAY(Color.rgb(255, 51, 51), 0f),
+    ROAD(Color.rgb(0, 0, 0), 0.05f, false, 1f),
 
-    COASTLINE(Color.rgb(0, 0, 0), 0f),
+    MOTORWAY(Color.rgb(255, 51, 51), 0f, false, 2f),
 
-    MILITARY(Color.TRANSPARENT, 2f),
+    COASTLINE(Color.rgb(0, 0, 0), 0f, false, 2f),
 
-    STONE(Color.rgb(192, 192, 192), 0.1f),
-
-    WETLAND(Color.rgb(135, 255, 195), 0.1f);
+    STONE(Color.rgb(192, 192, 192), 0.1f, true, 1f);
 
     private final Color color;
     private final float requiredZoom;
+    private final boolean fill;
+    private final float width;
 
-    WayType(Color color, float requiredZoom) {
+    WayType(Color color, float requiredZoom, boolean fill, float width) {
         this.color = color;
         this.requiredZoom = requiredZoom;
+        this.fill = fill;
+        this.width = width;
     }
 
     public Color getColor() {
@@ -46,11 +48,14 @@ public enum WayType{
     }
 
     public boolean fillTrue() {
-        return this == WayType.LAKE || this == WayType.FOREST || this == WayType.LANDUSE || this == WayType.BUILDING
-                || this == WayType.CITY || this == WayType.STONE || this == WayType.WETLAND || this == WayType.LAND;
+        return fill;
     }
 
     public float getRequiredZoom() {
         return requiredZoom;
+    }
+
+    public float getWidth(){
+        return width;
     }
 }
