@@ -112,7 +112,7 @@ public class Controller {
             canvas.updateMousePos(lastMouse);
             PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(canvas.getMousePos());
             int dest = ((PolyLine) n).getFrom().getID2();
-            canvas.drawRoute(1572, dest, model.getGraf());
+            canvas.drawRoute(157204, dest, model.getGraf());
             canvas.repaint();
         }
         lastMouse = new Point2D(e.getX(), e.getY());

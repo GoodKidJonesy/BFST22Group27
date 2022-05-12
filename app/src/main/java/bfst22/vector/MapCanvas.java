@@ -84,6 +84,8 @@ public class MapCanvas extends Canvas {
         //System.out.println(n.getNodes());
 
         if (drawable != null){
+            gc.setLineWidth(0.0006);
+            gc.setStroke(Color.AQUAMARINE);
             drawable.draw(gc);
         }
         gc.setLineWidth(4 / Math.sqrt(trans.determinant()));

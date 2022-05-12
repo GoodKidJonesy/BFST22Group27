@@ -272,7 +272,13 @@ public class Model {
                                     wayName = v;
                                     break;
                                 case "maxspeed":
-                                    maxSpeed = Integer.parseInt(v);
+                                    if (v.equals("signals")){
+
+                                    } else{
+                                        Double d = Double.parseDouble(v);
+                                        maxSpeed = (int) Math.round(d);
+                                    }
+
                                 default:
                                     break;
                             }
