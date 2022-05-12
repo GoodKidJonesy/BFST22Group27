@@ -207,14 +207,13 @@ public class Controller {
 
     @FXML
     private void searchPress(MouseEvent e) {
-
-        rute1Found = Arrays.asList(address).contains(rute1.getText());
-        rute2Found = Arrays.asList(address).contains(rute2.getText());
-
+        rute1Found = model.trie.search(rute1.getText());
+        rute2Found = model.trie.search(rute2.getText());
         if (!ruteSwitch.isSelected()) {
             if (rute1.getText().isEmpty()) {
                 Notifications.create().title("Error").text("Please enter an address").showError();
             } else if (rute1Found) {
+                Point2D currentAddress = model.trie.getCords(rute1.getText());
                 Notifications.create().title("Success").text("Address found: " + rute1.getText()).showInformation();
             } else {
                 Notifications.create().title("Error").text("No address found").showError();
@@ -234,8 +233,9 @@ public class Controller {
                 Notifications.create().title("Error").text("No end address found").showError();
                 directionList.getItems().clear();
             } else {
+                Point2D origin = model.trie.getCords(rute1.getText());
+                Point2D dest = model.trie.getCords(rute2.getText());
                 getDirectionList();
-
             }
         }
     }
