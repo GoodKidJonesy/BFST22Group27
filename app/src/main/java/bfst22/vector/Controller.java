@@ -24,6 +24,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -51,6 +52,9 @@ public class Controller {
 
     @FXML
     private HBox vehicleBox;
+
+    @FXML
+    VBox sidepanel;
 
     @FXML
     private Button carBtn,
@@ -84,7 +88,7 @@ public class Controller {
     ProgressBar zoomBar;
 
     @FXML
-    CheckBox FPSBox, KdBox, Nearest;
+    CheckBox FPSBox, KdBox, Nearest, DarkTheme;
 
     @FXML
     MenuItem loadCustom,
@@ -279,23 +283,30 @@ public class Controller {
     private void KdDebugger(ActionEvent e) {
         if (KdBox.isSelected()) {
             canvas.setRangeDebug(true);
-            canvas.repaint();
-        } else if (!KdBox.isSelected()) {
+        } else {
             canvas.setRangeDebug(false);
-            canvas.repaint();
         }
+        canvas.repaint();
     }
+
     @FXML
-    private void nearestNeighbourDebugger(ActionEvent e) {
-        if(Nearest.isSelected()){
+    private void NNDebugger(ActionEvent e) {
+        if (Nearest.isSelected()) {
             canvas.getStreetDebug(true);
-            canvas.repaint();
-        }else if(!Nearest.isSelected()){
+        } else {
             canvas.getStreetDebug(false);
-            canvas.repaint();
+        }
+        canvas.repaint();
+    }
+
+    @FXML
+    private void DarkTheme(ActionEvent e) {
+        if (DarkTheme.isSelected()) {
+            sidepanel.setStyle("-fx-background-color: grey");
+        } else {
+            sidepanel.setStyle("-fx-background-color: transparent");
         }
     }
-            
 
     private void zoomBarValue() {
         double temp = (double) canvas.getZoomedIn() / 10;

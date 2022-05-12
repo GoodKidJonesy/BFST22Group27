@@ -23,6 +23,7 @@ public class MapCanvas extends Canvas {
     private int origin, dest;
     private boolean streetDebug = false;
     private Point2D currentAddress;
+    private boolean darkTheme = false;
 
     private PolyLine drawable;
 
@@ -39,21 +40,21 @@ public class MapCanvas extends Canvas {
     void repaint() {
         var gc = getGraphicsContext2D();
         gc.setTransform(new Affine());
-        gc.setFill(WayType.LAKE.getColor());
+        gc.setFill(calcColor(WayType.LAKE));
         gc.fillRect(0, 0, getWidth(), getHeight());
         gc.setTransform(trans);
 
         for (Drawable d : model.iterable(WayType.LAND)) {
             gc.setLineWidth(calcWidth(d.getType().getWidth()));
             if (d.getType().fillTrue()) {
-                gc.setFill(d.getType().getColor());
+                gc.setFill(calcColor(d.getType()));
                 d.fill(gc);
             }
         }
         for (Drawable d : model.iterable(WayType.CITY)) {
             gc.setLineWidth(calcWidth(d.getType().getWidth()));
             if (d.getType().fillTrue()) {
-                gc.setFill(d.getType().getColor());
+                gc.setFill(calcColor(d.getType()));
                 d.fill(gc);
             }
         }
@@ -66,10 +67,10 @@ public class MapCanvas extends Canvas {
                 if (d.getType().getRequiredZoom() <= zoomedIn) {
                     gc.setLineWidth(calcWidth(d.getType().getWidth()));
                     if (d.getType().fillTrue()) {
-                        gc.setFill(d.getType().getColor());
+                        gc.setFill(calcColor(d.getType()));
                         d.fill(gc);
                     } else {
-                        gc.setStroke(d.getType().getColor());
+                        gc.setStroke(calcColor(d.getType()));
                         d.draw(gc);
                     }
                 }
@@ -80,10 +81,10 @@ public class MapCanvas extends Canvas {
             if (d.getType().getRequiredZoom() <= zoomedIn) {
                 gc.setLineWidth(calcWidth(d.getType().getWidth()));
                 if (d.getType().fillTrue()) {
-                    gc.setFill(d.getType().getColor());
+                    gc.setFill(calcColor(d.getType()));
                     d.fill(gc);
                 } else {
-                    gc.setStroke(d.getType().getColor());
+                    gc.setStroke(calcColor(d.getType()));
                     d.draw(gc);
                 }
             }
@@ -91,7 +92,7 @@ public class MapCanvas extends Canvas {
 
         if (drawable != null) {
             gc.setLineWidth(calcWidth(drawable.getType().getWidth()));
-            gc.setStroke(drawable.getType().getColor());
+            gc.setStroke(calcColor(drawable.getType()));
             drawable.draw(gc);
         }
 
@@ -110,7 +111,19 @@ public class MapCanvas extends Canvas {
         }
     }
 
-    private double calcWidth(float f) {
+    private Color calcColor(WayType w) {
+        if (darkTheme){
+            return w.getSecondColor();
+        } else {
+            return w.getMainColor();
+        }
+    }
+
+    public void setDarkTheme(boolean darkTheme){
+        this.darkTheme = darkTheme;
+    }
+
+    private double calcWidth(float f){
         return f / Math.sqrt(trans.determinant());
     }
 

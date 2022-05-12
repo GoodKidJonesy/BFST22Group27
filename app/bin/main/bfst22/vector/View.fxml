@@ -185,8 +185,8 @@
                      <children>
                         <CheckBox fx:id="FPSBox" mnemonicParsing="false" text="FPS" />
                         <CheckBox fx:id="KdBox" mnemonicParsing="false" onAction="#KdDebugger" text="KDTree" GridPane.columnIndex="1" />
-                        <CheckBox fx:id="ColorBlind" mnemonicParsing="false" text="ColorBlind mode" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <CheckBox fx:id="Nearest" mnemonicParsing="false" text="Nearest Neighbour" GridPane.rowIndex="1" />
+                        <CheckBox fx:id="Nearest" mnemonicParsing="false" onAction="#NNDebugger" text="NNDebug" GridPane.rowIndex="1" />
+                        <CheckBox fx:id="DarkTheme" mnemonicParsing="false" onAction="#DarkTheme" text="Dark Theme" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                      </children>
                      <cursor>
                         <Cursor fx:constant="HAND" />
