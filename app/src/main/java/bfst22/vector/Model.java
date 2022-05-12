@@ -252,7 +252,7 @@ public class Model {
                                     wayName = v;
                                     break;
                                 case "maxspeed":
-                                    if(isHighway) {
+                                    if (isHighway) {
                                         if (v.equals("signals")) {
 
                                         } else {
@@ -342,6 +342,7 @@ public class Model {
         trie.insert(address.toString(), address.getCords());
         address = null;
     }
+
     public void fillTrees() {
         ArrayList<Drawable> main = new ArrayList<>();
         ArrayList<Drawable> roads = new ArrayList<>();
@@ -366,7 +367,7 @@ public class Model {
          * are
          */
         for (OSMWay o : highways) {
-            if (o.getSpeedLimit() == 0){
+            if (o.getSpeedLimit() == 0) {
                 o.setSpeedLimit(50);
             }
 
@@ -375,16 +376,13 @@ public class Model {
                 double distance = distanceCalc(o.getNodes().get(j).getID(), o.getNodes().get(j + 1).getID());
                 Edge e = new Edge(o.getNodes().get(j).getID(), o.getNodes().get(j + 1).getID(),
                         o.getNodes().get(j).getID2(),
-                        o.getNodes().get(j + 1).getID2(), o.getName(), distance / o.getSpeedLimit(), distance);
+                        o.getNodes().get(j + 1).getID2(), o.getName(), distance, distance);
                 e.addFromC(o.getNodes().get(j).getX(), o.getNodes().get(j).getY());
                 e.addToC(o.getNodes().get(j + 1).getX(), o.getNodes().get(j + 1).getY());
                 Edge f = new Edge(o.getNodes().get(j + 1).getID(), o.getNodes().get(j).getID(),
                         o.getNodes().get(j + 1).getID2(),
-                        o.getNodes().get(j).getID2(), o.getName(), distance / o.getSpeedLimit(), distance);
+                        o.getNodes().get(j).getID2(), o.getName(), distance, distance);
 
-                if (o.getName().equals("Middelfartvej")){
-                    System.out.println(distance);
-                }
                 f.addFromC(o.getNodes().get(j + 1).getX(), o.getNodes().get(j + 1).getY());
                 f.addToC(o.getNodes().get(j).getX(), o.getNodes().get(j).getY());
                 edgeList.add(e);

@@ -88,8 +88,7 @@ public class Controller {
 
     @FXML
     MenuItem loadCustom,
-             aboutBtn;
-
+            aboutBtn;
 
     App app;
 
@@ -141,6 +140,11 @@ public class Controller {
     }
 
     @FXML
+    private void onMouseMoved(MouseEvent e) {
+
+    }
+
+    @FXML
     private void onMouseDragged(MouseEvent e) {
         startFPS();
         var dx = e.getX() - lastMouse.getX();
@@ -157,6 +161,10 @@ public class Controller {
         PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(canvas.getMousePos());
         int id2 = ((PolyLine) n).getFrom().getID2();
 
+        canvas.updateMousePos(new Point2D(e.getX(), e.getY()));
+        String name = canvas.getClosestStreet();
+        addressLabel.setText(name);
+
         if (e.isPrimaryButtonDown() && e.isControlDown()) {
             canvas.setDest(id2);
         }
@@ -165,10 +173,12 @@ public class Controller {
             canvas.setOrigin(id2);
         }
 
-        canvas.drawRoute(canvas.getOrigin(), canvas.getDest(), model.getGraf());
-        canvas.repaint();
+        // Draw route if there is an origin and destination
+        if (canvas.getDest() != 0 && canvas.getOrigin() != 0) {
+            canvas.drawRoute(canvas.getOrigin(), canvas.getDest(), model.getGraf());
+        }
 
-        lastMouse = new Point2D(e.getX(), e.getY());
+        canvas.repaint();
         startFPS();
     }
 
@@ -208,6 +218,7 @@ public class Controller {
                 Notifications.create().title("Error").text("Please enter an address").showError();
             } else if (rute1Found) {
                 Point2D currentAddress = model.trie.getCords(rute1.getText());
+                canvas.setCurrentAddress(currentAddress);
                 Notifications.create().title("Success").text("Address found: " + rute1.getText()).showInformation();
             } else {
                 Notifications.create().title("Error").text("No address found").showError();
@@ -229,9 +240,13 @@ public class Controller {
             } else {
                 Point2D origin = model.trie.getCords(rute1.getText());
                 Point2D dest = model.trie.getCords(rute2.getText());
+
+                canvas.setRoute(origin, dest);
                 getDirectionList();
             }
         }
+
+        canvas.repaint();
     }
 
     @FXML
@@ -412,7 +427,7 @@ public class Controller {
 
     @FXML
     private void about() throws IOException {
-        //load about window
+        // load about window
 
         Stage stage = new Stage();
         stage.setTitle("About");

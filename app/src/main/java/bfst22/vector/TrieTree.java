@@ -142,8 +142,9 @@ public class TrieTree {
         return words;
     }
     public String replaceKey(String key){
+        key = key.trim().toLowerCase();
         key = key.replace("æ", "ae").replace("ø","oe").replace("å", "aa").replace("é","e").replace("ü","u").replace("ö", "oe").replace("õ","oe").replace("ä","ae");
-        return key.trim().toLowerCase();
+        return key;
     }
 }
 

@@ -239,7 +239,7 @@
                         <Insets />
                      </VBox.margin>
                   </HBox>
-                  <Label fx:id="addressLabel" contentDisplay="CENTER" text="Nearest Neighbour" textAlignment="CENTER">
+                  <Label fx:id="addressLabel" contentDisplay="CENTER" onMouseMoved="#onMouseMoved" text="Nearest Neighbour" textAlignment="CENTER">
                      <font>
                         <Font name="Monospaced Bold" size="12.0" />
                      </font>

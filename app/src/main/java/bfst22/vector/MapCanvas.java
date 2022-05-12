@@ -21,8 +21,9 @@ public class MapCanvas extends Canvas {
     private Range buffer = new Range(new Point2D(0, 0), new Point2D(0, 0));
     private Point2D mousePos = new Point2D(0, 0);
     private int origin, dest;
+    private boolean streetDebug = true;
+    private Point2D currentAddress;
 
-    private Dijkstra path;
     private PolyLine drawable;
 
     void init(Model model) {
@@ -94,21 +95,13 @@ public class MapCanvas extends Canvas {
             drawable.draw(gc);
         }
 
-        // PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(mousePos);
-        /*
-         * int dest = ((PolyLine) n).getFrom().getID2();
-         * 
-         * gc.setLineWidth(4 / Math.sqrt(trans.determinant()));
-         * if (n.getType().fillTrue()) {
-         * gc.setFill(Color.RED);
-         * n.fill(gc);
-         * } else {
-         * gc.setStroke(Color.RED);
-         * n.draw(gc);
-         * }
-         * 
-         * drawRoute(1572, dest, model.getGraf());
-         */
+        PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(mousePos);
+
+        if (streetDebug) {
+            gc.setLineWidth(calcWidth(n.getType().getWidth()));
+            gc.setStroke(Color.RED);
+            n.draw(gc);
+        }
 
         if (range.getDebug()) {
             gc.setLineWidth(5 / Math.sqrt(trans.determinant()));
@@ -117,9 +110,10 @@ public class MapCanvas extends Canvas {
         }
     }
 
-    private double calcWidth(float f){
+    private double calcWidth(float f) {
         return f / Math.sqrt(trans.determinant());
     }
+
     public double getMaxZoom() {
         return maxZoom;
     }
@@ -236,5 +230,19 @@ public class MapCanvas extends Canvas {
 
     public int getDest() {
         return dest;
+    }
+
+    public void setRoute(Point2D origin, Point2D dest) {
+        this.origin = ((PolyLine) model.getRoadTree().getNearestNeighbor(origin)).getFrom().getID2();
+        this.dest = ((PolyLine) model.getRoadTree().getNearestNeighbor(dest)).getFrom().getID2();
+    }
+
+    public void setCurrentAddress(Point2D currentAddress) {
+        this.currentAddress = currentAddress;
+    }
+
+    public String getClosestStreet() {
+        PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(mousePos);
+        return n.getName();
     }
 }
