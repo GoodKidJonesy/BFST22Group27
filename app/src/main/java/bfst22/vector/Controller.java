@@ -21,6 +21,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.util.Arrays;
@@ -46,6 +47,8 @@ public class Controller {
 
     @FXML
     private HBox vehicleBox;
+
+    @FXML VBox sidepanel;
 
     @FXML
     private Button carBtn,
@@ -78,7 +81,7 @@ public class Controller {
     ProgressBar zoomBar;
 
     @FXML
-    CheckBox FPSBox, KdBox;
+    CheckBox FPSBox, KdBox, DarkTheme;
 
     @FXML
     MenuItem loadCustom;
@@ -265,6 +268,19 @@ public class Controller {
         } else if (!KdBox.isSelected()) {
             canvas.setRangeDebug(false);
             canvas.repaint();
+        }
+    }
+
+    @FXML
+    private void DarkTheme(ActionEvent e) {
+        boolean temp = DarkTheme.isSelected() ? true : false;
+        canvas.setDarkTheme(temp);
+        canvas.repaint();
+
+        if(temp) {
+            sidepanel.setStyle("-fx-background-color: grey");   
+        } else {
+            sidepanel.setStyle("-fx-background-color: transparent");
         }
     }
 

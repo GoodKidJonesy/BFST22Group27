@@ -33,7 +33,7 @@
                 <MapCanvas fx:id="canvas" height="${scene.height}" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" onScroll="#onScroll" width="${scene.width}" />
             </center>
          <left>
-            <VBox prefHeight="1055.0" prefWidth="218.0" style="-fx-background-color: null;" BorderPane.alignment="CENTER">
+            <VBox fx:id="sidepanel" prefHeight="1055.0" prefWidth="218.0" style="-fx-background-color: null;" BorderPane.alignment="CENTER">
                <children>
                   <HBox prefHeight="31.0" prefWidth="240.0">
                      <children>
@@ -185,7 +185,7 @@
                      <children>
                         <CheckBox fx:id="FPSBox" mnemonicParsing="false" text="FPS" />
                         <CheckBox fx:id="KdBox" mnemonicParsing="false" onAction="#KdDebugger" text="KDTree" GridPane.columnIndex="1" />
-                        <CheckBox fx:id="ColorBlind" mnemonicParsing="false" text="ColorBlind mode" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <CheckBox fx:id="DarkTheme" mnemonicParsing="false" onAction="#DarkTheme" text="Dark Theme" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <CheckBox mnemonicParsing="false" text="CheckBox" GridPane.rowIndex="1" />
                      </children>
                      <cursor>
