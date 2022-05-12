@@ -52,7 +52,8 @@ public class Controller {
     private ToggleSwitch ruteSwitch;
 
     @FXML
-    private HBox vehicleBox;
+    private HBox vehicleBox,
+                    hboxZoom;
 
     @FXML
     VBox sidepanel;
@@ -80,7 +81,8 @@ public class Controller {
             totalTimeLabel,
             FPSLabel,
             zoomValue,
-            addressLabel;
+            addressLabel,
+            debuggerMenu;
 
     @FXML
     ListView directionList;
@@ -90,6 +92,9 @@ public class Controller {
 
     @FXML
     CheckBox FPSBox, KdBox, Nearest, DarkTheme;
+
+    @FXML
+    MenuBar menuBar;
 
     @FXML
     MenuItem loadCustom,
@@ -144,7 +149,7 @@ public class Controller {
     private void onMouseMoved(MouseEvent e) {
         canvas.updateMousePos(new Point2D(e.getX(), e.getY()));
         String name = canvas.getClosestStreet();
-        addressLabel.setText(name);
+        addressLabel.setText("Address: " + name);
     }
 
     @FXML
@@ -252,7 +257,7 @@ public class Controller {
     @FXML
     private void highlightVehicle(MouseEvent e) {
         String transparent = "-fx-background-color: transparent; -fx-border-color: black";
-        String grey = "-fx-background-color: grey; -fx-border-color: black";
+        String grey = "-fx-background-color: #AAAAAA; -fx-border-color: black";
 
         if (carBtn.isPressed()) {
             walkBtn.setStyle(transparent);
@@ -303,11 +308,48 @@ public class Controller {
     @FXML
     private void DarkTheme(ActionEvent e) {
         if (DarkTheme.isSelected()) {
-            sidepanel.setStyle("-fx-background-color: grey");
+            sidepanel.setStyle("-fx-background-color: #181818");
             canvas.setDarkTheme(true);
+            canvas.repaint();
+            directionList.setStyle("-fx-text-fill: #AAAAAA; -fx-background-color: #3D3D3D; -fx-accent: #E4E6EB;");
+            rute1.setStyle("-fx-background-color: #3D3D3D; -fx-text-fill: #AAAAAA");
+            rute2.setStyle("-fx-background-color: #3D3D3D; -fx-text-fill: #AAAAAA");
+            searchButton.setStyle("-fx-background-color: #3D3D3D; -fx-text-fill: #AAAAAA");
+            FPSBox.setStyle("-fx-text-fill: #AAAAAA");
+            KdBox.setStyle("-fx-text-fill: #AAAAAA");
+            Nearest.setStyle("-fx-text-fill: #AAAAAA");
+            DarkTheme.setStyle("-fx-text-fill: #AAAAAA");
+            addressLabel.setStyle("-fx-text-fill: #AAAAAA");
+            debuggerMenu.setStyle("-fx-text-fill: #AAAAAA");
+            totalDistanceLabel.setStyle("-fx-text-fill: #AAAAAA");
+            totalTimeLabel.setStyle("-fx-text-fill: #AAAAAA");
+            zoomBar.setStyle("-fx-accent: #3D3D3D");
+            zoomValue.setStyle("-fx-text-fill: #AAAAAA");
+            hboxZoom.setStyle("-fx-background-color: #3D3D3D");
+            ruteSwitch.setStyle("-fx-accent: #3D3D3D");
+
+
         } else {
             sidepanel.setStyle("-fx-background-color: transparent");
             canvas.setDarkTheme(false);
+            canvas.repaint();
+            directionList.setStyle(null);
+            rute1.setStyle(null);
+            rute2.setStyle(null);
+            searchButton.setStyle(null);
+            hboxZoom.setStyle(null);
+            ruteSwitch.setStyle(null);
+            FPSBox.setStyle(null);
+            KdBox.setStyle(null);
+            Nearest.setStyle(null);
+            DarkTheme.setStyle(null);
+            addressLabel.setStyle(null);
+            debuggerMenu.setStyle(null);
+            totalDistanceLabel.setStyle(null);
+            totalTimeLabel.setStyle(null);
+            zoomBar.setStyle(null);
+            zoomValue.setStyle(null);
+        
         }
         canvas.repaint();
     }
@@ -475,6 +517,17 @@ public class Controller {
         stage.initModality(Modality.APPLICATION_MODAL);
 
         var about = new FXMLLoader(View.class.getResource("About.fxml"));
+        stage.setScene(about.load());
+        stage.show();
+    }
+
+    @FXML
+    private void hotKey() throws IOException {
+        Stage stage = new Stage();
+        stage.setTitle("Hotkeys");
+        stage.setResizable(false);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        var about = new FXMLLoader(View.class.getResource("Hotkeys.fxml"));
         stage.setScene(about.load());
         stage.show();
     }
