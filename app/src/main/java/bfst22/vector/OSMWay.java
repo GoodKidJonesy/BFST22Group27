@@ -28,6 +28,7 @@ public class OSMWay implements Serializable {
     public int getSpeedLimit(){
         return speedLimit;
     }
+    public void setSpeedLimit(int speedLimit){ this.speedLimit = speedLimit;}
     public boolean getOneWay(){
         return oneWay;
     }

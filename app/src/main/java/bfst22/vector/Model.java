@@ -203,28 +203,40 @@ public class Model {
                                     }
                                     break;
                                 case "highway":
-                                isHighway = true;
+
                                     switch (v) {
                                         case "primary":
+                                            isHighway = true;
                                         case "trunk":
+                                            isHighway = true;
                                         case "secondary":
+                                            isHighway = true;
                                         case "trunk_link":
+                                            isHighway = true;
                                         case "secondary_link":
+                                            isHighway = true;
                                             type = WayType.HIGHWAY;
                                             break;
                                         case "residential":
+                                            isHighway = true;
                                         case "service":
-                                        case "cycleway":
+                                            isHighway = true;
+                                        //case "cycleway":
                                         case "tertiary":
+                                            isHighway = true;
                                         case "unclassified":
                                         case "road":
+                                            isHighway = true;
                                         case "tertiary_link":
+                                            isHighway = true;
                                         case "path":
                                         case "track":
                                             type = WayType.CITYWAY;
                                             break;
                                         case "motorway":
+                                            isHighway = true;
                                         case "motorway_link":
+                                            isHighway = true;
                                             type = WayType.MOTORWAY;
                                             break;
                                         default:
@@ -384,6 +396,9 @@ public class Model {
         for (OSMWay o : highways) {
             for (int j = 0; j < o.getNodes().size() - 1; j++) {
                 double distance = distanceCalc(o.getNodes().get(j).getID(), o.getNodes().get(j + 1).getID());
+                if(o.getSpeedLimit() == 0){
+                    o.setSpeedLimit(1);
+                }
                 Edge e = new Edge(o.getNodes().get(j).getID(), o.getNodes().get(j + 1).getID(), o.getNodes().get(j).getID2(),
                         o.getNodes().get(j + 1).getID2(), o.getName(), distance / o.getSpeedLimit(), distance);
                 e.addFromC(o.getNodes().get(j).lat, o.getNodes().get(j).lon);
