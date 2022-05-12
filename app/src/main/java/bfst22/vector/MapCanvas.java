@@ -24,6 +24,8 @@ public class MapCanvas extends Canvas {
     private boolean streetDebug = false;
     private Point2D currentAddress;
     private boolean darkTheme = false;
+    private List<Pin> pointsOfInterest = new ArrayList<>();
+    private Pin originPin, destPin, currentPin;
 
     private PolyLine drawable;
 
@@ -104,6 +106,23 @@ public class MapCanvas extends Canvas {
             n.draw(gc);
         }
 
+        /*
+         * if (pointsOfInterest.size() > 0) {
+         * for (Pin p : pointsOfInterest) {
+         * gc.setFill(Color.RED);
+         * gc.fillOval(p.getX(), p.getY(), p.getSize(), p.getSize());
+         * }
+         * }
+         */
+
+        gc.setFill(Color.RED);
+        if (originPin != null)
+            gc.fillOval(originPin.getX() - originPin.getSize() * (maxZoom - zoomedIn) / 2, originPin.getY() - originPin.getSize() * (maxZoom - zoomedIn) / 2, originPin.getSize() * (maxZoom - zoomedIn), originPin.getSize() * (maxZoom - zoomedIn));
+        if (destPin != null)
+            gc.fillOval(destPin.getX() - destPin.getSize() * (maxZoom - zoomedIn) / 2, destPin.getY() - destPin.getSize() * (maxZoom - zoomedIn) / 2, destPin.getSize() * (maxZoom - zoomedIn), destPin.getSize() * (maxZoom - zoomedIn));
+        if (currentPin != null)
+            gc.fillOval(currentPin.getX() - currentPin.getSize() * (maxZoom - zoomedIn) / 2, currentPin.getY() - currentPin.getSize() * (maxZoom - zoomedIn) / 2, currentPin.getSize() * (maxZoom - zoomedIn), currentPin.getSize() * (maxZoom - zoomedIn));
+
         if (range.getDebug()) {
             gc.setLineWidth(5 / Math.sqrt(trans.determinant()));
             drawRange(range, Color.BLACK);
@@ -112,18 +131,18 @@ public class MapCanvas extends Canvas {
     }
 
     private Color calcColor(WayType w) {
-        if (darkTheme){
+        if (darkTheme) {
             return w.getSecondColor();
         } else {
             return w.getMainColor();
         }
     }
 
-    public void setDarkTheme(boolean darkTheme){
+    public void setDarkTheme(boolean darkTheme) {
         this.darkTheme = darkTheme;
     }
 
-    private double calcWidth(float f){
+    private double calcWidth(float f) {
         return f / Math.sqrt(trans.determinant());
     }
 
@@ -234,10 +253,12 @@ public class MapCanvas extends Canvas {
 
     public void setOrigin(int id2) {
         dest = id2;
+        originPin = new Pin(mousePos);
     }
 
     public void setDest(int id2) {
         origin = id2;
+        destPin = new Pin(mousePos);
     }
 
     public int getOrigin() {
@@ -251,11 +272,14 @@ public class MapCanvas extends Canvas {
     public void setRoute(Point2D origin, Point2D dest) {
         this.origin = ((PolyLine) model.getRoadTree().getNearestNeighbor(origin)).getFrom().getID2();
         this.dest = ((PolyLine) model.getRoadTree().getNearestNeighbor(dest)).getFrom().getID2();
+        this.originPin = new Pin(origin);
+        this.destPin = new Pin(dest);
         repaint();
     }
 
     public void setCurrentAddress(Point2D currentAddress) {
         this.currentAddress = currentAddress;
+        this.currentPin = new Pin(currentAddress);
     }
 
     public String getClosestStreet() {
