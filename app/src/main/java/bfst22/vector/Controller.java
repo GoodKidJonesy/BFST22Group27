@@ -84,7 +84,7 @@ public class Controller {
     ProgressBar zoomBar;
 
     @FXML
-    CheckBox FPSBox, KdBox;
+    CheckBox FPSBox, KdBox, Nearest;
 
     @FXML
     MenuItem loadCustom,
@@ -110,11 +110,6 @@ public class Controller {
         TextFields.bindAutoCompletion(rute2, model.trie.searchMultiple(rute2.getText()));
     }
 
-    // OnScroll method that have zoom in and out in levels
-    public void onScroll1(ScrollEvent event) {
-
-    }
-
     @FXML
     private void onScroll(ScrollEvent e) throws InterruptedException {
 
@@ -136,12 +131,15 @@ public class Controller {
             }
         }
         Thread.sleep(300);
+        canvas.repaint();
 
     }
 
     @FXML
     private void onMouseMoved(MouseEvent e) {
-
+        canvas.updateMousePos(new Point2D(e.getX(), e.getY()));
+        String name = canvas.getClosestStreet();
+        addressLabel.setText(name);
     }
 
     @FXML
@@ -160,10 +158,6 @@ public class Controller {
         canvas.updateMousePos(lastMouse);
         PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(canvas.getMousePos());
         int id2 = ((PolyLine) n).getFrom().getID2();
-
-        canvas.updateMousePos(new Point2D(e.getX(), e.getY()));
-        String name = canvas.getClosestStreet();
-        addressLabel.setText(name);
 
         if (e.isPrimaryButtonDown() && e.isControlDown()) {
             canvas.setDest(id2);
@@ -243,6 +237,7 @@ public class Controller {
 
                 canvas.setRoute(origin, dest);
                 getDirectionList();
+                canvas.repaint();
             }
         }
 
@@ -290,6 +285,17 @@ public class Controller {
             canvas.repaint();
         }
     }
+    @FXML
+    private void nearestNeighbourDebugger(ActionEvent e) {
+        if(Nearest.isSelected()){
+            canvas.getStreetDebug(true);
+            canvas.repaint();
+        }else if(!Nearest.isSelected()){
+            canvas.getStreetDebug(false);
+            canvas.repaint();
+        }
+    }
+            
 
     private void zoomBarValue() {
         double temp = (double) canvas.getZoomedIn() / 10;
@@ -373,7 +379,7 @@ public class Controller {
         File selectedFile = fileChooser.showOpenDialog(null);
         String filePath = selectedFile.getAbsolutePath();
 
-        // Stage splash = (Stage) loadCustomBtn.getScene().getWindow();
+        Stage splash = (Stage) loadCustomBtn.getScene().getWindow();
         // var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
         // splash.setScene(loader.load());
         // splash.show();
@@ -381,7 +387,7 @@ public class Controller {
         // Thread thread = new Thread(() -> {
         // try {
         var newModel = new Model(filePath);
-        // splash.close();
+        splash.close();
         Stage stage = new Stage();
         new View(newModel, stage);
         // } catch (ClassNotFoundException | IOException | XMLStreamException |

@@ -30,11 +30,11 @@
     <root>
         <BorderPane prefHeight="1080" prefWidth="1920" style="-fx-background-color: transparent;">
             <center>
-                <MapCanvas fx:id="canvas" height="${scene.height}" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" onScroll="#onScroll" width="${scene.width}" />
+                <MapCanvas fx:id="canvas" height="${scene.height}" onMouseMoved="#onMouseMoved" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" onScroll="#onScroll" width="${scene.width}" />
             </center>
          <left>
             <VBox fx:id="sidepanel" prefHeight="1055.0" prefWidth="220.0" style="-fx-background-color: null;" BorderPane.alignment="CENTER">
-               <children>
+               <children>  
                   <HBox prefHeight="31.0" prefWidth="240.0">
                      <children>
                         <VBox prefHeight="84.0" prefWidth="239.0" spacing="10.0">
@@ -186,7 +186,7 @@
                         <CheckBox fx:id="FPSBox" mnemonicParsing="false" text="FPS" />
                         <CheckBox fx:id="KdBox" mnemonicParsing="false" onAction="#KdDebugger" text="KDTree" GridPane.columnIndex="1" />
                         <CheckBox fx:id="ColorBlind" mnemonicParsing="false" text="ColorBlind mode" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <CheckBox mnemonicParsing="false" text="CheckBox" GridPane.rowIndex="1" />
+                        <CheckBox fx:id="Nearest" mnemonicParsing="false" text="Nearest Neighbour" GridPane.rowIndex="1" />
                      </children>
                      <cursor>
                         <Cursor fx:constant="HAND" />
@@ -239,7 +239,7 @@
                         <Insets />
                      </VBox.margin>
                   </HBox>
-                  <Label fx:id="addressLabel" contentDisplay="CENTER" onMouseMoved="#onMouseMoved" text="Nearest Neighbour" textAlignment="CENTER">
+                  <Label fx:id="addressLabel" contentDisplay="CENTER" text="Nearest Neighbour" textAlignment="CENTER">
                      <font>
                         <Font name="Monospaced Bold" size="12.0" />
                      </font>

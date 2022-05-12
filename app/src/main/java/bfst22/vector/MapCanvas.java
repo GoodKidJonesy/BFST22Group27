@@ -21,7 +21,7 @@ public class MapCanvas extends Canvas {
     private Range buffer = new Range(new Point2D(0, 0), new Point2D(0, 0));
     private Point2D mousePos = new Point2D(0, 0);
     private int origin, dest;
-    private boolean streetDebug = true;
+    private boolean streetDebug = false;
     private Point2D currentAddress;
 
     private PolyLine drawable;
@@ -124,6 +124,10 @@ public class MapCanvas extends Canvas {
 
     public int getZoomedIn() {
         return zoomedIn;
+    }
+
+    public void getStreetDebug(boolean streetDebug) {
+        this.streetDebug = streetDebug;
     }
 
     private ArrayList<Drawable> query() {
