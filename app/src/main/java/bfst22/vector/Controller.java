@@ -121,9 +121,8 @@ public class Controller {
     public void init(Model model) {
         this.model = model;
         canvas.init(model);
-        String[] address = model.getAddresses().toString().split(",");
-        TextFields.bindAutoCompletion(rute1, address);
-        TextFields.bindAutoCompletion(rute2, address);
+        TextFields.bindAutoCompletion(rute1, model.trie.searchMultiple(rute1.getText()));
+        TextFields.bindAutoCompletion(rute2, model.trie.searchMultiple(rute2.getText()));
     }
 
     // OnScroll method that have zoom in and out in levels

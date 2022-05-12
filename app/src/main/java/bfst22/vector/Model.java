@@ -26,9 +26,8 @@ public class Model {
     private float minlat, minlon, maxlat, maxlon;
     private int id2 = 0;
     private Address address = null;
-    private TrieTree trie;
+    public TrieTree trie = new TrieTree();
     private OSMNode osmnode = null;
-    private ArrayList<Address> addresses = new ArrayList<>();
     private ArrayList<OSMWay> highways = new ArrayList<OSMWay>();
     private Map<WayType, List<Drawable>> lines = new EnumMap<>(WayType.class);
     private ArrayList<Edge> edgeList = new ArrayList<>();
@@ -319,10 +318,6 @@ public class Model {
         timeTwo += System.nanoTime();
         System.out.println("Parsing Done in " + (long) (timeTwo / 1e6) + "ms.");
         timeTwo = -System.nanoTime();
-        makeTrie();
-        timeTwo += System.nanoTime();
-        System.out.println("TrieTree done in: " + (long) (timeTwo / 1e6) + "ms.");
-        timeTwo = -System.nanoTime();
         fillTrees();
         timeTwo += System.nanoTime();
         System.out.println("KDTree filled in: " + (long) (timeTwo / 1e6) + " ms");
@@ -345,22 +340,9 @@ public class Model {
     }
 
     public void addAddress() {
-        // System.out.println(address.getStreet());
-        addresses.add(address);
+        trie.insert(address.toString(), address.getCords());
         address = null;
     }
-
-    public List<Address> getAddresses() {
-        return addresses;
-    }
-
-    public void makeTrie() {
-        trie = new TrieTree();
-        for (Address a : addresses) {
-            trie.insert(a.toString(), a.getCords());
-        }
-    }
-
     public void fillTrees() {
         ArrayList<Drawable> main = new ArrayList<>();
         ArrayList<Drawable> roads = new ArrayList<>();

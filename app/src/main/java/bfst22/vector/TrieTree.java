@@ -37,7 +37,7 @@ public class TrieTree {
     // hver char i key bliver indsat efter den forrige og hver node har en parent
     // samt børn.
     public void insert(String key, String cords) {
-        key = key.replace("æ", "ae").replace("ø","oe").replace("å", "aa");
+        key = replaceKey(key);
         int depth;
         int index;
 
@@ -63,8 +63,8 @@ public class TrieTree {
 
     // search metode, fungerer ligesom insert. metode bare hvor den tjekker hver
     // node og sammenligner med input.
-    public static String search(String key) {
-        key = key.replace("æ", "ae").replace("ø","oe").replace("å", "aa");
+    public String search(String key) {
+        key = replaceKey(key);
         int depth;
         int index;
         TrieNode parent = root;
@@ -93,7 +93,7 @@ public class TrieTree {
     //finder den node som er sidste character i inputtet og kalder derefter DFS metoden med denne node, input og arraylist.
     public ArrayList<String> searchMultiple(String key){
         ArrayList<String> words = new ArrayList<>();
-        key = key.replace("æ", "ae").replace("ø","oe").replace("å", "aa");
+        key = replaceKey(key);
         TrieNode currentNode = root;
         for(int i = 0; i < key.length(); i++){
             inner : for(TrieNode n : currentNode.children){
@@ -111,6 +111,7 @@ public class TrieTree {
     //rekursiv dybde først søgning. Søger rekursivt igennem alle børn til currentnode og tilføjer alle ord der matcher input til listen. 
     static ArrayList<String> DFS(String key, TrieNode current, ArrayList<String> words){
         if(current.endOfString){
+            key = key.substring(0,1).toUpperCase() + key.substring(1);
             words.add(key.replaceAll("ae", "æ").replace("oe", "ø").replace("aa", "å"));
             
         }
@@ -123,6 +124,10 @@ public class TrieTree {
             }
         }
         return words;
+    }
+    public String replaceKey(String key){
+        key = key.replace("æ", "ae").replace("ø","oe").replace("å", "aa").replace("é","e").replace("ü","u").replace("ö", "oe").replace("õ","oe").replace("ä","ae");
+        return key.trim().toLowerCase();
     }
 }
 

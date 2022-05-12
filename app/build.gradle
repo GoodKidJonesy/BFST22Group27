@@ -33,3 +33,6 @@ application {
 tasks.named('test') {
     useJUnitPlatform()
 }
+jar {
+  zip64 true
+}

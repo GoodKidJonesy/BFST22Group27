@@ -49,7 +49,7 @@ public class Address {
     }
 
     public String toString() {
-        return street.toLowerCase().replace("é","e").replace("ü","u").replace("ö", "oe").replace("õ","oe").replace("ä","ae") + " " + houseNumber.toLowerCase() + " " + postcode + " " + city.toLowerCase();
+        return street.toLowerCase() + " " + houseNumber.toLowerCase() + " " + postcode + " " + city.toLowerCase();
     }
     public String getCords(){
         return x + "." + y;
