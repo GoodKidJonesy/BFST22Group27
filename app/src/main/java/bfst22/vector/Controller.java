@@ -304,8 +304,10 @@ public class Controller {
     private void DarkTheme(ActionEvent e) {
         if (DarkTheme.isSelected()) {
             sidepanel.setStyle("-fx-background-color: grey");
+            canvas.setDarkTheme(true);
         } else {
             sidepanel.setStyle("-fx-background-color: transparent");
+            canvas.setDarkTheme(false);
         }
     }
 
