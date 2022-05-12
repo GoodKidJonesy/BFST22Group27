@@ -42,10 +42,11 @@ public class PolyLine extends Drawable {
         this.from = nodes.get(0);
         this.to = nodes.get(nodes.size() - 1);
         this.name = name;
+
     }
 
     public List<OSMNode> getNodes() {
-        return this.nodes;
+        return nodes;
     }
 
     @Override

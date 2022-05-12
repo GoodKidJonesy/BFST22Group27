@@ -304,6 +304,7 @@ public class Model {
                             } else {
                                 way = new PolyLine(nodes, type);
                             }
+                            
                             id2way.put(relID, new OSMWay(nodes, wayName, maxSpeed));
                             lines.get(type).add(way);
                             nodes.clear();

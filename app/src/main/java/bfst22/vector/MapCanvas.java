@@ -48,11 +48,10 @@ public class MapCanvas extends Canvas {
                 d.fill(gc);
             }
         }
-        
+
         List<Drawable> queryResult = query();
         Collections.sort(queryResult);
 
-        
         for (Drawable d : queryResult) {
             if (d.getType() != WayType.LAND && d.getType() != WayType.LANDUSE && d.getType() != WayType.FOREST) {
                 if (d.getType().getRequiredZoom() <= zoomedIn) {
@@ -79,8 +78,10 @@ public class MapCanvas extends Canvas {
             }
         }
 
-        Drawable n = model.getRoadTree().getNearestNeighbor(mousePos);
-        System.out.println(((PolyLine) n).getName());
+        PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(mousePos);
+        System.out.println(n.getName());
+        //System.out.println(n.getNodes());
+        int dest = ((PolyLine) n).getFrom().getID2();
 
         gc.setLineWidth(4 / Math.sqrt(trans.determinant()));
         if (n.getType().fillTrue()) {
@@ -91,20 +92,22 @@ public class MapCanvas extends Canvas {
             n.draw(gc);
         }
 
-        //drawRoute(1572, 615782, model.getGraf());
+        drawRoute(1572, dest, model.getGraf());
 
         gc.setLineWidth(5 / Math.sqrt(trans.determinant()));
         drawRange(range, Color.BLACK);
         drawRange(buffer, Color.RED);
     }
 
-    public double getMaxZoom(){
+    public double getMaxZoom() {
         return maxZoom;
     }
-    public double getMinZoom(){
+
+    public double getMinZoom() {
         return minZoom;
     }
-    public double getZoomedIn(){
+
+    public double getZoomedIn() {
         return zoomedIn;
     }
 

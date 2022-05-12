@@ -9,6 +9,9 @@ public class KDTree {
   private Drawable nearest;
   private float shortestDist;
 
+  private Drawable nearestRoad;
+  private float shortestDistRoad;
+
   // Sorter. It is parsed a list of nodes to sort, and an axis for it to sort by
   private static class DrawableSorter {
     public static void sort(ArrayList<Drawable> l, int depth) {
@@ -32,11 +35,11 @@ public class KDTree {
     return root;
   }
 
-  public Drawable getNearest(){
+  public Drawable getNearest() {
     return nearest;
   }
 
-  public float getShortestDist(){
+  public float getShortestDist() {
     return shortestDist;
   }
 
@@ -230,10 +233,69 @@ public class KDTree {
     }
   }
 
+  private void nearestNeighbor(OSMNode target, Drawable r, int depth) {
+    if (r == null) {
+      return;
+    }
+
+    Point2D nodePoint = new Point2D(target.getX(), target.getY());
+
+    if (distTo(r, nodePoint) < shortestDist) {
+      shortestDist = (float) distTo(r, nodePoint);
+      nearestRoad = (PolyLine) r;
+      System.out.println(((PolyLine) r).getNodes());
+    }
+
+    if (depth % 2 == 0) {
+      if (target.getX() < r.getAvgX()) {
+        nearestNeighbor(target, r.left, depth + 1);
+        if (distTo(new Point2D(r.getAvgX(), nodePoint.getY()), nodePoint) < distTo(r, nodePoint)) {
+          nearestNeighbor(target, r.right, depth + 1);
+        }
+      } else {
+        nearestNeighbor(target, r.right, depth + 1);
+        if (distTo(new Point2D(r.getAvgX(), nodePoint.getY()), nodePoint) < distTo(r, nodePoint)) {
+          nearestNeighbor(target, r.left, depth + 1);
+        }
+      }
+
+    } else {
+      if (target.getY() < r.getAvgY()) {
+        nearestNeighbor(target, r.left, depth + 1);
+        if (distTo(new Point2D(nodePoint.getX(), r.getAvgY()), nodePoint) < distTo(r, nodePoint)) {
+          nearestNeighbor(target, r.right, depth + 1);
+        }
+      } else {
+        nearestNeighbor(target, r.right, depth + 1);
+        if (distTo(new Point2D(nodePoint.getX(), r.getAvgY()), nodePoint) < distTo(r, nodePoint)) {
+          nearestNeighbor(target, r.left, depth + 1);
+        }
+      }
+
+    }
+  }
+
   public Drawable getNearestNeighbor(Point2D target) {
     nearest = root;
     shortestDist = (float) distTo(root, target);
     nearestNeighbor(target, root, 0);
     return nearest;
+  }
+
+  public Drawable getNearestNeighbor(OSMNode target) {
+    nearestRoad = root;
+    shortestDistRoad = (float) distTo(root, new Point2D(target.getX(), target.getY()));
+    nearestNeighbor(target, root, 0);
+    return nearestRoad;
+  }
+
+  private void printNR(){
+    PolyLine n = (PolyLine) nearestRoad;
+    System.out.println(n.getAvgX());
+    System.out.println(n.getAvgY());
+    System.out.println(n.getName());
+    System.out.println(n.getNodes());
+    System.out.println(n.getTo());
+    System.out.println(n.getFrom());
   }
 }
