@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -357,27 +358,33 @@ public class Controller {
     }
 
     @FXML
-    private void loadDenmark(ActionEvent e) throws ClassNotFoundException, IOException, XMLStreamException,
+    private void loadDefault(ActionEvent e) throws ClassNotFoundException, IOException, XMLStreamException,
             FactoryConfigurationError, InterruptedException {
 
         Stage splash = (Stage) loadDenmarkBtn.getScene().getWindow();
-        // var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
-        // splash.setScene(loader.load());
-        // splash.show();
+        var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
+        splash.setScene(loader.load());
+  
 
-        // Thread thread = new Thread(() -> {
-        // try {
-        var newModel = new Model(App.defaultMap);
-        splash.close();
-        Stage stage = new Stage();
-        new View(newModel, stage);
+        Thread thread = new Thread(() -> {
+        try {
+            var newModel = new Model(App.defaultMap);
+            Platform.runLater(() -> {
+                try {
+                Stage stage = new Stage();
+                new View(newModel, stage);
+                
+                splash.close();
 
-        // } catch (ClassNotFoundException | IOException | XMLStreamException |
-        // FactoryConfigurationError ex) {
-        // System.out.println(ex.getMessage());
-        // }
-        // });
-        // thread.start();
+                } catch (IOException | FactoryConfigurationError exe) {
+                    exe.printStackTrace();
+                }
+            });
+        } catch (FactoryConfigurationError | ClassNotFoundException | IOException | XMLStreamException ex) {
+            Notifications.create().title("Error").text("Could not load map").showError();
+        }
+        });
+        thread.start();
 
     }
 
@@ -394,23 +401,28 @@ public class Controller {
         String filePath = selectedFile.getAbsolutePath();
 
         Stage splash = (Stage) loadCustomBtn.getScene().getWindow();
-        // var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
-        // splash.setScene(loader.load());
-        // splash.show();
+        var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
+        splash.setScene(loader.load());
 
-        // Thread thread = new Thread(() -> {
-        // try {
-        var newModel = new Model(filePath);
-        splash.close();
-        Stage stage = new Stage();
-        new View(newModel, stage);
-        // } catch (ClassNotFoundException | IOException | XMLStreamException |
-        // FactoryConfigurationError ex) {
-        // System.out.println(ex.getMessage());
-        // }
-        // });
-        // thread.start();
-        // }
+        Thread thread = new Thread(() -> {
+            try {
+                var newModel = new Model(filePath);
+                Platform.runLater(() -> {
+                    try {
+                    Stage stage = new Stage();
+                    new View(newModel, stage);
+                    
+                    splash.close();
+    
+                    } catch (IOException | FactoryConfigurationError exe) {
+                        exe.printStackTrace();
+                    }
+                });
+            } catch (FactoryConfigurationError | ClassNotFoundException | IOException | XMLStreamException ex) {
+                Notifications.create().title("Error").text("Could not load map").showError();
+            }
+            });
+            thread.start();
     }
 
     @FXML
@@ -425,24 +437,32 @@ public class Controller {
         File selectedFile = fileChooser.showOpenDialog(null);
         String filePath = selectedFile.getAbsolutePath();
 
-        Stage currentStage = (Stage) searchButton.getScene().getWindow();
-        // var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
-        // currentStage.setScene(loader.load());
-        // currentStage.show();
+        Stage view = (Stage) searchButton.getScene().getWindow();
+        view.close();
+        Stage splash = new Stage();
+        var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
+        splash.setScene(loader.load());
+        splash.show();
 
-        // Thread thread = new Thread(() -> {
-        // try {
-        var newModel = new Model(filePath);
-        currentStage.close();
-        Stage stage = new Stage();
-        new View(newModel, stage);
-        // } catch (ClassNotFoundException | IOException | XMLStreamException |
-        // FactoryConfigurationError ex) {
-        // System.out.println(ex.getMessage());
-        // }
-        // });
-        // thread.start();
-        // }
+        Thread thread = new Thread(() -> {
+            try {
+                var newModel = new Model(filePath);
+                Platform.runLater(() -> {
+                    try {
+                    Stage stage = new Stage();
+                    new View(newModel, stage);
+                    splash.close();
+                    
+    
+                    } catch (IOException | FactoryConfigurationError exe) {
+                        exe.printStackTrace();
+                    }
+                });
+            } catch (FactoryConfigurationError | ClassNotFoundException | IOException | XMLStreamException ex) {
+                Notifications.create().title("Error").text("Could not load map").showError();
+            }
+            });
+            thread.start();
     }
 
     @FXML
