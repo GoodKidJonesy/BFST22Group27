@@ -5,9 +5,29 @@ import javax.xml.stream.XMLStreamException;
 
 import java.io.File;
 import java.io.IOException;
+<<<<<<< HEAD
 
+=======
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.lang.System.Logger;
+import java.net.URI;
+import java.net.URISyntaxException;
+//import observableValue
+import java.util.Observable;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.awt.*;
+import javafx.animation.FadeTransition;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+>>>>>>> prototype-niller
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -22,6 +42,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.util.Arrays;
 
@@ -69,7 +90,8 @@ public class Controller {
     Label totalDistanceLabel,
             totalTimeLabel,
             FPSLabel,
-            zoomValue;
+            zoomValue,
+            addressLabel;
 
     @FXML
     ListView directionList;
@@ -81,7 +103,9 @@ public class Controller {
     CheckBox FPSBox, KdBox;
 
     @FXML
-    MenuItem loadCustom;
+    MenuItem loadCustom,
+             aboutBtn;
+
 
     App app;
 
@@ -115,13 +139,13 @@ public class Controller {
         var factor = e.getDeltaY();
 
         if (factor > 0) {
-            if (canvas.getZoomedIn() + 1 < canvas.getMaxZoom()) {
+            if (canvas.getZoomedIn() + 1 <= canvas.getMaxZoom()) {
                 canvas.zoom(Math.pow(1.01, 50), e.getX(), e.getY());
                 canvas.getZoom(factor);
                 zoomBarValue();
             }
         } else {
-            if (canvas.getZoomedIn() - 1 > canvas.getMinZoom()) {
+            if (canvas.getZoomedIn() - 1 >= canvas.getMinZoom()) {
 
                 canvas.zoom(Math.pow(1.01, -50), e.getX(), e.getY());
                 canvas.getZoom(factor);
@@ -194,8 +218,8 @@ public class Controller {
     @FXML
     private void searchPress(MouseEvent e) {
 
-        rute1Found = Arrays.asList(address).contains(rute1.getText());
-        rute2Found = Arrays.asList(address).contains(rute2.getText());
+        //rute1Found = Arrays.asList(address).contains(rute1.getText());
+        //rute2Found = Arrays.asList(address).contains(rute2.getText());
 
         if (!ruteSwitch.isSelected()) {
             if (rute1.getText().isEmpty()) {
@@ -400,5 +424,24 @@ public class Controller {
         // });
         // thread.start();
         // }
+    }
+
+    @FXML
+    private void about() throws IOException {
+        //load about window
+
+        Stage stage = new Stage();
+        stage.setTitle("About");
+        stage.setResizable(false);
+        stage.initModality(Modality.APPLICATION_MODAL);
+
+        var about = new FXMLLoader(View.class.getResource("About.fxml"));
+        stage.setScene(about.load());
+        stage.show();
+    }
+
+    @FXML
+    private void link(ActionEvent e) throws IOException, URISyntaxException {
+        Desktop.getDesktop().browse(new URI("https://github.itu.dk/trbj/BFST22Group27"));
     }
 }
