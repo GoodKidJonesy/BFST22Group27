@@ -241,11 +241,10 @@ public class Controller {
 
                 canvas.setRoute(origin, dest);
                 getDirectionList();
+                canvas.drawRoute(canvas.getOrigin(), canvas.getDest(), model.getGraf());
                 canvas.repaint();
             }
         }
-
-        canvas.drawRoute(canvas.getOrigin(), canvas.getDest(), model.getGraf());
         canvas.repaint();
     }
 
@@ -309,6 +308,7 @@ public class Controller {
             sidepanel.setStyle("-fx-background-color: transparent");
             canvas.setDarkTheme(false);
         }
+        canvas.repaint();
     }
 
     private void zoomBarValue() {
