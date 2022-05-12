@@ -1,18 +1,51 @@
 package bfst22.vector;
 
+import javax.swing.Action;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLStreamException;
+
+import java.io.Console;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.lang.System.Logger;
+//import observableValue
+import java.util.Observable;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import javafx.animation.FadeTransition;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+import javafx.scene.control.ListView;
+import java.util.Collections;
 
 import org.controlsfx.control.ToggleSwitch;
 import org.controlsfx.control.textfield.*;
@@ -20,7 +53,7 @@ import org.controlsfx.control.Notifications;
 
 public class Controller {
     private Point2D lastMouse;
-    Model model;
+    private Model model;
     private TrieTree trie;
     Framerate FPS = new Framerate();
 
@@ -37,62 +70,89 @@ public class Controller {
     private HBox vehicleBox;
 
     @FXML
-    private Button  carBtn, 
-                    bikeBtn, 
-                    walkBtn,
-                    searchButton,
-                    resetButton;
+    private Button carBtn,
+            bikeBtn,
+            walkBtn,
+            searchButton,
+            resetButton,
+            plusBtn,
+            minusBtn,
+            loadCustomBtn,
+            loadDenmarkBtn;
 
     @FXML
-    private TextField   rute1,
-                        rute2;
+    private TextField rute1,
+            rute2;
 
-    @FXML 
+    @FXML
+    TextArea logger;
+
+    @FXML
     Label totalDistanceLabel,
-                totalTimeLabel,
-                FPSLabel,
-                zoomValue;
-    
-    @FXML 
+            totalTimeLabel,
+            FPSLabel,
+            zoomValue;
+
+    @FXML
     ListView directionList;
 
-    @FXML 
+    @FXML
     ProgressBar zoomBar;
 
-    @FXML 
+    @FXML
     CheckBox FPSBox, KdBox;
+
+    @FXML
+    MenuItem loadCustom;
 
     App app;
 
     @FXML
     BorderPane root;
 
+    private boolean vehicleSelected;
+
+    String[] address;
+
+    private boolean rute1Found;
+
+    private boolean rute2Found;
+
     public void init(Model model) {
-        canvas.init(model);
         this.model = model;
+        canvas.init(model);
         String[] address = model.getAddresses().toString().split(",");
         TextFields.bindAutoCompletion(rute1, address);
         TextFields.bindAutoCompletion(rute2, address);
     }
 
+    // OnScroll method that have zoom in and out in levels
+    public void onScroll1(ScrollEvent event) {
+
+    }
+
     @FXML
-    private void onScroll(ScrollEvent e) {
+    private void onScroll(ScrollEvent e) throws InterruptedException {
+
         startFPS();
         var factor = e.getDeltaY();
 
-        if(factor > 0) {
-            if(canvas.getZoomedIn()+0.1 < canvas.getMaxZoom()) {
+        if (factor > 0) {
+            if (canvas.getZoomedIn() + 1 < canvas.getMaxZoom()) {
+                canvas.zoom(Math.pow(1.01, 50), e.getX(), e.getY());
                 canvas.getZoom(factor);
-                canvas.zoom(Math.pow(1.01, factor), e.getX(), e.getY());
                 zoomBarValue();
             }
         } else {
-            if(canvas.getZoomedIn()-0.1 > canvas.getMinZoom()) {
+            if (canvas.getZoomedIn() - 1 > canvas.getMinZoom()) {
+
+                canvas.zoom(Math.pow(1.01, -50), e.getX(), e.getY());
                 canvas.getZoom(factor);
-                canvas.zoom(Math.pow(1.01, factor), e.getX(), e.getY());
                 zoomBarValue();
             }
         }
+        Thread.sleep(300);
+
     }
 
     @FXML
@@ -107,7 +167,7 @@ public class Controller {
 
     @FXML
     private void onMousePressed(MouseEvent e) {
-        if (e.isControlDown()){
+        if (e.isControlDown()) {
             lastMouse = new Point2D(e.getX(), e.getY());
             canvas.updateMousePos(lastMouse);
             PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(canvas.getMousePos());
@@ -121,7 +181,7 @@ public class Controller {
 
     @FXML
     private void addTextFieldandLabel(MouseEvent e) {
-        if(ruteSwitch.isSelected()) {
+        if (ruteSwitch.isSelected()) {
             rute1.setPromptText("Start destination");
             rute2.setVisible(true);
             rute2.setPromptText("End destination");
@@ -130,8 +190,7 @@ public class Controller {
             totalTimeLabel.setVisible(true);
             directionList.setVisible(true);
             searchButton.setText("Route");
-        }
-        else {
+        } else {
             searchButton.setText("Search");
             rute1.setPromptText("Address");
             rute2.setVisible(false);
@@ -143,97 +202,124 @@ public class Controller {
             walkBtn.setStyle(transparent);
             bikeBtn.setStyle(transparent);
             carBtn.setStyle(transparent);
+            vehicleSelected = false;
         }
     }
 
-    @FXML private void searchPress(MouseEvent e) {
-        if(!ruteSwitch.isSelected()) {
-            if(rute1.getText().isEmpty()) {
+    @FXML
+    private void searchPress(MouseEvent e) {
+
+        rute1Found = Arrays.asList(address).contains(rute1.getText());
+        rute2Found = Arrays.asList(address).contains(rute2.getText());
+
+        if (!ruteSwitch.isSelected()) {
+            if (rute1.getText().isEmpty()) {
                 Notifications.create().title("Error").text("Please enter an address").showError();
+            } else if (rute1Found) {
+                Notifications.create().title("Success").text("Address found: " + rute1.getText()).showInformation();
             } else {
-            trie.search(rute1.getText());
+                Notifications.create().title("Error").text("No address found").showError();
             }
-        } else if(ruteSwitch.isSelected()) {
-            if(rute1.getText().isEmpty() || rute2.getText().isEmpty()) {
+        } else if (ruteSwitch.isSelected()) {
+            if (!vehicleSelected) {
+                Notifications.create().title("Error").text("Please select your preferred transportation").showError();
+            } else if (rute1.getText().isEmpty() || rute2.getText().isEmpty()) {
                 Notifications.create().title("Error").text("Please fill in both fields").showError();
+            } else if (!rute1Found && !rute2Found) {
+                Notifications.create().title("Error").text("Neither start nor end address found").showError();
+                directionList.getItems().clear();
+            } else if (!rute1Found) {
+                Notifications.create().title("Error").text("No start address found").showError();
+                directionList.getItems().clear();
+            } else if (!rute2Found) {
+                Notifications.create().title("Error").text("No end address found").showError();
+                directionList.getItems().clear();
             } else {
                 getDirectionList();
 
             }
         }
     }
-    
+
     @FXML
     private void highlightVehicle(MouseEvent e) {
         String transparent = "-fx-background-color: transparent; -fx-border-color: black";
         String grey = "-fx-background-color: grey; -fx-border-color: black";
 
-        if(carBtn.isPressed()) {
+        if (carBtn.isPressed()) {
             walkBtn.setStyle(transparent);
             bikeBtn.setStyle(transparent);
             carBtn.setStyle(grey);
-        }
-        else if(bikeBtn.isPressed()) {
+            vehicleSelected = true;
+        } else if (bikeBtn.isPressed()) {
             walkBtn.setStyle(transparent);
             carBtn.setStyle(transparent);
             bikeBtn.setStyle(grey);
-        }
-        else if(walkBtn.isPressed()) {
+            vehicleSelected = true;
+        } else if (walkBtn.isPressed()) {
             bikeBtn.setStyle(transparent);
             carBtn.setStyle(transparent);
             walkBtn.setStyle(grey);
+            vehicleSelected = true;
         }
     }
 
     private void startFPS() {
-        if(FPSBox.isSelected()) {
+        if (FPSBox.isSelected()) {
             FPSBox.setText(FPS.getFrameRate());
-        }
-        else if (!FPSBox.isSelected()) {
+        } else if (!FPSBox.isSelected()) {
             FPSBox.setText("FPS");
         }
     }
 
     @FXML
     private void KdDebugger(ActionEvent e) {
-        if(KdBox.isSelected()) {
+        if (KdBox.isSelected()) {
             canvas.setRangeDebug(true);
             canvas.repaint();
-        }
-        else if (!KdBox.isSelected()) {
+        } else if (!KdBox.isSelected()) {
             canvas.setRangeDebug(false);
             canvas.repaint();
         }
     }
 
     private void zoomBarValue() {
-        zoomBar.setProgress(canvas.getZoomedIn());
-        zoomValue.setText(Math.round(canvas.getZoomedIn() * 100) + "%");
+        double temp = (double) canvas.getZoomedIn() / 10;
+        zoomBar.setProgress(temp);
+        zoomValue.setText((canvas.getZoomedIn() * 10) + "%");
     }
 
     @FXML
-    private void onMouseMoved(MouseEvent e){
+    private void buttonZoomIn(ActionEvent e) {
+        startFPS();
+
+        if (canvas.getZoomedIn() + 1 <= canvas.getMaxZoom()) {
+            canvas.getZoom(50);
+            canvas.zoom(Math.pow(1.01, 50), canvas.getWidth() / 2, canvas.getHeight() / 2);
+            zoomBarValue();
+        }
+    }
+
+    @FXML
+    private void buttonZoomOut(ActionEvent e) {
+        startFPS();
+
+        if (canvas.getZoomedIn() - 1 >= canvas.getMinZoom()) {
+            canvas.getZoom(-50);
+            canvas.zoom(Math.pow(1.01, -50), canvas.getWidth() / 2, canvas.getHeight() / 2);
+            zoomBarValue();
+        }
+    }
+
+    @FXML
+    private void onMouseMoved(MouseEvent e) {
         lastMouse = new Point2D(e.getX(), e.getY());
-    }
-
-    @FXML
-    private void resetZoom(MouseEvent e) {
-        //canvas.getZoomedIn() = 0;
-        //zoomBar.setProgress(canvas.getZoomedIn());
-        //zoomValue.setText(0 + "%");
-        //canvas.pan(-model.minlon, -model.minlat);
-        //canvas.zoom(640 / (model.maxlon - model.minlon), 0, 0);
-        //canvas.repaint();
-        
-        
-        //Aner ikke hvordan jeg resetter kortet, til at resettes til samme zoom og position, som når man starter programmet.
-        //TODO: FIX
-
+        System.out.println(lastMouse);
     }
 
     private void getDirectionList() {
-        //HARDCODED FOR TEST PURPSES
-        //TODO: FIX THIS
+        // HARDCODED FOR TEST PURPSES
+        // TODO: FIX THIS
 
         directionList.getItems().clear();
         directionList.getItems().add("1. Start point: " + rute1.getText());
@@ -247,7 +333,93 @@ public class Controller {
         totalDistanceLabel.setText("Total distance: " + "200 meters");
         totalTimeLabel.setText("Total time: " + "20 minutes");
     }
-        
 
+    @FXML
+    private void loadDenmark(ActionEvent e) throws ClassNotFoundException, IOException, XMLStreamException,
+            FactoryConfigurationError, InterruptedException {
 
+        Stage splash = (Stage) loadDenmarkBtn.getScene().getWindow();
+        // var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
+        // splash.setScene(loader.load());
+        // splash.show();
+
+        // Thread thread = new Thread(() -> {
+        // try {
+        var newModel = new Model(App.defaultMap);
+        splash.close();
+        Stage stage = new Stage();
+        new View(newModel, stage);
+
+        // } catch (ClassNotFoundException | IOException | XMLStreamException |
+        // FactoryConfigurationError ex) {
+        // System.out.println(ex.getMessage());
+        // }
+        // });
+        // thread.start();
+
+    }
+
+    @FXML
+    private void loadCustom(ActionEvent e)
+            throws ClassNotFoundException, IOException, XMLStreamException, FactoryConfigurationError {
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open File");
+        fileChooser.setInitialDirectory(new File("./data/"));
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("OSM Files", "*.osm"));
+        File selectedFile = fileChooser.showOpenDialog(null);
+        String filePath = selectedFile.getAbsolutePath();
+
+        // Stage splash = (Stage) loadCustomBtn.getScene().getWindow();
+        // var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
+        // splash.setScene(loader.load());
+        // splash.show();
+
+        // Thread thread = new Thread(() -> {
+        // try {
+        var newModel = new Model(filePath);
+        // splash.close();
+        Stage stage = new Stage();
+        new View(newModel, stage);
+        // } catch (ClassNotFoundException | IOException | XMLStreamException |
+        // FactoryConfigurationError ex) {
+        // System.out.println(ex.getMessage());
+        // }
+        // });
+        // thread.start();
+        // }
+    }
+
+    @FXML
+    private void loadCustom2(ActionEvent e)
+            throws ClassNotFoundException, IOException, XMLStreamException, FactoryConfigurationError {
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open File");
+        fileChooser.setInitialDirectory(new File("./data/"));
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("OSM Files", "*.osm"));
+        File selectedFile = fileChooser.showOpenDialog(null);
+        String filePath = selectedFile.getAbsolutePath();
+
+        Stage currentStage = (Stage) searchButton.getScene().getWindow();
+        // var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
+        // currentStage.setScene(loader.load());
+        // currentStage.show();
+
+        // Thread thread = new Thread(() -> {
+        // try {
+        var newModel = new Model(filePath);
+        currentStage.close();
+        Stage stage = new Stage();
+        new View(newModel, stage);
+        // } catch (ClassNotFoundException | IOException | XMLStreamException |
+        // FactoryConfigurationError ex) {
+        // System.out.println(ex.getMessage());
+        // }
+        // });
+        // thread.start();
+        // }
+    }
 }

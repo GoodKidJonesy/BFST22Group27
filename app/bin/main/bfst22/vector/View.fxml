@@ -185,13 +185,8 @@
                      <children>
                         <CheckBox fx:id="FPSBox" mnemonicParsing="false" text="FPS" />
                         <CheckBox fx:id="KdBox" mnemonicParsing="false" onAction="#KdDebugger" text="KDTree" GridPane.columnIndex="1" />
-                        <CheckBox mnemonicParsing="false" text="CheckBox" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <CheckBox fx:id="ColorBlind" mnemonicParsing="false" text="ColorBlind mode" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <CheckBox mnemonicParsing="false" text="CheckBox" GridPane.rowIndex="1" />
-                        <Button fx:id="resetButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onMouseClicked="#resetZoom" prefHeight="25.0" prefWidth="103.0" style="-fx-background-radius: 5em;" text="Reset" GridPane.rowIndex="2">
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </Button>
                      </children>
                      <cursor>
                         <Cursor fx:constant="HAND" />
@@ -205,13 +200,44 @@
                   </GridPane>
                   <HBox prefHeight="25.0" prefWidth="246.0">
                      <children>
-                        <ProgressBar fx:id="zoomBar" prefHeight="21.0" prefWidth="201.0" progress="0.0" />
+                        <ProgressBar fx:id="zoomBar" prefHeight="21.0" prefWidth="201.0" progress="0.0">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding></ProgressBar>
                         <Label fx:id="zoomValue" text="0%">
                            <HBox.margin>
                               <Insets left="10.0" />
                            </HBox.margin>
                         </Label>
                      </children>
+                  </HBox>
+                  <HBox spacing="110.0">
+                     <children>
+                        <Button fx:id="minusbtn" mnemonicParsing="false" onAction="#buttonZoomOut" prefHeight="8.0" prefWidth="16.0" style="-fx-background-color: transparent;">
+                           <graphic>
+                              <ImageView fitHeight="50.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@images/minus.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="plusBtn" mnemonicParsing="false" onAction="#buttonZoomIn" prefHeight="8.0" prefWidth="16.0" style="-fx-background-color: transparent;">
+                           <graphic>
+                              <ImageView fitHeight="50.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@images/plus.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                     </children>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
                   </HBox>
                </children>
             </VBox>
@@ -221,7 +247,7 @@
               <menus>
                 <Menu mnemonicParsing="false" text="File">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="Close" />
+                    <MenuItem fx:id="loadCustom" mnemonicParsing="false" onAction="#loadCustom2" text="Load Custom File" />
                   </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">

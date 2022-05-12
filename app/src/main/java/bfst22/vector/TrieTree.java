@@ -91,7 +91,7 @@ public class TrieTree {
     //metode til at søge efter alle ord der indeholder bruger input i trietree.
     //bruger rekursiv dybde først søgning metoden til dette.
     //finder den node som er sidste character i inputtet og kalder derefter DFS metoden med denne node, input og arraylist.
-    public ArrayList<String> searchMuliple(String key){
+    public ArrayList<String> searchMultiple(String key){
         ArrayList<String> words = new ArrayList<>();
         key = key.replace("æ", "ae").replace("ø","oe").replace("å", "aa");
         TrieNode currentNode = root;

@@ -14,9 +14,9 @@ import javafx.scene.transform.NonInvertibleTransformException;
 public class MapCanvas extends Canvas {
     private Model model;
     private Affine trans = new Affine();
-    private double maxZoom = 1.06;
-    private double minZoom = -0.06;
-    private float zoomedIn = 0;
+    private int maxZoom = 10;
+    private int minZoom = 0;
+    private int zoomedIn = 0;
     private Range range = new Range(new Point2D(0, 0), new Point2D(0, 0));
     private Range buffer = new Range(new Point2D(0, 0), new Point2D(0, 0));
     private Point2D mousePos = new Point2D(0, 0);
@@ -40,6 +40,7 @@ public class MapCanvas extends Canvas {
         gc.setFill(WayType.LAKE.getColor());
         gc.fillRect(0, 0, getWidth(), getHeight());
         gc.setTransform(trans);
+        System.out.println(zoomedIn);
 
         for (Drawable d : model.iterable(WayType.LAND)) {
             gc.setLineWidth(d.getType().getWidth() / Math.sqrt(trans.determinant()));
@@ -128,7 +129,7 @@ public class MapCanvas extends Canvas {
         return minZoom;
     }
 
-    public double getZoomedIn() {
+    public int getZoomedIn() {
         return zoomedIn;
     }
 
@@ -169,9 +170,9 @@ public class MapCanvas extends Canvas {
 
     void getZoom(double factor) {
         if (factor > 0) {
-            factor = 0.05;
+            factor = 1;
         } else if (factor < 0) {
-            factor = -0.05;
+            factor = -1;
         }
         zoomedIn += factor;
     }
