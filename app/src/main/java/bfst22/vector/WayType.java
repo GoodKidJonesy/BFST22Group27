@@ -15,7 +15,9 @@ public enum WayType {
 
     BUILDING(Color.rgb(100, 100, 100), Color.rgb(100, 100, 100), 8, false, 1f),
 
-    HIGHWAY(Color.rgb(233,132,31), Color.rgb(233,132,31), 1, false, 2f),
+    WATERWAY(Color.rgb(51, 153, 255), Color.rgb(0, 0, 30), 0, false, 1f),
+
+    HIGHWAY(Color.rgb(233, 132, 31), Color.rgb(233, 132, 31), 1, false, 2f),
 
     SUBWAY(Color.rgb(255, 180, 50), Color.rgb(255, 180, 50), 6, false, 1f),
 

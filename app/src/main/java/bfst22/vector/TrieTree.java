@@ -3,7 +3,6 @@ package bfst22.vector;
 import java.util.ArrayList;
 
 import javafx.geometry.Point2D;
-import javafx.scene.effect.Light.Point;
 
 //Initial code from geeksforgeeks.org.
 public class TrieTree {

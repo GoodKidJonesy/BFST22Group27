@@ -134,6 +134,10 @@ public class Model {
                                         case "islet":
                                         case "peninsula":
                                             type = WayType.LAND;
+                                            break;
+                                        default:
+                                            type = WayType.UNKNOWN;
+                                            break;
                                     }
                                 case "natural":
                                     switch (v) {
@@ -143,6 +147,12 @@ public class Model {
                                         case "stone":
                                             type = WayType.STONE;
                                             break;
+                                        case "lake":
+                                        case "water":
+                                            type = WayType.LAKE;
+                                            break;
+                                        case "wetland":
+                                            type = WayType.FOREST;
                                         default:
                                             break;
                                     }
@@ -164,16 +174,22 @@ public class Model {
                                             type = WayType.FOREST;
                                             break;
                                         case "residential":
-                                        case "port":
+                                        case "industrial":
                                             type = WayType.CITY;
                                             break;
                                         case "quarry":
                                             type = WayType.STONE;
                                             break;
+                                        default:
+                                            type = WayType.UNKNOWN;
+                                            break;
                                     }
                                     break;
                                 case "highway":
                                     switch (v) {
+                                        case "waterway":
+                                            type = WayType.WATERWAY;
+                                            break;
                                         case "primary":
                                         case "trunk":
                                         case "secondary":
@@ -208,6 +224,7 @@ public class Model {
                                             type = WayType.MOTORWAY;
                                             break;
                                         default:
+                                            type = WayType.UNKNOWN;
                                             break;
                                     }
 
@@ -353,10 +370,11 @@ public class Model {
                         || l.getType() == WayType.MOTORWAY) {
                     roads.add(l);
                 } else {
-                    main.add(l);
+                main.add(l);
                 }
             }
         }
+
         roadTree.fillTree(roads, 0);
         kdTree.fillTree(main, 0);
     }
