@@ -10,7 +10,7 @@ public class App extends Application {
     private final long[] frameTimes = new long[100];
     private int frameTimeIndex = 0;
     private boolean arrayFilled = false;
-    public final static String defaultMap = "data/map.osm";
+    public final static String defaultMap = "data/bornholm.osm";
 
     @Override
     public void start(Stage primaryStage) throws Exception {

@@ -5,26 +5,9 @@ import javax.xml.stream.XMLStreamException;
 
 import java.io.File;
 import java.io.IOException;
-<<<<<<< HEAD
-
-=======
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.lang.System.Logger;
 import java.net.URI;
 import java.net.URISyntaxException;
-//import observableValue
-import java.util.Observable;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.awt.*;
-import javafx.animation.FadeTransition;
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
->>>>>>> prototype-niller
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -45,6 +28,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.util.Arrays;
+import java.awt.*;
 
 import org.controlsfx.control.ToggleSwitch;
 import org.controlsfx.control.textfield.*;
