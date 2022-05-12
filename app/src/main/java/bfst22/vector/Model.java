@@ -138,15 +138,8 @@ public class Model {
                                     }
                                 case "natural":
                                     switch (v) {
-                                        case "water":
-                                        case "wetland":
-                                            type = WayType.WETLAND;
-                                            break;
                                         case "coastline":
                                             type = WayType.COASTLINE;
-                                            break;
-                                        case "scrub":
-                                            type = WayType.WETLAND;
                                             break;
                                         case "stone":
                                             type = WayType.STONE;
@@ -156,6 +149,7 @@ public class Model {
                                     }
                                     break;
                                 case "building":
+                                case "farmyard":
                                     type = WayType.BUILDING;
                                     break;
                                 case "aerodrome":
@@ -170,9 +164,6 @@ public class Model {
                                         case "meadow":
                                             type = WayType.FOREST;
                                             break;
-                                        case "military":
-                                            type = WayType.MILITARY;
-                                            break;
                                         case "residential":
                                         case "port":
                                             type = WayType.CITY;
@@ -180,52 +171,39 @@ public class Model {
                                         case "quarry":
                                             type = WayType.STONE;
                                             break;
-                                        default:
-                                            type = WayType.LANDUSE;
-                                            break;
                                     }
                                     break;
                                 case "highway":
-
-
-
                                     switch (v) {
                                         case "primary":
-                                            isHighway = true;
                                         case "trunk":
-                                            isHighway = true;
                                         case "secondary":
-                                            isHighway = true;
                                         case "trunk_link":
-                                            isHighway = true;
                                         case "secondary_link":
                                             isHighway = true;
                                             type = WayType.HIGHWAY;
                                             break;
-                                        case "residential":
-                                            isHighway = true;
-                                        case "service":
-                                            isHighway = true;
-                                        //case "cycleway":
-                                        case "tertiary":
-                                            isHighway = true;
-                                        case "unclassified":
-                                            isHighway = true;
                                         case "road":
+                                        case "unclassified":
+                                        case "tertiary":
+                                        case "tertiary_link":
+                                            type = WayType.ROAD;
                                             isHighway = true;
+                                            break;
+                                        case "residential":
+                                        case "service":
                                         case "living_street":
                                         case "pedestrian":
-
-                                        case "tertiary_link":
-                                            isHighway = true;
-                                        //case "path":
-
-                                        //case "track":
-
                                             type = WayType.CITYWAY;
+                                            isHighway = true;
+                                            break;
+                                        case "path":
+                                        case "track":
+                                        case "cycleway":
+                                            isHighway = false;
+                                            type = WayType.PATH;
                                             break;
                                         case "motorway":
-                                            isHighway = true;
                                         case "motorway_link":
                                             isHighway = true;
                                             type = WayType.MOTORWAY;
@@ -494,5 +472,5 @@ public class Model {
     public KDTree getKdTree() {
         return kdTree;
     }
-    
+
 }

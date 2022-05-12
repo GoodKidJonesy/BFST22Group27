@@ -27,11 +27,10 @@ public class MapCanvas extends Canvas {
     void init(Model model) {
         this.model = model;
         pan(-model.getMinlon(), -model.getMinlat());
-        zoom(1280 / (model.getMaxlon() - model.getMinlon()), 0, 0);
+        zoom(640 / (model.getMaxlon() - model.getMinlon()), 0, 0);
         moveRange();
         model.addObserver(this::repaint);
         repaint();
-
 
     }
 
@@ -42,9 +41,15 @@ public class MapCanvas extends Canvas {
         gc.fillRect(0, 0, getWidth(), getHeight());
         gc.setTransform(trans);
 
-        gc.setLineWidth(1 / Math.sqrt(trans.determinant()));
-
         for (Drawable d : model.iterable(WayType.LAND)) {
+            gc.setLineWidth(d.getType().getWidth() / Math.sqrt(trans.determinant()));
+            if (d.getType().fillTrue()) {
+                gc.setFill(d.getType().getColor());
+                d.fill(gc);
+            }
+        }
+        for (Drawable d : model.iterable(WayType.CITY)) {
+            gc.setLineWidth(d.getType().getWidth() / Math.sqrt(trans.determinant()));
             if (d.getType().fillTrue()) {
                 gc.setFill(d.getType().getColor());
                 d.fill(gc);
@@ -55,8 +60,9 @@ public class MapCanvas extends Canvas {
         Collections.sort(queryResult);
 
         for (Drawable d : queryResult) {
-            if (d.getType() != WayType.LAND && d.getType() != WayType.LANDUSE && d.getType() != WayType.FOREST) {
+            if (d.getType() != WayType.LAND && d.getType() != WayType.UNKNOWN && d.getType() != WayType.CITY) {
                 if (d.getType().getRequiredZoom() <= zoomedIn) {
+                    gc.setLineWidth(d.getType().getWidth() / Math.sqrt(trans.determinant()));
                     if (d.getType().fillTrue()) {
                         gc.setFill(d.getType().getColor());
                         d.fill(gc);
@@ -70,6 +76,7 @@ public class MapCanvas extends Canvas {
 
         for (Drawable d : model.getRoadTree().query(model.getRoadTree().getRoot(), buffer, 0)) {
             if (d.getType().getRequiredZoom() <= zoomedIn) {
+                gc.setLineWidth(d.getType().getWidth() / Math.sqrt(trans.determinant()));
                 if (d.getType().fillTrue()) {
                     gc.setFill(d.getType().getColor());
                     d.fill(gc);
@@ -80,22 +87,37 @@ public class MapCanvas extends Canvas {
             }
         }
 
+        // System.out.println(n.getNodes());
 
-        //System.out.println(n.getNodes());
-
-        if (drawable != null){
+        if (drawable != null) {
             gc.setLineWidth(0.0006);
             gc.setStroke(Color.AQUAMARINE);
             drawable.draw(gc);
         }
-        gc.setLineWidth(4 / Math.sqrt(trans.determinant()));
 
+        // PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(mousePos);
+        // System.out.println(n.getName());
+        // System.out.println(n.getNodes());
+        /*
+         * int dest = ((PolyLine) n).getFrom().getID2();
+         * 
+         * gc.setLineWidth(4 / Math.sqrt(trans.determinant()));
+         * if (n.getType().fillTrue()) {
+         * gc.setFill(Color.RED);
+         * n.fill(gc);
+         * } else {
+         * gc.setStroke(Color.RED);
+         * n.draw(gc);
+         * }
+         * 
+         * drawRoute(1572, dest, model.getGraf());
+         */
 
-        //drawRoute(1572, dest, model.getGraf());
-
-        gc.setLineWidth(5 / Math.sqrt(trans.determinant()));
-        drawRange(range, Color.BLACK);
-        drawRange(buffer, Color.RED);
+        if (range.getDebug()) {
+            gc.setLineWidth(5 / Math.sqrt(trans.determinant()));
+            drawRange(range, Color.BLACK);
+            drawRange(buffer, Color.RED);
+        }
     }
 
     public double getMaxZoom() {
@@ -116,15 +138,19 @@ public class MapCanvas extends Canvas {
 
     private void moveRange() {
         var gc = getGraphicsContext2D();
+        int bufferSize = 3;
+
         Point2D topLeft = new Point2D(0, 0);
         Point2D bottomRight = new Point2D(gc.getCanvas().getWidth() - 218, gc.getCanvas().getHeight());
         range.update(mouseToModel(topLeft), mouseToModel(bottomRight));
 
-        topLeft = new Point2D(0 - (bottomRight.getX() - topLeft.getX()),
-                0 - (bottomRight.getY() - topLeft.getY()));
-        bottomRight = new Point2D(gc.getCanvas().getWidth() + (bottomRight.getX() - topLeft.getX()) - 218,
-                gc.getCanvas().getHeight() + (bottomRight.getY() - topLeft.getY()));
-        buffer.update(mouseToModel(topLeft), mouseToModel(bottomRight));
+        System.out.println(range.getWidth());
+        Point2D topLeftBuffer = new Point2D(0 - ((bottomRight.getX() - topLeft.getX()) / bufferSize),
+                0 - ((bottomRight.getY() - topLeft.getX()) / bufferSize));
+        Point2D bottomRightBuffer = new Point2D(
+                gc.getCanvas().getWidth() - 218 + ((bottomRight.getX() - topLeft.getX()) / bufferSize),
+                gc.getCanvas().getHeight() + ((bottomRight.getY() - topLeft.getX()) / bufferSize));
+        buffer.update(mouseToModel(topLeftBuffer), mouseToModel(bottomRightBuffer));
     }
 
     void pan(double dx, double dy) {
@@ -193,7 +219,7 @@ public class MapCanvas extends Canvas {
 
     }
 
-    public Point2D getMousePos(){
+    public Point2D getMousePos() {
         return mousePos;
     }
 }

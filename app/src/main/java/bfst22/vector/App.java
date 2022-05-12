@@ -6,7 +6,7 @@ import javafx.stage.Stage;
 
 public class App extends Application {
     
-    private final String defaultMap = "data/map1.osm";
+    private final String defaultMap = "data/bornholm.osm";
 
 
     @Override
