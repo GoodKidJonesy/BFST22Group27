@@ -111,8 +111,11 @@ public class TrieTree {
     //rekursiv dybde først søgning. Søger rekursivt igennem alle børn til currentnode og tilføjer alle ord der matcher input til listen. 
     static ArrayList<String> DFS(String key, TrieNode current, ArrayList<String> words){
         if(current.endOfString){
-            key = key.substring(0,1).toUpperCase() + key.substring(1);
-            words.add(key.replaceAll("ae", "æ").replace("oe", "ø").replace("aa", "å"));
+            String output = "";
+            for (String word : key.toLowerCase().split("\\s+")) {
+                output += word.replaceFirst(".",word.substring(0, 1).toUpperCase()) + " ";
+            }
+            words.add(output.replace("ae", "æ").replace("oe", "ø").replace("aa", "å").replace("Oe", "Ø").replace("Aa","Å").replace("Ae","Æ"));
             
         }
         for(TrieNode n : current.children){
