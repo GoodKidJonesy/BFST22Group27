@@ -1,6 +1,9 @@
 package bfst22.vector;
 
 import java.util.ArrayList;
+
+import javafx.geometry.Point2D;
+import javafx.scene.effect.Light.Point;
 //Initial code from geeksforgeeks.org.
 public class TrieTree {
 
@@ -16,11 +19,11 @@ public class TrieTree {
     // null.
     static class TrieNode {
         TrieNode[] children = new TrieNode[alhabet_size];
-        String cords;
+        Point2D cords;
         boolean endOfString;
         char character;
         public TrieNode(){}
-        TrieNode(String cords, char c) {
+        TrieNode(Point2D cords, char c) {
             this.character = c;
             endOfString = false;
             this.cords = cords;
@@ -36,7 +39,7 @@ public class TrieTree {
     // insert metode der tager en String som argument og indsætter denne i træet.
     // hver char i key bliver indsat efter den forrige og hver node har en parent
     // samt børn.
-    public void insert(String key, String cords) {
+    public void insert(String key, Point2D cords) {
         key = replaceKey(key);
         int depth;
         int index;
@@ -62,12 +65,11 @@ public class TrieTree {
 
     // search metode, fungerer ligesom insert. metode bare hvor den tjekker hver
     // node og sammenligner med input.
-    public String search(String key) {
+    public boolean search(String key){
         key = replaceKey(key);
         int depth;
         int index;
         TrieNode parent = root;
-        boolean found;
         for (depth = 0; depth < key.length(); depth++) {
             index = key.charAt(depth) - 'a';
             if(key.charAt(depth) == ' ')
@@ -75,13 +77,31 @@ public class TrieTree {
             if(index < 0)
                 index += 75;            
             if (parent.children[index] == null){
-                found = false;
-                return "No such address found";
+                return false;
             }
 
             parent = parent.children[index];
         }
-        found = true;
+        return true;
+    }
+    //get cords på en specifik adresse, fungerer præcist ligesom search funktionen.
+    public Point2D getCords(String key) {
+        key = replaceKey(key);
+        int depth;
+        int index;
+        TrieNode parent = root;
+        for (depth = 0; depth < key.length(); depth++) {
+            index = key.charAt(depth) - 'a';
+            if(key.charAt(depth) == ' ')
+                index += 101;
+            if(index < 0)
+                index += 75;            
+            if (parent.children[index] == null){
+                return null;
+            }
+
+            parent = parent.children[index];
+        }
         return parent.cords;
     }
 
@@ -94,9 +114,7 @@ public class TrieTree {
         TrieNode currentNode = root;
         for(int i = 0; i < key.length(); i++){
             inner : for(TrieNode n : currentNode.children){
-                if(n == null){
-                }
-                else if(n.character == key.charAt(i)){
+                if(n!= null && n.character == key.charAt(i)){
                     currentNode = n;
                     break inner;
                 }
@@ -116,9 +134,7 @@ public class TrieTree {
             
         }
         for(TrieNode n : current.children){
-            if(n == null){
-                
-            }else{
+            if(n != null){
                 current = n;
                 DFS(key + n.character, current, words);
             }

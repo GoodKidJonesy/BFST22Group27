@@ -1,5 +1,7 @@
 package bfst22.vector;
 
+import javafx.geometry.Point2D;
+
 public class Address {
     private String city, postcode, houseNumber, street;
     private final float x, y;
@@ -51,8 +53,9 @@ public class Address {
     public String toString() {
         return street.toLowerCase() + " " + houseNumber.toLowerCase() + " " + postcode + " " + city.toLowerCase();
     }
-    public String getCords(){
-        return x + "." + y;
+    public Point2D getCords(){
+        Point2D cords = new Point2D(x, y);
+        return cords;
     }
 
     public String getHouseNumber() {
