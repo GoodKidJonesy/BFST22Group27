@@ -163,6 +163,9 @@ public class Controller {
         PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(canvas.getMousePos());
         int id2 = ((PolyLine) n).getFrom().getID2();
 
+        if (e.isPrimaryButtonDown() && e.isShiftDown()) {
+            canvas.checkPointOfInterest();
+        }
         if (e.isPrimaryButtonDown() && e.isControlDown()) {
             canvas.setDest(id2);
         }

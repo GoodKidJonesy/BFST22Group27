@@ -106,22 +106,28 @@ public class MapCanvas extends Canvas {
             n.draw(gc);
         }
 
-        /*
-         * if (pointsOfInterest.size() > 0) {
-         * for (Pin p : pointsOfInterest) {
-         * gc.setFill(Color.RED);
-         * gc.fillOval(p.getX(), p.getY(), p.getSize(), p.getSize());
-         * }
-         * }
-         */
+        if (pointsOfInterest.size() > 0) {
+            for (Pin p : pointsOfInterest) {
+                gc.setFill(Color.BLUE);
+                gc.fillOval(p.getX() - p.getSize() * (maxZoom - zoomedIn) / 2,
+                        p.getY() - p.getSize() * (maxZoom - zoomedIn) / 2,
+                        p.getSize() * (maxZoom - zoomedIn), p.getSize() * (maxZoom - zoomedIn));
+            }
+        }
 
         gc.setFill(Color.RED);
         if (originPin != null)
-            gc.fillOval(originPin.getX() - originPin.getSize() * (maxZoom - zoomedIn) / 2, originPin.getY() - originPin.getSize() * (maxZoom - zoomedIn) / 2, originPin.getSize() * (maxZoom - zoomedIn), originPin.getSize() * (maxZoom - zoomedIn));
+            gc.fillOval(originPin.getX() - originPin.getSize() * (maxZoom - zoomedIn) / 2,
+                    originPin.getY() - originPin.getSize() * (maxZoom - zoomedIn) / 2,
+                    originPin.getSize() * (maxZoom - zoomedIn), originPin.getSize() * (maxZoom - zoomedIn));
         if (destPin != null)
-            gc.fillOval(destPin.getX() - destPin.getSize() * (maxZoom - zoomedIn) / 2, destPin.getY() - destPin.getSize() * (maxZoom - zoomedIn) / 2, destPin.getSize() * (maxZoom - zoomedIn), destPin.getSize() * (maxZoom - zoomedIn));
+            gc.fillOval(destPin.getX() - destPin.getSize() * (maxZoom - zoomedIn) / 2,
+                    destPin.getY() - destPin.getSize() * (maxZoom - zoomedIn) / 2,
+                    destPin.getSize() * (maxZoom - zoomedIn), destPin.getSize() * (maxZoom - zoomedIn));
         if (currentPin != null)
-            gc.fillOval(currentPin.getX() - currentPin.getSize() * (maxZoom - zoomedIn) / 2, currentPin.getY() - currentPin.getSize() * (maxZoom - zoomedIn) / 2, currentPin.getSize() * (maxZoom - zoomedIn), currentPin.getSize() * (maxZoom - zoomedIn));
+            gc.fillOval(currentPin.getX() - currentPin.getSize() * (maxZoom - zoomedIn) / 2,
+                    currentPin.getY() - currentPin.getSize() * (maxZoom - zoomedIn) / 2,
+                    currentPin.getSize() * (maxZoom - zoomedIn), currentPin.getSize() * (maxZoom - zoomedIn));
 
         if (range.getDebug()) {
             gc.setLineWidth(5 / Math.sqrt(trans.determinant()));
@@ -285,5 +291,36 @@ public class MapCanvas extends Canvas {
     public String getClosestStreet() {
         PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(mousePos);
         return n.getName();
+    }
+
+    public void checkPointOfInterest() {
+        boolean found = false;
+        for (Pin p : pointsOfInterest) {
+            if (Math.hypot(mousePos.getX() - p.getX(), mousePos.getY() - p.getY()) < p.getSize()
+                    * (maxZoom - zoomedIn)) {
+                System.out.println("pressed a pin");
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            addPointOfInterest();
+        } else {
+            openPointOfInterest();
+        }
+    }
+
+    private void openPointOfInterest() {
+        // TODO: Open pop up with name, name of street, delete option, "color change?""
+        System.out.println("opened options");
+    }
+
+    private void addPointOfInterest() {
+        pointsOfInterest.add(new Pin(mousePos));
+        System.out.println("pin created");
+    }
+
+    private void removePointOfInterest() {
+
     }
 }

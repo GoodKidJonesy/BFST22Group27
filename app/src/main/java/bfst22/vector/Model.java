@@ -26,7 +26,7 @@ public class Model {
     private float minlat, minlon, maxlat, maxlon;
     private int id2 = 0;
     private Address address = null;
-    public TrieTree trie = new TrieTree();
+    public TrieTree trie;
     private OSMNode osmnode = null;
     private ArrayList<OSMWay> highways = new ArrayList<OSMWay>();
     private Map<WayType, List<Drawable>> lines = new EnumMap<>(WayType.class);
@@ -92,6 +92,7 @@ public class Model {
         var relationType = "";
         var multipolygonWays = new ArrayList<OSMWay>();
         var timeTwo = -System.nanoTime();
+        trie = new TrieTree();
 
         while (reader.hasNext()) {
             switch (reader.next()) {
