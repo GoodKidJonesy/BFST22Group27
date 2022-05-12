@@ -245,6 +245,7 @@ public class Controller {
             }
         }
 
+        canvas.drawRoute(canvas.getOrigin(), canvas.getDest(), model.getGraf());
         canvas.repaint();
     }
 

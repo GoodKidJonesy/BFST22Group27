@@ -223,10 +223,9 @@ public class MapCanvas extends Canvas {
 
     }
 
-    void drawRoute(int v, int w, EdgeWeightedDigraph G) {
+    public void drawRoute(int v, int w, EdgeWeightedDigraph G) {
         Dijkstra path = new Dijkstra(G, v, w);
         drawable = path.drawablePath(w);
-
     }
 
     public Point2D getMousePos() {
@@ -252,6 +251,7 @@ public class MapCanvas extends Canvas {
     public void setRoute(Point2D origin, Point2D dest) {
         this.origin = ((PolyLine) model.getRoadTree().getNearestNeighbor(origin)).getFrom().getID2();
         this.dest = ((PolyLine) model.getRoadTree().getNearestNeighbor(dest)).getFrom().getID2();
+        repaint();
     }
 
     public void setCurrentAddress(Point2D currentAddress) {
