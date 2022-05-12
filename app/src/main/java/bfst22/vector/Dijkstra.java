@@ -84,7 +84,6 @@ public class Dijkstra{
 
     public PolyLine drawablePath(int v){
         if (!hasPath(v)){
-            System.out.println("No path");
             return null;
         }
         ArrayList<OSMNode> nodes = new ArrayList<>();
@@ -92,7 +91,7 @@ public class Dijkstra{
             OSMNode o = new OSMNode(e.getFrom(), e.getFrom2(), e.getFromC()[0], e.getFromC()[1]);
             nodes.add(o);
         }
-        PolyLine path = new PolyLine(nodes, WayType.MOTORWAY);
+        PolyLine path = new PolyLine(nodes, WayType.DIJKSTRA);
 
         return path;
 

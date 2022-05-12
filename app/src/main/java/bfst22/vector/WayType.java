@@ -29,7 +29,9 @@ public enum WayType {
 
     COASTLINE(Color.rgb(0, 0, 0), 0, false, 2f),
 
-    STONE(Color.rgb(192, 192, 192), 1, true, 1f);
+    STONE(Color.rgb(192, 192, 192), 1, true, 1f),
+
+    DIJKSTRA(Color.rgb(255, 255, 100), 0, false, 2f);
 
     private final Color color;
     private final int requiredZoom;

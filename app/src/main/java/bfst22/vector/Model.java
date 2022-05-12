@@ -288,7 +288,6 @@ public class Model {
                         case "way":
                             PolyLine way;
                             if (isHighway) {
-                                // System.out.println(osmnode.id);
                                 OSMWay highway = new OSMWay(nodes, wayName, maxSpeed);
                                 highways.add(highway);
                                 isHighway = false;
