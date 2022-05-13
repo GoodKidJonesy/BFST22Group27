@@ -1,6 +1,7 @@
 package bfst22.vector;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javafx.geometry.Point2D;
 
@@ -126,6 +127,7 @@ public class TrieTree {
             }
         }
         words = DFS(key, currentNode, words);
+        Collections.sort(words);
         return words;
     }
 

@@ -29,7 +29,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import java.util.Arrays;
 import java.awt.*;
 
 import org.controlsfx.control.ToggleSwitch;
@@ -39,8 +38,7 @@ import org.controlsfx.control.Notifications;
 public class Controller {
     private Point2D lastMouse;
     private Model model;
-    private TrieTree trie;
-    Framerate FPS = new Framerate();
+    private Framerate FPS = new Framerate();
 
     @FXML
     private MapCanvas canvas;
@@ -83,7 +81,7 @@ public class Controller {
             addressLabel;
 
     @FXML
-    ListView directionList;
+    ListView<String> directionList;
 
     @FXML
     ProgressBar zoomBar;
@@ -165,16 +163,21 @@ public class Controller {
         int id2 = ((PolyLine) n).getFrom().getID2();
 
         if (e.isPrimaryButtonDown() && e.isControlDown()) {
-            canvas.setDest(id2);
+            canvas.setDest(canvas.getMousePos(), id2);
         }
 
         if (e.isSecondaryButtonDown() && e.isControlDown()) {
-            canvas.setOrigin(id2);
+            canvas.setOrigin(canvas.getMousePos(), id2);
         }
 
         // Draw route if there is an origin and destination
         if (canvas.getDest() != 0 && canvas.getOrigin() != 0) {
-            canvas.drawRoute(canvas.getOrigin(), canvas.getDest(), model.getGraph());
+            if (canvas.getDest() != canvas.getOrigin()) {
+                canvas.drawRoute(canvas.getOrigin(), canvas.getDest(), model.getGraph());
+            } else {
+                canvas.clearRoute();
+                Notifications.create().title("Error").text("Cannot make route on the same street").showError();
+            }
         }
 
         canvas.repaint();
@@ -216,8 +219,11 @@ public class Controller {
             if (rute1.getText().isEmpty()) {
                 Notifications.create().title("Error").text("Please enter an address").showError();
             } else if (rute1Found) {
-                Point2D currentAddress = model.trie.getCords(rute1.getText());
-                canvas.setCurrentAddress(currentAddress);
+                Point2D pos = model.trie.getCords(rute1.getText());
+                PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(pos);
+                int id2 = ((PolyLine) n).getFrom().getID2();
+                canvas.setOrigin(pos, id2);
+
                 Notifications.create().title("Success").text("Address found: " + rute1.getText()).showInformation();
             } else {
                 Notifications.create().title("Error").text("No address found").showError();
@@ -235,6 +241,9 @@ public class Controller {
                 directionList.getItems().clear();
             } else if (!rute2Found) {
                 Notifications.create().title("Error").text("No end address found").showError();
+                directionList.getItems().clear();
+            } else if (rute1.getText().equals(rute2.getText())) {
+                Notifications.create().title("Error").text("Cannot make route between the same address").showError();
                 directionList.getItems().clear();
             } else {
                 Point2D origin = model.trie.getCords(rute1.getText());
@@ -364,25 +373,24 @@ public class Controller {
         Stage splash = (Stage) loadDenmarkBtn.getScene().getWindow();
         FXMLLoader loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
         splash.setScene(loader.load());
-  
 
         Thread thread = new Thread(() -> {
-        try {
-            Model newModel = new Model(App.defaultMap);
-            Platform.runLater(() -> {
-                try {
-                Stage stage = new Stage();
-                new View(newModel, stage);
-                
-                splash.close();
+            try {
+                Model newModel = new Model(App.defaultMap);
+                Platform.runLater(() -> {
+                    try {
+                        Stage stage = new Stage();
+                        new View(newModel, stage);
 
-                } catch (IOException | FactoryConfigurationError exe) {
-                    exe.printStackTrace();
-                }
-            });
-        } catch (FactoryConfigurationError | ClassNotFoundException | IOException | XMLStreamException ex) {
-            Notifications.create().title("Error").text("Could not load map").showError();
-        }
+                        splash.close();
+
+                    } catch (IOException | FactoryConfigurationError exe) {
+                        exe.printStackTrace();
+                    }
+                });
+            } catch (FactoryConfigurationError | ClassNotFoundException | IOException | XMLStreamException ex) {
+                Notifications.create().title("Error").text("Could not load map").showError();
+            }
         });
         thread.start();
 
@@ -409,11 +417,11 @@ public class Controller {
                 Model newModel = new Model(filePath);
                 Platform.runLater(() -> {
                     try {
-                    Stage stage = new Stage();
-                    new View(newModel, stage);
-                    
-                    splash.close();
-    
+                        Stage stage = new Stage();
+                        new View(newModel, stage);
+
+                        splash.close();
+
                     } catch (IOException | FactoryConfigurationError exe) {
                         exe.printStackTrace();
                     }
@@ -421,8 +429,8 @@ public class Controller {
             } catch (FactoryConfigurationError | ClassNotFoundException | IOException | XMLStreamException ex) {
                 Notifications.create().title("Error").text("Could not load map").showError();
             }
-            });
-            thread.start();
+        });
+        thread.start();
     }
 
     @FXML
@@ -449,11 +457,10 @@ public class Controller {
                 Model newModel = new Model(filePath);
                 Platform.runLater(() -> {
                     try {
-                    Stage stage = new Stage();
-                    new View(newModel, stage);
-                    splash.close();
-                    
-    
+                        Stage stage = new Stage();
+                        new View(newModel, stage);
+                        splash.close();
+
                     } catch (IOException | FactoryConfigurationError exe) {
                         exe.printStackTrace();
                     }
@@ -461,8 +468,8 @@ public class Controller {
             } catch (FactoryConfigurationError | ClassNotFoundException | IOException | XMLStreamException ex) {
                 Notifications.create().title("Error").text("Could not load map").showError();
             }
-            });
-            thread.start();
+        });
+        thread.start();
     }
 
     @FXML

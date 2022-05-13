@@ -24,17 +24,16 @@ public class MapCanvas extends Canvas {
 
     private Point2D mousePos = new Point2D(0, 0);
 
-    private int origin, dest;
+    private int origin, dest, oldOrigin;
 
     private boolean streetDebug = false;
     private boolean darkTheme = false;
-    
-    private Point2D currentAddress;
-    
+
     private List<Pin> pointsOfInterest = new ArrayList<>();
     private Pin originPin, destPin, currentPin;
 
     private PolyLine drawable;
+    private Dijkstra path;
 
     public void init(Model model) {
         this.model = model;
@@ -133,6 +132,10 @@ public class MapCanvas extends Canvas {
         }
     }
 
+    public void clearRoute(){
+        drawable = null;
+    }
+
     private void drawNearestRoad(GraphicsContext gc) {
         PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(mousePos);
         if (streetDebug) {
@@ -143,28 +146,26 @@ public class MapCanvas extends Canvas {
     }
 
     private void drawPins(GraphicsContext gc) {
+        double calcSize = screenToModel(new Point2D(20, 0)).getX() - screenToModel(new Point2D(0, 0)).getX();
+
         if (pointsOfInterest.size() > 0) {
             for (Pin p : pointsOfInterest) {
-                gc.setFill(Color.RED);
-                gc.fillOval(p.getX(), p.getY(), p.getSize(), p.getSize());
+                gc.setFill(p.getColor());
+                gc.fillOval(p.getX() - calcSize / 2, p.getY() - calcSize / 2, calcSize, calcSize);
             }
         }
 
-        gc.setFill(Color.RED);
         if (originPin != null) {
-            gc.fillOval(originPin.getX() - originPin.getSize() * (maxZoom - zoomedIn) / 2,
-                    originPin.getY() - originPin.getSize() * (maxZoom - zoomedIn) / 2,
-                    originPin.getSize() * (maxZoom - zoomedIn), originPin.getSize() * (maxZoom - zoomedIn));
+            gc.setFill(originPin.getColor());
+            gc.fillOval(originPin.getX() - calcSize / 2, originPin.getY() - calcSize / 2, calcSize, calcSize);
         }
         if (destPin != null) {
-            gc.fillOval(destPin.getX() - destPin.getSize() * (maxZoom - zoomedIn) / 2,
-                    destPin.getY() - destPin.getSize() * (maxZoom - zoomedIn) / 2,
-                    destPin.getSize() * (maxZoom - zoomedIn), destPin.getSize() * (maxZoom - zoomedIn));
+            gc.setFill(destPin.getColor());
+            gc.fillOval(destPin.getX() - calcSize / 2, destPin.getY() - calcSize / 2, calcSize, calcSize);
         }
         if (currentPin != null) {
-            gc.fillOval(currentPin.getX() - currentPin.getSize() * (maxZoom - zoomedIn) / 2,
-                    currentPin.getY() - currentPin.getSize() * (maxZoom - zoomedIn) / 2,
-                    currentPin.getSize() * (maxZoom - zoomedIn), currentPin.getSize() * (maxZoom - zoomedIn));
+            gc.setFill(currentPin.getColor());
+            gc.fillOval(currentPin.getX() - calcSize / 2, currentPin.getY() - calcSize / 2, calcSize, calcSize);
         }
     }
 
@@ -260,8 +261,12 @@ public class MapCanvas extends Canvas {
     }
 
     public void drawRoute(int v, int w, EdgeWeightedDigraph G) {
-        Dijkstra path = new Dijkstra(G, v, w);
-        drawable = path.drawablePath(w);
+        if (v == oldOrigin) {
+            drawable = path.drawablePath(w);
+        } else {
+            path = new Dijkstra(G, v, w);
+            drawable = path.drawablePath(w);
+        }
     }
 
     public void drawEdge(Edge e, GraphicsContext gc) {
@@ -272,27 +277,23 @@ public class MapCanvas extends Canvas {
 
     }
 
-    public void setOrigin(int id2) {
-        dest = id2;
-        originPin = new Pin(mousePos);
+    public void setOrigin(Point2D pos, int id2) {
+        oldOrigin = origin;
+        origin = id2;
+        originPin = new Pin(pos, Color.RED);
     }
 
-    public void setDest(int id2) {
-        origin = id2;
-        destPin = new Pin(mousePos);
+    public void setDest(Point2D pos, int id2) {
+        dest = id2;
+        destPin = new Pin(pos, Color.RED);
     }
 
     public void setRoute(Point2D origin, Point2D dest) {
         this.origin = ((PolyLine) model.getRoadTree().getNearestNeighbor(origin)).getFrom().getID2();
         this.dest = ((PolyLine) model.getRoadTree().getNearestNeighbor(dest)).getFrom().getID2();
-        this.originPin = new Pin(origin);
-        this.destPin = new Pin(dest);
+        this.originPin = new Pin(origin, Color.RED);
+        this.destPin = new Pin(dest, Color.PINK);
         repaint();
-    }
-
-    public void setCurrentAddress(Point2D currentAddress) {
-        this.currentAddress = currentAddress;
-        this.currentPin = new Pin(currentAddress);
     }
 
     public void setZoom(double factor) {
