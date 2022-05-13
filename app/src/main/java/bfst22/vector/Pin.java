@@ -1,14 +1,16 @@
 package bfst22.vector;
 
 import javafx.geometry.Point2D;
+import javafx.scene.paint.Color;
 
 public class Pin {
     private float x, y;
-    private float size = 0.001f;
+    private Color color;
 
-    public Pin(Point2D target) {
+    public Pin(Point2D target, Color color) {
         this.x = (float) target.getX();
         this.y = (float) target.getY();
+        this.color = color;
     }
 
     public float getX() {
@@ -19,7 +21,7 @@ public class Pin {
         return y;
     }
 
-    public float getSize() {
-        return size;
+    public Color getColor() {
+        return color;
     }
 }

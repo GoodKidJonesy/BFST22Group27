@@ -8,11 +8,10 @@ import javafx.stage.Stage;
 
 public class View {
 
-
     public View(Model model, Stage primaryStage) throws IOException {
 
         primaryStage.show();
-        var loader = new FXMLLoader(View.class.getResource("View.fxml"));
+        FXMLLoader loader = new FXMLLoader(View.class.getResource("View.fxml"));
         primaryStage.getIcons().add(new Image(View.class.getResourceAsStream("images/icon.png")));
         primaryStage.setScene(loader.load());
         Controller controller = loader.getController();

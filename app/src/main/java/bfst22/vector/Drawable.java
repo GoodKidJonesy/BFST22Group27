@@ -8,7 +8,7 @@ public abstract class Drawable implements Comparable<Drawable> {
     private WayType type = null;
 
     @Override
-    public int compareTo(Drawable d){
+    public int compareTo(Drawable d) {
         return this.getType().compareTo(d.getType());
     }
 

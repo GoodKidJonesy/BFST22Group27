@@ -29,7 +29,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import java.util.Arrays;
 import java.awt.*;
 
 import org.controlsfx.control.ToggleSwitch;
@@ -39,8 +38,7 @@ import org.controlsfx.control.Notifications;
 public class Controller {
     private Point2D lastMouse;
     private Model model;
-    private TrieTree trie;
-    Framerate FPS = new Framerate();
+    private Framerate FPS = new Framerate();
 
     @FXML
     private MapCanvas canvas;
@@ -85,7 +83,7 @@ public class Controller {
             debuggerMenu;
 
     @FXML
-    ListView directionList;
+    ListView<String> directionList;
 
     @FXML
     ProgressBar zoomBar;
@@ -124,19 +122,19 @@ public class Controller {
     private void onScroll(ScrollEvent e) throws InterruptedException {
 
         startFPS();
-        var factor = e.getDeltaY();
+        double factor = e.getDeltaY();
 
         if (factor > 0) {
             if (canvas.getZoomedIn() + 1 <= canvas.getMaxZoom()) {
                 canvas.zoom(Math.pow(1.01, 50), e.getX(), e.getY());
-                canvas.getZoom(factor);
+                canvas.setZoom(factor);
                 zoomBarValue();
             }
         } else {
             if (canvas.getZoomedIn() - 1 >= canvas.getMinZoom()) {
 
                 canvas.zoom(Math.pow(1.01, -50), e.getX(), e.getY());
-                canvas.getZoom(factor);
+                canvas.setZoom(factor);
                 zoomBarValue();
             }
         }
@@ -148,15 +146,15 @@ public class Controller {
     @FXML
     private void onMouseMoved(MouseEvent e) {
         canvas.updateMousePos(new Point2D(e.getX(), e.getY()));
-        String name = canvas.getClosestStreet();
+        String name = canvas.getClosestStreet(canvas.getMousePos());
         addressLabel.setText("Address: " + name);
     }
 
     @FXML
     private void onMouseDragged(MouseEvent e) {
         startFPS();
-        var dx = e.getX() - lastMouse.getX();
-        var dy = e.getY() - lastMouse.getY();
+        double dx = e.getX() - lastMouse.getX();
+        double dy = e.getY() - lastMouse.getY();
         canvas.pan(dx, dy);
         lastMouse = new Point2D(e.getX(), e.getY());
         canvas.updateMousePos(lastMouse);
@@ -166,20 +164,30 @@ public class Controller {
     private void onMousePressed(MouseEvent e) {
         lastMouse = new Point2D(e.getX(), e.getY());
         canvas.updateMousePos(lastMouse);
+        
+        if (e.isPrimaryButtonDown() && e.isShiftDown()){
+            canvas.checkPointOfInterest();
+        }
+        
         PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(canvas.getMousePos());
         int id2 = ((PolyLine) n).getFrom().getID2();
 
         if (e.isPrimaryButtonDown() && e.isControlDown()) {
-            canvas.setDest(id2);
+            canvas.setDest(canvas.getMousePos(), id2);
         }
 
         if (e.isSecondaryButtonDown() && e.isControlDown()) {
-            canvas.setOrigin(id2);
+            canvas.setOrigin(canvas.getMousePos(), id2);
         }
 
         // Draw route if there is an origin and destination
         if (canvas.getDest() != 0 && canvas.getOrigin() != 0) {
-            canvas.drawRoute(canvas.getOrigin(), canvas.getDest(), model.getGraf());
+            if (canvas.getDest() != canvas.getOrigin()) {
+                canvas.drawRoute(canvas.getOrigin(), canvas.getDest(), model.getGraph());
+            } else {
+                canvas.clearRoute();
+                Notifications.create().title("Error").text("Cannot make route on the same street").showError();
+            }
         }
 
         canvas.repaint();
@@ -221,8 +229,11 @@ public class Controller {
             if (rute1.getText().isEmpty()) {
                 Notifications.create().title("Error").text("Please enter an address").showError();
             } else if (rute1Found) {
-                Point2D currentAddress = model.trie.getCords(rute1.getText());
-                canvas.setCurrentAddress(currentAddress);
+                Point2D pos = model.trie.getCords(rute1.getText());
+                PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(pos);
+                int id2 = ((PolyLine) n).getFrom().getID2();
+                canvas.setOrigin(pos, id2);
+
                 Notifications.create().title("Success").text("Address found: " + rute1.getText()).showInformation();
             } else {
                 Notifications.create().title("Error").text("No address found").showError();
@@ -241,13 +252,16 @@ public class Controller {
             } else if (!rute2Found) {
                 Notifications.create().title("Error").text("No end address found").showError();
                 directionList.getItems().clear();
+            } else if (rute1.getText().equals(rute2.getText())) {
+                Notifications.create().title("Error").text("Cannot make route between the same address").showError();
+                directionList.getItems().clear();
             } else {
                 Point2D origin = model.trie.getCords(rute1.getText());
                 Point2D dest = model.trie.getCords(rute2.getText());
 
                 canvas.setRoute(origin, dest);
                 getDirectionList();
-                canvas.drawRoute(canvas.getOrigin(), canvas.getDest(), model.getGraf());
+                canvas.drawRoute(canvas.getOrigin(), canvas.getDest(), model.getGraph());
                 canvas.repaint();
             }
         }
@@ -298,9 +312,9 @@ public class Controller {
     @FXML
     private void NNDebugger(ActionEvent e) {
         if (Nearest.isSelected()) {
-            canvas.getStreetDebug(true);
+            canvas.setStreetDebug(true);
         } else {
-            canvas.getStreetDebug(false);
+            canvas.setStreetDebug(false);
         }
         canvas.repaint();
     }
@@ -365,7 +379,7 @@ public class Controller {
         startFPS();
 
         if (canvas.getZoomedIn() + 1 <= canvas.getMaxZoom()) {
-            canvas.getZoom(50);
+            canvas.setZoom(50);
             canvas.zoom(Math.pow(1.01, 50), canvas.getWidth() / 2, canvas.getHeight() / 2);
             zoomBarValue();
         }
@@ -376,7 +390,7 @@ public class Controller {
         startFPS();
 
         if (canvas.getZoomedIn() - 1 >= canvas.getMinZoom()) {
-            canvas.getZoom(-50);
+            canvas.setZoom(-50);
             canvas.zoom(Math.pow(1.01, -50), canvas.getWidth() / 2, canvas.getHeight() / 2);
             zoomBarValue();
         }
@@ -404,27 +418,26 @@ public class Controller {
             FactoryConfigurationError, InterruptedException {
 
         Stage splash = (Stage) loadDenmarkBtn.getScene().getWindow();
-        var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
+        FXMLLoader loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
         splash.setScene(loader.load());
-  
 
         Thread thread = new Thread(() -> {
-        try {
-            var newModel = new Model(App.defaultMap);
-            Platform.runLater(() -> {
-                try {
-                Stage stage = new Stage();
-                new View(newModel, stage);
-                
-                splash.close();
+            try {
+                Model newModel = new Model(App.defaultMap);
+                Platform.runLater(() -> {
+                    try {
+                        Stage stage = new Stage();
+                        new View(newModel, stage);
 
-                } catch (IOException | FactoryConfigurationError exe) {
-                    exe.printStackTrace();
-                }
-            });
-        } catch (FactoryConfigurationError | ClassNotFoundException | IOException | XMLStreamException ex) {
-            Notifications.create().title("Error").text("Could not load map").showError();
-        }
+                        splash.close();
+
+                    } catch (IOException | FactoryConfigurationError exe) {
+                        exe.printStackTrace();
+                    }
+                });
+            } catch (FactoryConfigurationError | ClassNotFoundException | IOException | XMLStreamException ex) {
+                Notifications.create().title("Error").text("Could not load map").showError();
+            }
         });
         thread.start();
 
@@ -443,19 +456,19 @@ public class Controller {
         String filePath = selectedFile.getAbsolutePath();
 
         Stage splash = (Stage) loadCustomBtn.getScene().getWindow();
-        var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
+        FXMLLoader loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
         splash.setScene(loader.load());
 
         Thread thread = new Thread(() -> {
             try {
-                var newModel = new Model(filePath);
+                Model newModel = new Model(filePath);
                 Platform.runLater(() -> {
                     try {
-                    Stage stage = new Stage();
-                    new View(newModel, stage);
-                    
-                    splash.close();
-    
+                        Stage stage = new Stage();
+                        new View(newModel, stage);
+
+                        splash.close();
+
                     } catch (IOException | FactoryConfigurationError exe) {
                         exe.printStackTrace();
                     }
@@ -463,8 +476,8 @@ public class Controller {
             } catch (FactoryConfigurationError | ClassNotFoundException | IOException | XMLStreamException ex) {
                 Notifications.create().title("Error").text("Could not load map").showError();
             }
-            });
-            thread.start();
+        });
+        thread.start();
     }
 
     @FXML
@@ -482,20 +495,19 @@ public class Controller {
         Stage view = (Stage) searchButton.getScene().getWindow();
         view.close();
         Stage splash = new Stage();
-        var loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
+        FXMLLoader loader = new FXMLLoader(View.class.getResource("Splash.fxml"));
         splash.setScene(loader.load());
         splash.show();
 
         Thread thread = new Thread(() -> {
             try {
-                var newModel = new Model(filePath);
+                Model newModel = new Model(filePath);
                 Platform.runLater(() -> {
                     try {
-                    Stage stage = new Stage();
-                    new View(newModel, stage);
-                    splash.close();
-                    
-    
+                        Stage stage = new Stage();
+                        new View(newModel, stage);
+                        splash.close();
+
                     } catch (IOException | FactoryConfigurationError exe) {
                         exe.printStackTrace();
                     }
@@ -503,8 +515,8 @@ public class Controller {
             } catch (FactoryConfigurationError | ClassNotFoundException | IOException | XMLStreamException ex) {
                 Notifications.create().title("Error").text("Could not load map").showError();
             }
-            });
-            thread.start();
+        });
+        thread.start();
     }
 
     @FXML
@@ -516,7 +528,7 @@ public class Controller {
         stage.setResizable(false);
         stage.initModality(Modality.APPLICATION_MODAL);
 
-        var about = new FXMLLoader(View.class.getResource("About.fxml"));
+        FXMLLoader about = new FXMLLoader(View.class.getResource("About.fxml"));
         stage.setScene(about.load());
         stage.show();
     }

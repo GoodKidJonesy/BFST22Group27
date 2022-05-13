@@ -1,9 +1,10 @@
 package bfst22.vector;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javafx.geometry.Point2D;
-import javafx.scene.effect.Light.Point;
+
 //Initial code from geeksforgeeks.org.
 public class TrieTree {
 
@@ -22,7 +23,10 @@ public class TrieTree {
         Point2D cords;
         boolean endOfString;
         char character;
-        public TrieNode(){}
+
+        public TrieNode() {
+        }
+
         TrieNode(Point2D cords, char c) {
             this.character = c;
             endOfString = false;
@@ -32,7 +36,7 @@ public class TrieTree {
             }
         }
     }
-    
+
     // opretter root node som altid vil være null;
     private static TrieNode root = new TrieNode();
 
@@ -47,13 +51,13 @@ public class TrieTree {
         TrieNode parent = root;
         for (depth = 0; depth < key.length(); depth++) {
             index = key.charAt(depth) - 'a';
-            if(key.charAt(depth) == 'ø')
+            if (key.charAt(depth) == 'ø')
                 index -= 17;
-            if(key.charAt(depth) == 'å')
+            if (key.charAt(depth) == 'å')
                 index += 3;
-            if(key.charAt(depth) == ' ')
+            if (key.charAt(depth) == ' ')
                 index += 101;
-            if(index < 0)
+            if (index < 0)
                 index += 75;
             if (parent.children[index] == null)
                 parent.children[index] = new TrieNode(cords, key.charAt(depth));
@@ -65,18 +69,18 @@ public class TrieTree {
 
     // search metode, fungerer ligesom insert. metode bare hvor den tjekker hver
     // node og sammenligner med input.
-    public boolean search(String key){
+    public boolean search(String key) {
         key = replaceKey(key);
         int depth;
         int index;
         TrieNode parent = root;
         for (depth = 0; depth < key.length(); depth++) {
             index = key.charAt(depth) - 'a';
-            if(key.charAt(depth) == ' ')
+            if (key.charAt(depth) == ' ')
                 index += 101;
-            if(index < 0)
-                index += 75;            
-            if (parent.children[index] == null){
+            if (index < 0)
+                index += 75;
+            if (parent.children[index] == null) {
                 return false;
             }
 
@@ -84,7 +88,8 @@ public class TrieTree {
         }
         return true;
     }
-    //get cords på en specifik adresse, fungerer præcist ligesom search funktionen.
+
+    // get cords på en specifik adresse, fungerer præcist ligesom search funktionen.
     public Point2D getCords(String key) {
         key = replaceKey(key);
         int depth;
@@ -92,11 +97,11 @@ public class TrieTree {
         TrieNode parent = root;
         for (depth = 0; depth < key.length(); depth++) {
             index = key.charAt(depth) - 'a';
-            if(key.charAt(depth) == ' ')
+            if (key.charAt(depth) == ' ')
                 index += 101;
-            if(index < 0)
-                index += 75;            
-            if (parent.children[index] == null){
+            if (index < 0)
+                index += 75;
+            if (parent.children[index] == null) {
                 return null;
             }
 
@@ -105,46 +110,52 @@ public class TrieTree {
         return parent.cords;
     }
 
-    //metode til at søge efter alle ord der indeholder bruger input i trietree.
-    //bruger rekursiv dybde først søgning metoden til dette.
-    //finder den node som er sidste character i inputtet og kalder derefter DFS metoden med denne node, input og arraylist.
-    public ArrayList<String> searchMultiple(String key){
+    // metode til at søge efter alle ord der indeholder bruger input i trietree.
+    // bruger rekursiv dybde først søgning metoden til dette.
+    // finder den node som er sidste character i inputtet og kalder derefter DFS
+    // metoden med denne node, input og arraylist.
+    public ArrayList<String> searchMultiple(String key) {
         ArrayList<String> words = new ArrayList<>();
         key = replaceKey(key);
         TrieNode currentNode = root;
-        for(int i = 0; i < key.length(); i++){
-            inner : for(TrieNode n : currentNode.children){
-                if(n!= null && n.character == key.charAt(i)){
+        for (int i = 0; i < key.length(); i++) {
+            inner: for (TrieNode n : currentNode.children) {
+                if (n != null && n.character == key.charAt(i)) {
                     currentNode = n;
                     break inner;
                 }
             }
         }
         words = DFS(key, currentNode, words);
+        Collections.sort(words);
         return words;
     }
-    //rekursiv dybde først søgning. Søger rekursivt igennem alle børn til currentnode og tilføjer alle ord der matcher input til listen. 
-    static ArrayList<String> DFS(String key, TrieNode current, ArrayList<String> words){
-        if(current.endOfString){
+
+    // rekursiv dybde først søgning. Søger rekursivt igennem alle børn til
+    // currentnode og tilføjer alle ord der matcher input til listen.
+    static ArrayList<String> DFS(String key, TrieNode current, ArrayList<String> words) {
+        if (current.endOfString) {
             String output = "";
             for (String word : key.toLowerCase().split("\\s+")) {
-                output += word.replaceFirst(".",word.substring(0, 1).toUpperCase()) + " ";
+                output += word.replaceFirst(".", word.substring(0, 1).toUpperCase()) + " ";
             }
-            words.add(output.replace("ae", "æ").replace("oe", "ø").replace("aa", "å").replace("Oe", "Ø").replace("Aa","Å").replace("Ae","Æ"));
-            
+            words.add(output.replace("ae", "æ").replace("oe", "ø").replace("aa", "å").replace("Oe", "Ø")
+                    .replace("Aa", "Å").replace("Ae", "Æ"));
+
         }
-        for(TrieNode n : current.children){
-            if(n != null){
+        for (TrieNode n : current.children) {
+            if (n != null) {
                 current = n;
                 DFS(key + n.character, current, words);
             }
         }
         return words;
     }
-    public String replaceKey(String key){
+
+    public String replaceKey(String key) {
         key = key.trim().toLowerCase();
-        key = key.replace("æ", "ae").replace("ø","oe").replace("å", "aa").replace("é","e").replace("ü","u").replace("ö", "oe").replace("õ","oe").replace("ä","ae");
+        key = key.replace("æ", "ae").replace("ø", "oe").replace("å", "aa").replace("é", "e").replace("ü", "u")
+                .replace("ö", "oe").replace("õ", "oe").replace("ä", "ae");
         return key;
     }
 }
-

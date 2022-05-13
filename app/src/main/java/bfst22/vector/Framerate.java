@@ -9,7 +9,7 @@ public class Framerate {
     private boolean arrayFilled = false;
     private double frameRate;
 
-    public Framerate(){
+    public Framerate() {
         Label label = new Label();
         AnimationTimer frameRateMeter = new AnimationTimer() {
 
@@ -33,7 +33,7 @@ public class Framerate {
         frameRateMeter.start();
     }
 
-    public String getFrameRate(){
+    public String getFrameRate() {
         int intFramerate = (int) frameRate;
         String stringFramerate = Integer.toString(intFramerate);
         return "FPS: " + stringFramerate;

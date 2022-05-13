@@ -9,11 +9,10 @@ public class OSMWay implements Serializable {
     private long length;
     private int speedLimit;
     private boolean oneWay;
-    private OSMNode from,to;
+    private OSMNode from, to;
     private String name;
 
-
-    List<OSMNode> nodes;
+    private List<OSMNode> nodes;
 
     public OSMWay(List<OSMNode> nodes, String name, int speedLimit) {
         this.nodes = new ArrayList<>(nodes);
@@ -23,28 +22,35 @@ public class OSMWay implements Serializable {
         this.speedLimit = speedLimit;
     }
 
-    public long getLength(){
+    public long getLength() {
         return length;
     }
-    public int getSpeedLimit(){
+
+    public int getSpeedLimit() {
         return speedLimit;
     }
-    public boolean getOneWay(){
+
+    public boolean getOneWay() {
         return oneWay;
     }
-    public void setSpeedLimit(int speed){
+
+    public void setSpeedLimit(int speed) {
         this.speedLimit = speed;
     }
-    public OSMNode getFrom(){
+
+    public OSMNode getFrom() {
         return from;
     }
-    public OSMNode getTo(){
+
+    public OSMNode getTo() {
         return to;
     }
-    public List<OSMNode> getNodes(){
+
+    public List<OSMNode> getNodes() {
         return nodes;
     }
-    public String getName(){
+
+    public String getName() {
         return name;
     }
 

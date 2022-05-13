@@ -45,7 +45,7 @@ public class OSMNode implements Serializable {
         return id2;
     }
 
-    public String getStreetName(){
+    public String getStreetName() {
         return streetName;
     }
 }

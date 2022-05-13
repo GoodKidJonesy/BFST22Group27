@@ -10,18 +10,15 @@ public class PolyLine extends Drawable {
     public WayType type;
     public int size = 0;
     public OSMNode from, to;
-    public List<OSMNode> nodes;
     public String name;
 
     public PolyLine(List<OSMNode> nodes, WayType type) {
         coords = new float[nodes.size() * 2];
         int i = 0;
-        for (var node : nodes) {
+        for (OSMNode node : nodes) {
             coords[i++] = node.getX();
             coords[i++] = node.getY();
-
         }
-        this.nodes = nodes;
         this.type = type;
         this.size = coords.length / 2;
         this.from = nodes.get(0);
@@ -31,34 +28,28 @@ public class PolyLine extends Drawable {
     public PolyLine(List<OSMNode> nodes, WayType type, String name) {
         coords = new float[nodes.size() * 2];
         int i = 0;
-        for (var node : nodes) {
+        for (OSMNode node : nodes) {
             coords[i++] = node.getX();
             coords[i++] = node.getY();
 
         }
-        this.nodes = nodes;
         this.type = type;
         this.size = coords.length / 2;
         this.from = nodes.get(0);
         this.to = nodes.get(nodes.size() - 1);
         this.name = name;
-
-    }
-
-    public List<OSMNode> getNodes() {
-        return nodes;
     }
 
     @Override
     public void trace(GraphicsContext gc) {
         gc.moveTo(coords[0], coords[1]);
-        for (var i = 2; i < coords.length; i += 2) {
+        for (int i = 2; i < coords.length; i += 2) {
             gc.lineTo(coords[i], coords[i + 1]);
         }
     }
 
     public void relationTrace(GraphicsContext gc) {
-        for (var i = 2; i < coords.length; i += 2) {
+        for (int i = 2; i < coords.length; i += 2) {
             gc.lineTo(coords[i], coords[i + 1]);
         }
     }

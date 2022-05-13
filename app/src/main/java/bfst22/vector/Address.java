@@ -53,7 +53,8 @@ public class Address {
     public String toString() {
         return street.toLowerCase() + " " + houseNumber.toLowerCase() + " " + postcode + " " + city.toLowerCase();
     }
-    public Point2D getCords(){
+
+    public Point2D getCords() {
         Point2D cords = new Point2D(x, y);
         return cords;
     }
@@ -69,14 +70,16 @@ public class Address {
     public String getCity() {
         return city;
     }
-    public float getX(){
+
+    public float getX() {
         return this.x;
     }
-    public float getY(){
+
+    public float getY() {
         return this.y;
     }
-    public long getId(){
+
+    public long getId() {
         return id;
     }
-
 }
