@@ -233,6 +233,7 @@ public class Controller {
                 PolyLine n = (PolyLine) model.getRoadTree().getNearestNeighbor(pos);
                 int id2 = ((PolyLine) n).getFrom().getID2();
                 canvas.setOrigin(pos, id2);
+                canvas.drawRoute(canvas.getOrigin(), canvas.getDest(), model.getGraph());
 
                 Notifications.create().title("Success").text("Address found: " + rute1.getText()).showInformation();
             } else {
