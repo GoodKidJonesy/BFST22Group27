@@ -2,6 +2,8 @@ package bfst22.vector;
 
 import java.util.*;
 
+
+//Initial code from Sedgewick and Wayne
 public class Dijkstra {
 
     private Edge[] edgeTo;

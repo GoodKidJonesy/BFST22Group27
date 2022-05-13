@@ -3,6 +3,7 @@ package bfst22.vector;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+//Initial code from Sedgewick and Wayne
 public class EdgeWeightedDigraph {
     private final int V; // number of vertices in this digraph
     private int E; // number of edges in this digraph
@@ -30,7 +31,6 @@ public class EdgeWeightedDigraph {
         return E;
     }
 
-    // throw an IllegalArgumentException unless {@code 0 <= v < V}
     private void validateVertex(int v) {
         if (v < 0 || v >= V)
             throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V - 1));

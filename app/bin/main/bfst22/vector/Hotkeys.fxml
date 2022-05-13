@@ -19,11 +19,12 @@
                <content>
                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                         <children>
+                           <Label text="Press on canvas" underline="true" />
                            <HBox prefHeight="171.0" prefWidth="301.0">
                               <children>
                                  <VBox alignment="TOP_CENTER" prefHeight="171.0" prefWidth="268.0" spacing="50.0">
                                     <children>
-                                       <Label prefHeight="130.0" prefWidth="115.0" text="Create POI:" textAlignment="CENTER">
+                                       <Label prefHeight="29.0" prefWidth="179.0" text="Create POI:" textAlignment="CENTER">
                                           <font>
                                              <Font size="20.0" />
                                           </font>
@@ -31,14 +32,24 @@
                                              <Insets />
                                           </VBox.margin>
                                        </Label>
+                                       <Label prefHeight="30.0" prefWidth="176.0" text="Delete POI:" textAlignment="CENTER">
+                                          <font>
+                                             <Font size="20.0" />
+                                          </font>
+                                       </Label>
                                     </children>
                                     <HBox.margin>
                                        <Insets left="5.0" top="20.0" />
                                     </HBox.margin>
                                  </VBox>
-                                 <VBox alignment="TOP_CENTER" prefHeight="151.0" prefWidth="329.0" spacing="50.0">
+                                 <VBox alignment="TOP_CENTER" prefHeight="151.0" prefWidth="281.0" spacing="50.0">
                                     <children>
-                                       <Label prefHeight="127.0" prefWidth="135.0" text="SHIFT + LEFT CLICK">
+                                       <Label prefHeight="29.0" prefWidth="135.0" text="SHIFT + LEFT CLICK">
+                                          <font>
+                                             <Font name="Monospaced Regular" size="12.0" />
+                                          </font>
+                                       </Label>
+                                       <Label prefHeight="29.0" prefWidth="143.0" text="SHIFT + RIGHT CLICK">
                                           <font>
                                              <Font name="Monospaced Regular" size="12.0" />
                                           </font>
@@ -58,6 +69,7 @@
                <content>
                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                         <children>
+                           <Label text="Press on canvas" underline="true" />
                            <HBox prefHeight="171.0" prefWidth="301.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                               <children>
                                  <VBox alignment="TOP_CENTER" prefHeight="171.0" prefWidth="268.0" spacing="50.0">

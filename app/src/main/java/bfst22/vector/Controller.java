@@ -397,9 +397,7 @@ public class Controller {
     }
 
     private void getDirectionList() {
-        // HARDCODED FOR TEST PURPSES
-        // TODO: FIX THIS
-
+        // HARDCODED FOR TEST PURPOSES
         directionList.getItems().clear();
         directionList.getItems().add("1. Start point: " + rute1.getText());
         directionList.getItems().add("2. Turn left after 50 meters");
@@ -432,7 +430,7 @@ public class Controller {
                         splash.close();
 
                     } catch (IOException | FactoryConfigurationError exe) {
-                        exe.printStackTrace();
+                        Notifications.create().title("Error").text("Could not load map").showError();
                     }
                 });
             } catch (FactoryConfigurationError | ClassNotFoundException | IOException | XMLStreamException ex) {
@@ -470,7 +468,7 @@ public class Controller {
                         splash.close();
 
                     } catch (IOException | FactoryConfigurationError exe) {
-                        exe.printStackTrace();
+                        Notifications.create().title("Error").text("Could not load map").showError();
                     }
                 });
             } catch (FactoryConfigurationError | ClassNotFoundException | IOException | XMLStreamException ex) {
@@ -509,7 +507,7 @@ public class Controller {
                         splash.close();
 
                     } catch (IOException | FactoryConfigurationError exe) {
-                        exe.printStackTrace();
+                        Notifications.create().title("Error").text("Could not load map").showError();
                     }
                 });
             } catch (FactoryConfigurationError | ClassNotFoundException | IOException | XMLStreamException ex) {

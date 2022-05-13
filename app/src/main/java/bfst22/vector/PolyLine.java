@@ -48,6 +48,7 @@ public class PolyLine extends Drawable {
         }
     }
 
+    //Idea of relationtrace given by group6
     public void relationTrace(GraphicsContext gc) {
         for (int i = 2; i < coords.length; i += 2) {
             gc.lineTo(coords[i], coords[i + 1]);

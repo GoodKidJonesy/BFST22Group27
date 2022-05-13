@@ -21,6 +21,7 @@ public class MultiPolygon extends Drawable {
     public void trace(GraphicsContext gc) {
         OSMNode prevLastNode = null;
 
+        
         for (Drawable d : parts) {
             if (prevLastNode != null && ((PolyLine) d).getFrom() == prevLastNode) {
                 ((PolyLine) d).relationTrace(gc);

@@ -67,9 +67,6 @@ public class Model {
         }
         time += System.nanoTime();
         System.out.println("Load time: " + (long) (time / 1e6) + " ms");
-        if (!filename.endsWith(".obj")) {
-            // save(filename);
-        }
     }
 
     public void save(String basename) throws FileNotFoundException, IOException {
